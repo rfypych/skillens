@@ -1,17 +1,21 @@
 'use client';
 
+import { ArrowLeft, CheckmarkOutline, Document, Email, Portfolio, User } from '@carbon/icons-react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Briefcase, FileText, CheckCircle2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import toast, { Toaster } from 'react-hot-toast';
+import { ThinkingIndicator } from '@/components/ThinkingIndicator';
+import { useLanguage } from '@/i18n/LanguageContext';
+import TextRollButton from '@/components/TextRollButton';
 
 export default function CandidateProfile() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { t, language, setLanguage } = useLanguage();
   
   const [formData, setFormData] = useState({
     full_name: '',
@@ -50,128 +54,155 @@ export default function CandidateProfile() {
         full_name: formData.full_name,
         profile: formData.profile
       });
-      toast.success('Profile updated successfully!');
+      window.dispatchEvent(new Event('user-profile-updated'));
+      toast.success('Profil berhasil diperbarui!');
     } catch (err: any) {
-      toast.error(err.message || 'Failed to update profile');
+      toast.error(err.message || 'Gagal memperbarui profil');
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <div className="w-8 h-8 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
+    <div className="max-w-4xl mx-auto space-y-10 pb-12 font-sans">
+      <div className="h-20 bg-gray-100 animate-pulse rounded-2xl" />
+      <div className="bg-white p-8 border border-gray-200/80 rounded-2xl h-96 animate-pulse" />
     </div>
   );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10 pb-12">
+    <div className="max-w-4xl mx-auto space-y-10 pb-12 font-sans">
       <Toaster position="top-right" />
       
       <div>
-        <Link href="/candidate/dashboard" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gray-dark hover:text-brand-secondary transition-colors mb-6">
+        <Link href="/candidate/dashboard" className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors mb-4">
           <ArrowLeft className="w-4 h-4" />
-          Back to Dashboard
+          Kembali ke Dasbor
         </Link>
-        <h1 className="text-3xl md:text-4xl font-display font-bold text-brand-secondary mb-2 tracking-tight">My Profile</h1>
-        <p className="text-brand-gray-dark text-lg">Manage your personal information and master resume.</p>
+        <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-2 tracking-tight">Profil Saya</h1>
+        <p className="text-gray-600 text-base font-normal">Kelola informasi pribadi dan ringkasan resume Anda.</p>
       </div>
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-brand-white rounded-2xl border border-brand-gray-light/30 shadow-sm overflow-hidden"
+        className="bg-white rounded-2xl border border-gray-200/80 shadow-xs overflow-hidden"
       >
         <form onSubmit={handleSave} className="p-8 space-y-8">
           {/* Basic Info */}
           <div>
-            <h3 className="text-lg font-bold text-brand-secondary mb-4 flex items-center gap-2 border-b border-brand-gray-light/30 pb-2">
-              <User className="w-5 h-5 text-brand-primary" />
-              Basic Information
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
+              <User className="w-5 h-5 text-[#F26522]" />
+              Informasi Dasar
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-bold text-brand-secondary mb-2">Full Name</label>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Nama Lengkap</label>
                 <input
                   type="text"
                   value={formData.full_name}
                   onChange={e => setFormData({ ...formData, full_name: e.target.value })}
-                  className="w-full px-4 py-3 bg-brand-gray-light/5 border border-brand-gray-light rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all"
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-brand-secondary mb-2">Email Address</label>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Alamat Email</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-brand-gray-dark" />
+                    <Email className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
                     type="email"
                     value={formData.email}
                     disabled
-                    className="w-full pl-11 pr-4 py-3 bg-brand-gray-light/10 border border-brand-gray-light rounded-xl text-brand-gray-dark cursor-not-allowed"
+                    className="w-full pl-11 pr-4 py-2.5 bg-gray-100 border border-gray-200 rounded-full text-gray-500 cursor-not-allowed text-sm font-mono"
                   />
                 </div>
-                <p className="text-xs text-brand-gray-dark mt-1">Email cannot be changed.</p>
               </div>
             </div>
           </div>
 
           {/* Professional Summary */}
           <div>
-            <h3 className="text-lg font-bold text-brand-secondary mb-4 flex items-center gap-2 border-b border-brand-gray-light/30 pb-2">
-              <FileText className="w-5 h-5 text-brand-primary" />
-              Professional Details
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
+              <Document className="w-5 h-5 text-[#F26522]" />
+              Detail Profesional & Resume
             </h3>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-brand-secondary mb-2">Short Bio</label>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Bio Singkat</label>
                 <textarea
                   value={formData.profile.bio}
                   onChange={e => setFormData({ ...formData, profile: { ...formData.profile, bio: e.target.value } })}
-                  placeholder="I am a software engineer passionate about building scalable AI applications..."
-                  className="w-full h-24 px-4 py-3 bg-brand-gray-light/5 border border-brand-gray-light rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all resize-none"
+                  placeholder="Saya adalah software engineer yang berfokus pada pengembangan aplikasi AI skala besar..."
+                  className="w-full h-24 px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 resize-none font-normal"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-brand-secondary mb-2">Experience Summary</label>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Ringkasan Pengalaman Kerja</label>
                 <textarea
                   value={formData.profile.experience}
                   onChange={e => setFormData({ ...formData, profile: { ...formData.profile, experience: e.target.value } })}
-                  placeholder="5 years at TechCorp (Backend), 2 years at Startup Inc (Fullstack)..."
-                  className="w-full h-32 px-4 py-3 bg-brand-gray-light/5 border border-brand-gray-light rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all resize-y"
+                  placeholder="5 tahun di TechCorp (Backend), 2 tahun di Startup Inc (Fullstack)..."
+                  className="w-full h-32 px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 resize-y font-normal"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-brand-secondary mb-2">LinkedIn or Portfolio URL</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Briefcase className="h-5 w-5 text-brand-gray-dark" />
-                  </div>
-                  <input
-                    type="url"
-                    value={formData.profile.resume_url}
-                    onChange={e => setFormData({ ...formData, profile: { ...formData.profile, resume_url: e.target.value } })}
-                    placeholder="https://linkedin.com/in/yourprofile"
-                    className="w-full pl-11 pr-4 py-3 bg-brand-gray-light/5 border border-brand-gray-light rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all"
-                  />
-                </div>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Unggah CV / Resume (PDF / Doc)</label>
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={async (e) => {
+                    if (!e.target.files || e.target.files.length === 0) return;
+                    const file = e.target.files[0];
+                    const formDataObj = new FormData();
+                    formDataObj.append('file', file);
+                    formDataObj.append('document_type', 'resume');
+                    
+                    try {
+                      const res = await api.post('/candidates/upload', formDataObj);
+                      setFormData(prev => ({
+                        ...prev,
+                        profile: { ...prev.profile, resume_url: res.file_url }
+                      }));
+                      toast.success('Resume berhasil diunggah');
+                    } catch (err: any) {
+                      toast.error(err.message || 'Gagal mengunggah resume');
+                    }
+                  }}
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900"
+                />
+                {formData.profile.resume_url && (
+                  <p className="mt-2 text-sm text-[#F26522] font-medium">
+                    <a href={`${process.env.NEXT_PUBLIC_API_URL || '/api'}${formData.profile.resume_url}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                      Lihat Resume Terunggah
+                    </a>
+                  </p>
+                )}
               </div>
             </div>
           </div>
 
-          <div className="pt-6 border-t border-brand-gray-light/30 flex justify-end">
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-8 py-3 rounded-xl font-bold bg-brand-secondary text-brand-white hover:bg-brand-dark-teal transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-2 disabled:opacity-70 disabled:hover:translate-y-0"
-            >
-              {saving ? (
-                <div className="w-4 h-4 border-2 border-brand-white/30 border-t-brand-white rounded-full animate-spin" />
-              ) : (
-                <CheckCircle2 className="w-5 h-5" />
-              )}
-              <span>Save Profile</span>
+          {/* Preferences */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
+              Bahasa Platform
+            </h3>
+            <div className="space-y-4">
+              <select 
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as 'en' | 'id')}
+                className="w-full md:w-1/2 px-4 py-2.5 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 font-medium"
+              >
+                <option value="id">Bahasa Indonesia</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-6 border-t border-gray-100 flex justify-end">
+            <button type="submit" disabled={saving}>
+              <TextRollButton text={saving ? 'Menyimpan...' : 'Simpan Profil'} variant="orange" size="md" />
             </button>
           </div>
         </form>

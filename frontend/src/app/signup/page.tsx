@@ -1,12 +1,14 @@
 'use client';
 
+import { ChevronLeft, Email, Enterprise, Locked, User, View, ViewOff, Warning } from '@carbon/icons-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Mail, ArrowRight, User, Building2, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import SponsorLogos from '@/components/SponsorLogos';
+import TextRollButton from '@/components/TextRollButton';
+import ShaderBackground from '@/components/ShaderBackground';
 
 export default function Signup() {
   const router = useRouter();
@@ -17,6 +19,7 @@ export default function Signup() {
     full_name: '',
     company_name: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -33,7 +36,6 @@ export default function Signup() {
       };
       await api.post('/auth/signup', payload, { requireAuth: false });
 
-      // Auto-login after signup
       const loginData = new URLSearchParams();
       loginData.append('username', formData.email);
       loginData.append('password', formData.password);
@@ -49,7 +51,7 @@ export default function Signup() {
         router.push('/login');
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred during signup');
+      setError(err.message || 'Terjadi kesalahan saat pendaftaran');
     } finally {
       setLoading(false);
     }
@@ -60,216 +62,398 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Form Side */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-24 bg-brand-white py-12 flex-1 md:flex-none">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md mx-auto"
-        >
-          {/* Mobile Logo */}
-          <div className="md:hidden flex items-center gap-2.5 mb-12">
-            <img src="/logo.svg" alt="SkillLens Logo" className="h-8 w-auto" />
-            <span className="text-xl font-display font-bold text-brand-secondary tracking-tight">SkillLens</span>
-          </div>
-
-          <div className="mb-10">
-            <h1 className="text-4xl font-display font-bold text-brand-secondary mb-2">Create an account.</h1>
-            <p className="text-brand-gray-dark">Join SkillLens and experience AI-powered recruitment.</p>
-          </div>
-
-          {/* Smooth Role Toggle */}
-          <div className="relative flex bg-[#F7F9F9] p-1.5 rounded-xl mb-8 border border-brand-gray-light/40">
-            <motion.div 
-              className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-brand-white shadow-sm border border-brand-gray-light/40 rounded-lg z-0"
-              animate={{ x: role === 'candidate' ? 0 : '100%' }}
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-            />
-            {(['candidate', 'recruiter'] as const).map(r => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRole(r)}
-                className={`relative flex-1 py-2.5 text-xs font-bold rounded-lg transition-colors uppercase tracking-wider z-10 ${
-                  role === r ? 'text-brand-secondary' : 'text-brand-gray-dark hover:text-brand-secondary'
-                }`}
-              >
-                {r === 'candidate' ? 'I\'m a Candidate' : 'I\'m a Recruiter'}
-              </button>
-            ))}
-          </div>
-
-          {error && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }} 
-              animate={{ opacity: 1, height: 'auto' }} 
-              className="mb-6 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 overflow-hidden"
-            >
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-              <p className="text-sm font-medium">{error}</p>
-            </motion.div>
-          )}
-
-          <form className="space-y-5" onSubmit={handleSignup}>
-            <div>
-              <label className="block text-sm font-medium text-brand-secondary mb-1">Full Name</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-brand-gray-light" />
-                </div>
-                <input
-                  type="text"
-                  name="full_name"
-                  required
-                  value={formData.full_name}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-brand-gray-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-colors"
-                  placeholder="Sarah Jenkins"
-                />
-              </div>
-            </div>
-
-            <AnimatePresence>
-              {role === 'recruiter' && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                  animate={{ opacity: 1, height: 'auto', marginTop: 20 }}
-                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="overflow-hidden"
-                >
-                  <label className="block text-sm font-medium text-brand-secondary mb-1 mt-1">Company Name</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Building2 className="h-5 w-5 text-brand-gray-light" />
-                    </div>
-                    <input
-                      type="text"
-                      name="company_name"
-                      required={role === 'recruiter'}
-                      value={formData.company_name}
-                      onChange={handleChange}
-                      className="block w-full pl-10 pr-3 py-3 border border-brand-gray-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-colors"
-                      placeholder="Acme Corp"
-                    />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div>
-              <label className="block text-sm font-medium text-brand-secondary mb-1">Email Address</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-brand-gray-light" />
-                </div>
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-brand-gray-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-colors"
-                  placeholder="you@email.com"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-brand-secondary mb-1">Password</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-brand-gray-light" />
-                </div>
-                <input
-                  type="password"
-                  name="password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-brand-gray-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-colors"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-brand-white bg-brand-primary hover:bg-brand-dark-teal focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary transition-colors disabled:opacity-50"
-              >
-                {loading ? 'Creating account...' : `Create ${role === 'recruiter' ? 'Recruiter' : 'Candidate'} Account`}
-                {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
-              </button>
-            </div>
-          </form>
-
-          <p className="mt-8 text-center text-sm text-brand-gray-dark">
-            Already have an account?{' '}
-            <Link href="/login" className="font-medium text-brand-primary hover:text-brand-dark-teal transition-colors">
-              Sign in
+    <div className="min-h-screen bg-[#EFEFEF] font-sans overflow-x-hidden">
+      
+      {/* MOBILE VIEW (< lg): Dribbble Card Sheet Layout */}
+      <div className="flex lg:hidden min-h-screen flex-col justify-between bg-[#0F172A]">
+        {/* Top WebGL Header Area */}
+        <div className="relative w-full h-[220px] sm:h-[260px] text-white p-4 flex flex-col justify-between overflow-hidden">
+          <ShaderBackground variant="dark" />
+          <div className="relative z-20 w-full flex items-center justify-between">
+            <Link href="/" className="p-2 text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/10">
+              <ChevronLeft className="w-6 h-6" />
             </Link>
-          </p>
-          
-          <div className="mt-8 pt-6">
-            <SponsorLogos />
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-white/80 font-medium">Already have an account?</span>
+              <Link 
+                href="/login" 
+                className="text-xs font-semibold text-white bg-white/20 hover:bg-white/30 backdrop-blur-md px-4 py-1.5 rounded-full transition-colors border border-white/20 shadow-xs"
+              >
+                Sign in
+              </Link>
+            </div>
           </div>
-        </motion.div>
-      </div>
-
-      {/* Brand Side */}
-      <div className="hidden md:flex w-1/2 bg-brand-secondary p-12 text-brand-white flex-col justify-between items-start relative overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-brand-dark-teal rounded-full blur-3xl opacity-50 mix-blend-screen pointer-events-none" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-brand-primary rounded-full blur-3xl opacity-30 mix-blend-screen pointer-events-none" />
-
-        <div className="z-10">
-          <div className="flex items-center gap-2.5">
-            <img src="/logo.svg" alt="SkillLens Logo" className="h-10 w-auto brightness-0 invert" />
-            <span className="text-2xl font-display font-bold text-brand-white tracking-tight">SkillLens</span>
+          <div className="relative z-20 w-full text-center my-auto pb-4">
+            <Link href="/" className="inline-flex items-center gap-3">
+              <div className="w-9 h-9 bg-white text-gray-900 rounded-full flex items-center justify-center font-bold text-xs shadow-md">
+                SK
+              </div>
+              <span className="text-2xl font-extrabold text-white tracking-tight">Skillens</span>
+            </Link>
           </div>
         </div>
 
-        <div className="z-10 max-w-lg">
-          <AnimatePresence mode="wait">
-            {role === 'candidate' ? (
-              <motion.div
-                key="candidate-text"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.4 }}
+        {/* Bottom Form Sheet - Fills Full Bottom Viewport */}
+        <div className="relative z-30 w-full flex-1 bg-white rounded-t-[32px] sm:rounded-t-[40px] px-6 py-8 shadow-2xl flex flex-col justify-between border-t border-gray-100">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="w-full max-w-md mx-auto"
+          >
+            <div className="mb-6 text-center">
+              <h1 className="text-2xl font-bold tracking-tight text-gray-900 mb-1">Get started free.</h1>
+              <p className="text-gray-500 text-xs font-normal">Free forever. No credit card needed.</p>
+            </div>
+
+            {/* Role Toggle */}
+            <div className="relative flex bg-gray-100 p-1.5 rounded-2xl mb-6 border border-gray-200">
+              <motion.div 
+                className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-gray-900 rounded-xl z-0"
+                animate={{ x: role === 'candidate' ? 0 : '100%' }}
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+              {(['candidate', 'recruiter'] as const).map(r => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setRole(r)}
+                  className={`relative flex-1 py-2 text-xs font-semibold rounded-xl transition-colors uppercase tracking-wider z-10 ${
+                    role === r ? 'text-white' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {r === 'candidate' ? "Saya Kandidat" : "Saya Rekruter"}
+                </button>
+              ))}
+            </div>
+
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }} 
+                animate={{ opacity: 1, height: 'auto' }} 
+                className="mb-6 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-xs font-semibold overflow-hidden"
               >
-                <h2 className="text-4xl md:text-5xl font-display font-bold mb-6 leading-tight">
-                  Showcase your real skills,<br/>
-                  <span className="text-brand-accent">not just your resume.</span>
-                </h2>
-                <p className="text-brand-gray-light text-lg leading-relaxed mb-10">
-                  Prove your real-world problem solving through highly contextual AI-proctored simulations. Stand out from the crowd and let your abilities do the talking.
-                </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="recruiter-text"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.4 }}
-              >
-                <h2 className="text-4xl md:text-5xl font-display font-bold mb-6 leading-tight">
-                  Zero false positives.<br/>
-                  <span className="text-brand-accent">100% confidence.</span>
-                </h2>
-                <p className="text-brand-gray-light text-lg leading-relaxed mb-10">
-                  Get forensic-level insight into every applicant. Detect fabricated skills, identify hidden gems, and hire with absolute certainty.
-                </p>
+                <Warning className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <p>{error}</p>
               </motion.div>
             )}
-          </AnimatePresence>
+
+            <form className="space-y-4" onSubmit={handleSignup}>
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 tracking-wide uppercase">Email Address</label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="block w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                    placeholder="nicholas@ergemla.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 tracking-wide uppercase">Your name</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="full_name"
+                    required
+                    value={formData.full_name}
+                    onChange={handleChange}
+                    className="block w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                    placeholder="Nicholas Ergemla"
+                  />
+                </div>
+              </div>
+
+              <AnimatePresence mode="wait">
+                {role === 'recruiter' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 tracking-wide uppercase">Company name</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        name="company_name"
+                        required={role === 'recruiter'}
+                        value={formData.company_name}
+                        onChange={handleChange}
+                        className="block w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                        placeholder="Acme Corp"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 tracking-wide uppercase">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="block w-full pl-4 pr-12 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                    placeholder="••••••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                  >
+                    {showPassword ? <ViewOff className="h-5 w-5" /> : <View className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <TextRollButton
+                  text={loading ? 'Memproses...' : 'Sign up'}
+                  variant="orange"
+                  size="lg"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full justify-between rounded-2xl"
+                />
+              </div>
+            </form>
+
+            <p className="mt-6 text-center text-xs text-gray-500 font-normal">
+              Sudah memiliki akun?{' '}
+              <Link href="/login" className="font-semibold text-[#F26522] hover:text-[#e05a1a] transition-colors">
+                Masuk
+              </Link>
+            </p>
+            
+            <div className="mt-8 pt-6 border-t border-gray-100">
+              <SponsorLogos />
+            </div>
+          </motion.div>
         </div>
       </div>
+
+      {/* DESKTOP VIEW (>= lg): Asymmetric Split-Screen with WebGL Window Panel */}
+      <div className="hidden lg:flex min-h-screen flex-row items-stretch justify-between">
+        {/* Form Side - Left Column */}
+        <div className="w-[42%] xl:w-[38%] flex flex-col justify-center px-12 xl:px-16 py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-md mx-auto"
+          >
+            <div className="mb-6">
+              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900 mb-2">Buat akun baru.</h1>
+              <p className="text-gray-500 text-sm font-normal">Bergabung dengan Skillens dan nikmati evaluasi berbasis AI.</p>
+            </div>
+
+            {/* Role Toggle */}
+            <div className="relative flex bg-white p-1.5 rounded-full mb-6 border border-gray-200 shadow-xs">
+              <motion.div 
+                className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-gray-900 rounded-full z-0"
+                animate={{ x: role === 'candidate' ? 0 : '100%' }}
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+              {(['candidate', 'recruiter'] as const).map(r => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setRole(r)}
+                  className={`relative flex-1 py-2 text-xs font-semibold rounded-full transition-colors uppercase tracking-wider z-10 ${
+                    role === r ? 'text-white' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {r === 'candidate' ? "Saya Kandidat" : "Saya Rekruter"}
+                </button>
+              ))}
+            </div>
+
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }} 
+                animate={{ opacity: 1, height: 'auto' }} 
+                className="mb-6 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-xs font-semibold overflow-hidden"
+              >
+                <Warning className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <p>{error}</p>
+              </motion.div>
+            )}
+
+            <form className="space-y-4" onSubmit={handleSignup}>
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider">Nama Lengkap</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <User className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    name="full_name"
+                    required
+                    value={formData.full_name}
+                    onChange={handleChange}
+                    className="block w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] transition-colors bg-white text-sm text-gray-900"
+                    placeholder="Sarah Jenkins"
+                  />
+                </div>
+              </div>
+
+              <AnimatePresence mode="wait">
+                {role === 'recruiter' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="pt-1"
+                  >
+                    <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider">Nama Perusahaan</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <Enterprise className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        type="text"
+                        name="company_name"
+                        required={role === 'recruiter'}
+                        value={formData.company_name}
+                        onChange={handleChange}
+                        className="block w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] transition-colors bg-white text-sm text-gray-900"
+                        placeholder="Acme Corp"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider">Email Address</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Email className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="block w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] transition-colors bg-white text-sm text-gray-900"
+                    placeholder="you@email.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider">Password</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Locked className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="password"
+                    name="password"
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="block w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] transition-colors bg-white text-sm text-gray-900"
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <TextRollButton
+                  text={loading ? 'Memproses...' : `Daftar Akun ${role === 'recruiter' ? 'Rekruter' : 'Kandidat'}`}
+                  variant="orange"
+                  size="lg"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full justify-between"
+                />
+              </div>
+            </form>
+
+            <p className="mt-6 text-center text-xs text-gray-500 font-normal">
+              Sudah memiliki akun?{' '}
+              <Link href="/login" className="font-semibold text-[#F26522] hover:text-[#e05a1a] transition-colors">
+                Masuk
+              </Link>
+            </p>
+            
+            <div className="mt-8 pt-6 border-t border-gray-200/60">
+              <SponsorLogos />
+            </div>
+          </motion.div>
+        </div>
+
+        {/* WebGL Side - Flush Right Edge Floating Panel */}
+        <div className="w-[58%] xl:w-[62%] p-3 pl-0">
+          <div className="w-full h-full bg-[#0F172A] rounded-3xl border border-gray-200/60 p-12 lg:p-16 text-white flex flex-col justify-between items-start relative overflow-hidden shadow-2xl">
+            {/* WebGL Shader Background Overlay */}
+            <ShaderBackground variant="dark" />
+
+            {/* Clean Brand Header */}
+            <div className="relative z-20">
+              <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+                <div className="w-9 h-9 bg-white text-gray-900 rounded-full flex items-center justify-center font-bold text-[11px]">
+                  SK
+                </div>
+                <span className="text-xl font-bold text-white tracking-tight">Skillens</span>
+              </Link>
+            </div>
+
+            {/* Pure Typography Content */}
+            <div className="relative z-20 max-w-xl my-auto">
+              <AnimatePresence mode="wait">
+                {role === 'candidate' ? (
+                  <motion.div
+                    key="candidate-text"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white leading-[1.08]">
+                      Tunjukkan keahlian nyata,<br/>
+                      <span className="text-[#F26522]">bukan sekadar resume.</span>
+                    </h2>
+                    <p className="text-gray-300 text-base md:text-lg leading-relaxed font-normal max-w-lg mt-6">
+                      Buktikan kemampuan pemecahan masalah Anda melalui simulasi studi kasus interaktif di platform Skillens.
+                    </p>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="recruiter-text"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white leading-[1.08]">
+                      Zero false positives.<br/>
+                      <span className="text-[#F26522]">100% kepastian.</span>
+                    </h2>
+                    <p className="text-gray-300 text-base md:text-lg leading-relaxed font-normal max-w-lg mt-6">
+                      Dapatkan wawasan bukti nyata dari setiap pelamar dengan simulasi AI interaktif Skillens.
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

@@ -1,0 +1,13 @@
+@echo off
+echo Starting JHIC Application Services...
+
+echo Starting Frontend...
+start cmd /k "cd frontend && npm run dev"
+
+echo Starting Backend API...
+start cmd /k "cd backend && .\venv\Scripts\python.exe -m uvicorn main:app --reload"
+
+echo Starting Celery Worker...
+start cmd /k "cd backend && .\venv\Scripts\celery.exe -A celery_app.celery worker --loglevel=info --pool=solo"
+
+echo All services started in separate windows!

@@ -1,17 +1,20 @@
 'use client';
 
+import { ChevronLeft, Email, Locked, View, ViewOff, Warning } from '@carbon/icons-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Mail, Lock, AlertCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import SponsorLogos from '@/components/SponsorLogos';
+import TextRollButton from '@/components/TextRollButton';
+import ShaderBackground from '@/components/ShaderBackground';
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -24,7 +27,6 @@ export default function LoginPage() {
       loginData.append('username', email);
       loginData.append('password', password);
       
-      // Cookie is set by the backend now
       await api.post('/auth/login', loginData.toString(), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -32,7 +34,6 @@ export default function LoginPage() {
         requireAuth: false
       });
       
-      // Get user role
       const me = await api.get('/auth/me');
       if (me.role === 'recruiter') {
         router.push('/recruiter');
@@ -40,127 +41,259 @@ export default function LoginPage() {
         router.push('/candidate/dashboard');
       }
     } catch (err: any) {
-      setError(err.message || 'Invalid credentials. Please try again.');
+      setError(err.message || 'Kredensial tidak valid. Silakan coba lagi.');
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Form Side */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center px-8 py-12 md:py-0 md:px-24 bg-brand-white flex-1 md:flex-none">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md mx-auto"
-        >
-          {/* Mobile Logo */}
-          <div className="md:hidden flex items-center gap-2.5 mb-12">
-            <img src="/logo.svg" alt="SkillLens Logo" className="h-8 w-auto" />
-            <span className="text-xl font-display font-bold text-brand-secondary tracking-tight">SkillLens</span>
-          </div>
-
-          <div className="mb-10">
-            <h1 className="text-4xl font-display font-bold text-brand-secondary mb-2">Welcome back.</h1>
-            <p className="text-brand-gray-dark">Sign in to your SkillLens account to continue.</p>
-          </div>
-
-          {error && (
-            <div className="mb-6 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-              <p className="text-sm font-medium">{error}</p>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-brand-secondary mb-1">Email Address</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-brand-gray-light" />
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-brand-gray-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-colors"
-                  placeholder="you@company.com"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-brand-secondary mb-1">Password</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-brand-gray-light" />
-                </div>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-brand-gray-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-colors"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input id="remember-me" type="checkbox" className="h-4 w-4 text-brand-primary focus:ring-brand-primary border-brand-gray-light rounded" />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-brand-gray-dark">Remember me</label>
-              </div>
-              <a href="#" className="text-sm font-medium text-brand-primary hover:text-brand-dark-teal transition-colors">Forgot password?</a>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-brand-white bg-brand-primary hover:bg-brand-dark-teal focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
-              {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
-            </button>
-          </form>
-
-          <p className="mt-8 text-center text-sm text-brand-gray-dark">
-            Don't have an account?{' '}
-            <Link href="/signup" className="font-medium text-brand-primary hover:text-brand-dark-teal transition-colors">
-              Sign up now
+    <div className="min-h-screen bg-[#EFEFEF] font-sans overflow-x-hidden">
+      
+      {/* MOBILE VIEW (< lg): Dribbble Card Sheet Layout */}
+      <div className="flex lg:hidden min-h-screen flex-col justify-between bg-[#0F172A]">
+        {/* Top WebGL Header Area */}
+        <div className="relative w-full h-[220px] sm:h-[260px] text-white p-4 flex flex-col justify-between overflow-hidden">
+          <ShaderBackground variant="dark" />
+          <div className="relative z-20 w-full flex items-center justify-between">
+            <Link href="/" className="p-2 text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/10">
+              <ChevronLeft className="w-6 h-6" />
             </Link>
-          </p>
-          
-          <div className="mt-12 pt-8">
-            <SponsorLogos />
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-white/80 font-medium">Belum punya akun?</span>
+              <Link 
+                href="/signup" 
+                className="text-xs font-semibold text-white bg-white/20 hover:bg-white/30 backdrop-blur-md px-4 py-1.5 rounded-full transition-colors border border-white/20 shadow-xs"
+              >
+                Daftar
+              </Link>
+            </div>
           </div>
-        </motion.div>
-      </div>
-
-      {/* Brand Side */}
-      <div className="hidden md:flex w-1/2 bg-brand-secondary p-12 text-brand-white flex-col justify-between items-start relative overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-brand-dark-teal rounded-full blur-3xl opacity-50 mix-blend-screen pointer-events-none" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-brand-primary rounded-full blur-3xl opacity-30 mix-blend-screen pointer-events-none" />
-
-        <div className="z-10">
-          <div className="flex items-center gap-2.5">
-            <img src="/logo.svg" alt="SkillLens Logo" className="h-10 w-auto brightness-0 invert" />
-            <span className="text-2xl font-display font-bold text-brand-white tracking-tight">SkillLens</span>
+          <div className="relative z-20 w-full text-center my-auto pb-4">
+            <Link href="/" className="inline-flex items-center gap-3">
+              <div className="w-9 h-9 bg-white text-gray-900 rounded-full flex items-center justify-center font-bold text-xs shadow-md">
+                SK
+              </div>
+              <span className="text-2xl font-extrabold text-white tracking-tight">Skillens</span>
+            </Link>
           </div>
         </div>
 
-        <div className="z-10 max-w-lg">
-          <h2 className="text-4xl md:text-5xl font-display font-bold mb-6 leading-tight">
-            Hire the right talent,<br/>
-            <span className="text-brand-accent">with absolute certainty.</span>
-          </h2>
-          <p className="text-brand-gray-light text-lg leading-relaxed mb-10">
-            SkillLens is the AI-native Applicant Tracking System built to eliminate resume fraud and automate technical screening. Discover true problem solvers in a fraction of the time.
-          </p>
+        {/* Bottom Form Sheet - Fills Full Bottom Viewport */}
+        <div className="relative z-30 w-full flex-1 bg-white rounded-t-[32px] sm:rounded-t-[40px] px-6 py-8 shadow-2xl flex flex-col justify-between border-t border-gray-100">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="w-full max-w-md mx-auto"
+          >
+            <div className="mb-6 text-center">
+              <h1 className="text-2xl font-bold tracking-tight text-gray-900 mb-1">Welcome Back</h1>
+              <p className="text-gray-500 text-xs font-normal">Enter your details below to continue.</p>
+            </div>
+
+            {error && (
+              <div className="mb-6 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-xs font-semibold">
+                <Warning className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <p>{error}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 tracking-wide uppercase">Email Address</label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    className="block w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                    placeholder="nicholas@ergemla.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 tracking-wide uppercase">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="block w-full pl-4 pr-12 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                    placeholder="••••••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                  >
+                    {showPassword ? <ViewOff className="h-5 w-5" /> : <View className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center">
+                  <input id="remember-me-mobile" type="checkbox" className="h-4 w-4 text-[#F26522] focus:ring-0 border-gray-300 rounded bg-white cursor-pointer" />
+                  <label htmlFor="remember-me-mobile" className="ml-2 block text-xs font-medium text-gray-600 cursor-pointer">Ingat saya</label>
+                </div>
+                <a href="#" className="text-xs font-semibold text-gray-500 hover:text-[#F26522] transition-colors">Forgot password?</a>
+              </div>
+
+              <div className="pt-2">
+                <TextRollButton
+                  text={loading ? 'Memproses...' : 'Sign in'}
+                  variant="orange"
+                  size="lg"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full justify-between rounded-2xl"
+                />
+              </div>
+            </form>
+
+            <p className="mt-6 text-center text-xs text-gray-500 font-normal">
+              Belum memiliki akun?{' '}
+              <Link href="/signup" className="font-semibold text-[#F26522] hover:text-[#e05a1a] transition-colors">
+                Daftar sekarang
+              </Link>
+            </p>
+
+            <div className="mt-8 pt-6 border-t border-gray-100">
+              <SponsorLogos />
+            </div>
+          </motion.div>
         </div>
       </div>
+
+      {/* DESKTOP VIEW (>= lg): Asymmetric Split-Screen with WebGL Window Panel */}
+      <div className="hidden lg:flex min-h-screen flex-row items-stretch justify-between">
+        {/* Form Side - Left Column */}
+        <div className="w-[42%] xl:w-[38%] flex flex-col justify-center px-12 xl:px-16 py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-md mx-auto"
+          >
+            <div className="mb-8">
+              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900 mb-2">Selamat datang kembali.</h1>
+              <p className="text-gray-500 text-sm font-normal">Masuk ke akun Skillens Anda untuk melanjutkan.</p>
+            </div>
+
+            {error && (
+              <div className="mb-6 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-xs font-semibold">
+                <Warning className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <p>{error}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider">Email Address</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Email className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    className="block w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] transition-colors bg-white text-sm text-gray-900"
+                    placeholder="you@company.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider">Password</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Locked className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="block w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] transition-colors bg-white text-sm text-gray-900"
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input id="remember-me-desktop" type="checkbox" className="h-4 w-4 text-[#F26522] focus:ring-0 border-gray-300 rounded bg-white cursor-pointer" />
+                  <label htmlFor="remember-me-desktop" className="ml-2 block text-xs font-medium text-gray-600 cursor-pointer">Ingat saya</label>
+                </div>
+                <a href="#" className="text-xs font-semibold text-[#F26522] hover:text-[#e05a1a] transition-colors">Lupa kata sandi?</a>
+              </div>
+
+              <div className="pt-2">
+                <TextRollButton
+                  text={loading ? 'Memproses...' : 'Masuk Akun'}
+                  variant="orange"
+                  size="lg"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full justify-between"
+                />
+              </div>
+            </form>
+
+            <p className="mt-8 text-center text-xs text-gray-500 font-normal">
+              Belum memiliki akun?{' '}
+              <Link href="/signup" className="font-semibold text-[#F26522] hover:text-[#e05a1a] transition-colors">
+                Daftar sekarang
+              </Link>
+            </p>
+
+            <div className="mt-10 pt-6 border-t border-gray-200/60">
+              <SponsorLogos />
+            </div>
+          </motion.div>
+        </div>
+
+        {/* WebGL Side - Flush Right Edge Floating Panel */}
+        <div className="w-[58%] xl:w-[62%] p-3 pl-0">
+          <div className="w-full h-full bg-[#0F172A] rounded-3xl border border-gray-200/60 p-12 lg:p-16 text-white flex flex-col justify-between items-start relative overflow-hidden shadow-2xl">
+            {/* WebGL Shader Background Overlay */}
+            <ShaderBackground variant="dark" />
+
+            {/* Clean Brand Header */}
+            <div className="relative z-20">
+              <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+                <div className="w-9 h-9 bg-white text-gray-900 rounded-full flex items-center justify-center font-bold text-[11px]">
+                  SK
+                </div>
+                <span className="text-xl font-bold text-white tracking-tight">Skillens</span>
+              </Link>
+            </div>
+
+            {/* Pure Typography Content */}
+            <div className="relative z-20 max-w-xl my-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white leading-[1.08]">
+                  Merekrut bakat tepat,<br/>
+                  <span className="text-[#F26522]">dengan kepastian mutlak.</span>
+                </h2>
+                <p className="text-gray-300 text-base md:text-lg leading-relaxed font-normal max-w-lg mt-6">
+                  Skillens mengeliminasi klaim palsu resume dengan simulasi studi kasus interaktif berbasis telemetry AI cerdas.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

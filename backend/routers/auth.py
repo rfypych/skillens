@@ -98,3 +98,48 @@ def update_user_me(
     current_user: models.User = Depends(auth.get_current_user)
 ):
     return auth_service.update_current_user(db, current_user, user_update)
+
+from typing import List
+
+@router.post("/sub-accounts", response_model=schemas.UserResponse)
+def create_sub_account(
+    payload: schemas.UserCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    from fastapi import HTTPException
+    if current_user.role not in ["admin", "recruiter"] or current_user.parent_account_id is not None:
+        raise HTTPException(status_code=403, detail="Only primary company accounts can create sub-accounts")
+        
+    existing_user = db.query(models.User).filter(models.User.email == payload.email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+        
+    from utils.auth import get_password_hash
+    hashed_password = get_password_hash(payload.password)
+    
+    new_user = models.User(
+        email=payload.email,
+        hashed_password=hashed_password,
+        role="recruiter",
+        full_name=payload.full_name,
+        company_id=current_user.company_id,
+        parent_account_id=current_user.id
+    )
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+@router.get("/sub-accounts", response_model=List[schemas.UserResponse])
+def get_sub_accounts(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    from fastapi import HTTPException
+    if current_user.role not in ["admin", "recruiter"] or current_user.parent_account_id is not None:
+        raise HTTPException(status_code=403, detail="Only primary company accounts can view sub-accounts")
+        
+    sub_accounts = db.query(models.User).filter(models.User.parent_account_id == current_user.id).all()
+    return sub_accounts

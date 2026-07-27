@@ -1,32 +1,28 @@
 'use client';
 
+import { Close, Dashboard, Logout, Menu, Notification, Settings } from '@carbon/icons-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, 
-  Settings, 
-  LogOut, 
-  Bell, 
-  Aperture,
-  Menu,
-  X
-} from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import clsx from 'clsx';
 import SponsorLogos from '@/components/SponsorLogos';
+import { LanguageProvider, useLanguage } from '@/i18n/LanguageContext';
 
 const sidebarLinks = [
-  { name: 'Dashboard', href: '/candidate/dashboard', icon: LayoutDashboard },
+  { nameKey: 'sidebar.dashboard', href: '/candidate/dashboard', icon: Dashboard },
+  { nameKey: 'sidebar.interviews', href: '/candidate/interviews', icon: Notification },
+  { nameKey: 'sidebar.profile', href: '/candidate/profile', icon: Settings },
 ];
 
-export default function CandidateLayout({ children }: { children: React.ReactNode }) {
+function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [userName, setUserName] = useState('Candidate');
   const [userInitials, setUserInitials] = useState('CA');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   const isPublicAssessmentPage = pathname.includes('/candidate/test/') || 
                                  pathname.includes('/candidate/apply/') || 
@@ -35,22 +31,27 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     if (isPublicAssessmentPage) return;
 
-    api.get('/auth/me').then((data: any) => {
-      if (data?.role !== 'candidate') {
+    const fetchUser = () => {
+      api.get('/auth/me').then((data: any) => {
+        if (data?.role !== 'candidate') {
+          router.push('/login');
+          return;
+        }
+        if (data?.full_name) {
+          setUserName(data.full_name);
+          const parts = data.full_name.split(' ');
+          setUserInitials(parts.map((p: string) => p[0]).join('').toUpperCase().slice(0, 2));
+        }
+      }).catch(() => {
         router.push('/login');
-        return;
-      }
-      if (data?.full_name) {
-        setUserName(data.full_name);
-        const parts = data.full_name.split(' ');
-        setUserInitials(parts.map((p: string) => p[0]).join('').toUpperCase().slice(0, 2));
-      }
-    }).catch(() => {
-      router.push('/login');
-    });
+      });
+    };
+
+    fetchUser();
+    window.addEventListener('user-profile-updated', fetchUser);
+    return () => window.removeEventListener('user-profile-updated', fetchUser);
   }, [router, isPublicAssessmentPage]);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
@@ -65,13 +66,12 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
     }
   };
 
-  // Hide sidebar/header for public assessment flows
   if (isPublicAssessmentPage) {
     return <>{children}</>;
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F9F9] flex overflow-hidden">
+    <div className="min-h-screen bg-[#EFEFEF] flex overflow-hidden relative font-sans">
       
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
@@ -81,85 +81,93 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsMobileMenuOpen(false)}
-            className="fixed inset-0 bg-brand-dark/50 z-40 md:hidden backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-xs"
           />
         )}
       </AnimatePresence>
 
       {/* Sidebar */}
       <aside className={clsx(
-        "w-64 bg-brand-white border-r border-brand-gray-light/30 flex flex-col fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0",
+        "w-64 bg-white border-r border-gray-200/80 flex flex-col fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 shadow-sm",
         isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="p-6 flex items-center justify-between">
-          <Link href="/candidate/dashboard" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
-            <img src="/logo.svg" alt="SkillLens Logo" className="h-8 w-auto" />
-            <span className="text-xl font-display font-bold text-brand-secondary tracking-tight">SkillLens</span>
+        <div className="p-6 flex items-center justify-between border-b border-gray-100">
+          <Link href="/candidate/dashboard" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <div className="w-9 h-9 bg-gray-900 rounded-full flex items-center justify-center text-white text-[11px] font-bold tracking-tight">
+              SK
+            </div>
+            <span className="text-xl font-bold text-gray-900 tracking-tight">Skillens</span>
           </Link>
           <button 
             onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden p-2 text-brand-gray-dark hover:bg-brand-gray-light/20 rounded-xl"
+            className="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-full"
           >
-            <X className="w-5 h-5" />
+            <Close className="w-5 h-5" />
           </button>
         </div>
 
-        <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
+        <nav className="flex-1 px-3 py-6 flex flex-col gap-2 overflow-y-auto">
           {sidebarLinks.map((link) => {
             const isActive = pathname === link.href || (link.href !== '/candidate/dashboard' && pathname.startsWith(link.href));
             const Icon = link.icon;
             return (
               <Link
-                key={link.name}
+                key={link.nameKey}
                 href={link.href}
                 className={clsx(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all",
+                  "flex items-center gap-3 px-4 py-2.5 rounded-full transition-all text-sm font-medium",
                   isActive
-                    ? "bg-brand-primary/10 text-brand-primary font-semibold"
-                    : "text-brand-gray-dark hover:bg-brand-gray-light/10 hover:text-brand-secondary font-medium"
+                    ? "bg-gray-900 text-white shadow-xs"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 )}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
-                <span className="text-sm">{link.name}</span>
+                <span>{t(link.nameKey)}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t border-brand-gray-light/30 flex-shrink-0">
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-brand-gray-light/20 text-brand-gray-dark transition-colors cursor-pointer mb-2">
-            <Settings className="w-5 h-5" />
-            <span className="font-medium text-sm">Settings</span>
-          </div>
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 text-red-600 transition-colors cursor-pointer">
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium text-sm">Log out</span>
+        <div className="p-4 border-t border-gray-100 flex-shrink-0">
+          <Link href="/candidate/profile">
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-full hover:bg-gray-100 text-gray-700 hover:text-gray-900 transition-colors cursor-pointer mb-1 font-medium text-sm">
+              <Settings className="w-4 h-4" />
+              <span>{t('sidebar.profile')}</span>
+            </div>
+          </Link>
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full hover:bg-red-50 text-red-600 transition-colors cursor-pointer font-medium text-sm">
+            <Logout className="w-4 h-4" />
+            <span>{t('sidebar.logout')}</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 flex flex-col min-h-screen w-full">
+      <main className="flex-1 md:ml-64 flex flex-col min-h-screen w-full relative z-10">
         {/* Top Header */}
-        <header className="h-16 md:h-20 bg-brand-white/90 backdrop-blur-md border-b border-brand-gray-light/30 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30">
-          <div className="flex items-center">
+        <header className="h-16 bg-white/90 backdrop-blur-md border-b border-gray-200/80 flex items-center justify-between px-6 md:px-8 sticky top-0 z-30 shadow-xs">
+          <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-2 text-brand-gray-dark hover:bg-brand-gray-light/20 rounded-xl mr-2"
+              className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-full mr-2"
             >
               <Menu className="w-6 h-6" />
             </button>
+            <div className="hidden sm:flex items-center gap-2 text-sm text-gray-700">
+              <span className="font-medium text-gray-500">{t('header.welcome_back')}</span>
+              <span className="font-bold text-gray-900">{userName}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-3 md:gap-4">
-            <button className="p-2 text-brand-gray-dark hover:bg-brand-gray-light/20 rounded-full transition-colors">
-              <Bell className="w-5 h-5" />
+          <div className="flex items-center gap-4">
+            <button className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+              <Notification className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-3 cursor-pointer">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-brand-secondary">{userName}</p>
-                <p className="text-xs text-brand-gray-dark">Candidate</p>
+                <p className="text-sm font-bold text-gray-900">{userName}</p>
+                <p className="text-xs text-gray-500">{t('header.candidate')}</p>
               </div>
-              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-gray-light/30 flex items-center justify-center text-brand-secondary font-bold text-sm md:text-base border border-brand-gray-light/50">
+              <div className="w-9 h-9 rounded-full bg-[#F26522] flex items-center justify-center text-white font-bold text-xs shadow-xs">
                 {userInitials}
               </div>
             </div>
@@ -167,15 +175,23 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
         </header>
 
         {/* Page Content */}
-        <div className="p-4 sm:p-6 md:p-8 flex-1 overflow-x-hidden">
+        <div className="p-6 md:p-8 flex-1 overflow-x-hidden">
           {children}
         </div>
 
         {/* Footer Logos */}
-        <div className="w-full bg-brand-white/30">
+        <div className="w-full bg-white border-t border-gray-200/60">
           <SponsorLogos />
         </div>
       </main>
     </div>
+  );
+}
+
+export default function CandidateLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <LanguageProvider>
+      <CandidateLayoutContent>{children}</CandidateLayoutContent>
+    </LanguageProvider>
   );
 }

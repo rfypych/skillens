@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-[#F7F9F9] flex flex-col items-center justify-center p-4">
-      <div className="bg-white p-12 rounded-3xl shadow-sm border border-brand-gray-light/30 max-w-lg w-full text-center">
+      <div className="bg-white p-12 rounded-none shadow-none border border-brand-gray-light/30 max-w-lg w-full text-center">
         <div className="text-[120px] leading-none font-display font-bold text-brand-primary/20 mb-4 select-none">
           404
         </div>
@@ -13,7 +13,7 @@ export default function NotFound() {
         </p>
         <Link 
           href="/" 
-          className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-primary hover:bg-[#5a9361] text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-brand-primary/20"
+          className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-primary hover:bg-[#5a9361] text-white font-bold rounded-none transition-all shadow-none hover:shadow-none-brand-primary/20"
         >
           Return Home
         </Link>

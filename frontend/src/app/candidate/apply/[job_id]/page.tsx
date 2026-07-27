@@ -1,11 +1,14 @@
 'use client';
 
+import { ArrowRight, CheckmarkOutline, ChevronLeft, CloudUpload, Document, Email, Location, Portfolio, Time, User, Warning } from '@carbon/icons-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Mail, ArrowRight, Loader2, AlertCircle, Briefcase, MapPin, Building2, UploadCloud } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import SponsorLogos from '@/components/SponsorLogos';
+import { ThinkingIndicator } from '@/components/ThinkingIndicator';
+import TextRollButton from '@/components/TextRollButton';
+import Link from 'next/link';
 
 export default function ApplyForJob() {
   const router = useRouter();
@@ -28,20 +31,23 @@ export default function ApplyForJob() {
   useEffect(() => {
     const init = async () => {
       try {
-        const jobData = await api.get(`/jobs/${job_id}`, { requireAuth: false });
+        const jobPromise = api.get(`/jobs/${job_id}`, { requireAuth: false });
+        
+        const token = localStorage.getItem('token');
+        const userPromise = token 
+          ? api.get('/auth/me', { requireAuth: false }).catch(() => null)
+          : Promise.resolve(null);
+
+        const [jobData, userData] = await Promise.all([jobPromise, userPromise]);
+        
         setJob(jobData);
+        
+        if (userData) {
+          setUser(userData);
+          setFormData({ name: userData.full_name || '', email: userData.email || '', resume_url: '' });
+        }
       } catch (err) {
-        setError('Failed to load job details. This link might be invalid or expired.');
-      }
-      
-      const token = localStorage.getItem('token');
-      // Attempt to load user if they are logged in
-      try {
-        const userData = await api.get('/auth/me');
-        setUser(userData);
-        setFormData({ name: userData.full_name || '', email: userData.email || '', resume_url: '' });
-      } catch (err) {
-        // Ignore, guest user
+        setError('Gagal memuat detail pekerjaan. Tautan ini mungkin tidak valid.');
       }
       
       setInitLoading(false);
@@ -58,17 +64,13 @@ export default function ApplyForJob() {
       const dataPayload = new FormData();
       if (formData.name) dataPayload.append('name', formData.name);
       if (formData.email) dataPayload.append('email', formData.email);
-      if (!file) throw new Error("Please upload a valid PDF resume to continue.");
+      if (!file) throw new Error("Harap unggah resume PDF yang valid.");
       dataPayload.append('file', file);
 
       const data = await api.post(`/assessment/${job_id}/apply`, dataPayload, { requireAuth: false });
-
-      // Cookie is set by the backend now
-      
-      // Redirect to instructions
       router.push(`/candidate/instructions/${data.id}`);
     } catch (err: any) {
-      setError(err.message || 'An error occurred while submitting your application.');
+      setError(err.message || 'Terjadi kesalahan saat mengirimkan lamaran.');
     } finally {
       setLoading(false);
     }
@@ -80,182 +82,178 @@ export default function ApplyForJob() {
 
   if (initLoading) {
     return (
-      <div className="min-h-screen bg-[#F7F9F9] flex flex-col items-center justify-center gap-6">
-        <div className="w-12 h-12 border-4 border-brand-primary/20 border-t-brand-primary rounded-full animate-spin" />
-        <p className="text-brand-gray-dark font-medium font-mono text-sm animate-pulse tracking-widest uppercase">Loading Role Details...</p>
+      <div className="min-h-screen bg-[#EFEFEF] flex flex-col items-center justify-center gap-6 font-sans">
+        <ThinkingIndicator statusText="Memuat Detail Posisi..." />
       </div>
     );
   }
 
+  let cleanDescription = job?.description || "Anda diundang untuk mengikuti evaluasi teknis.";
+  cleanDescription = cleanDescription.replace(/Job Title:.*?\nJob Description:\s*/, '');
+
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-[#F7F9F9]">
-      {/* Brand Side (Top on Mobile, Left on Desktop) */}
-      <div className="w-full md:w-5/12 bg-brand-secondary p-6 md:p-12 text-brand-white flex flex-col justify-between items-start relative overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-brand-dark-teal rounded-full blur-3xl opacity-50 mix-blend-screen pointer-events-none" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-brand-primary rounded-full blur-3xl opacity-30 mix-blend-screen pointer-events-none" />
-
-        <div className="z-10 w-full mb-6 md:mb-12">
-          <div className="flex items-center gap-2.5 mb-8 md:mb-16">
-            <img src="/logo.svg" alt="SkillLens Logo" className="h-8 md:h-10 w-auto brightness-0 invert" />
-            <span className="text-xl md:text-2xl font-display font-bold text-brand-white tracking-tight">SkillLens</span>
+    <div className="min-h-screen bg-[#EFEFEF] font-sans text-gray-900 selection:bg-[#F26522] selection:text-white">
+      {/* Skillens Top Navigation */}
+      <nav className="bg-white border-b border-gray-200/80 h-16 flex items-center px-6 md:px-8 shadow-xs">
+        <div className="flex items-center justify-between max-w-6xl mx-auto w-full">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => router.back()} 
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-700"
+              title="Kembali"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <Link href="/" className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center text-[10px] font-bold">
+                SK
+              </div>
+              <span className="font-bold text-gray-900 text-lg">Skillens</span>
+              <span className="text-xs font-semibold text-gray-400 border-l border-gray-200 pl-3 uppercase">Portal Evaluasi</span>
+            </Link>
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-white/10 border border-brand-white/20 text-brand-accent text-[10px] md:text-xs font-bold uppercase tracking-wider mb-4 md:mb-6 backdrop-blur-sm">
-              <Briefcase className="w-3 h-3 md:w-4 md:h-4" /> Assessment Portal
-            </div>
-            
-            <h1 className="text-3xl md:text-5xl font-display font-bold mb-4 leading-tight tracking-tight">
-              {job?.title || "Role Assessment"}
-            </h1>
-            
-            <div className="flex flex-wrap gap-2 md:gap-4 text-xs md:text-sm text-brand-gray-light font-medium mb-6 md:mb-8">
-              <div className="flex items-center gap-1.5 bg-brand-white/5 px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg">
-                <Building2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-brand-accent" /> {job?.company_name || "Company"}
-              </div>
-              <div className="flex items-center gap-1.5 bg-brand-white/5 px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg">
-                <MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-brand-accent" /> {job?.location || "Remote"}
-              </div>
-            </div>
-
-            <div className="prose prose-invert text-xs md:text-sm line-clamp-3 md:line-clamp-4 text-brand-gray-light/80 leading-relaxed max-w-sm hidden sm:block">
-              {job?.description || "You've been invited to take a technical assessment. Please provide your details to begin the proctored session."}
-            </div>
-          </motion.div>
         </div>
-      </div>
+      </nav>
 
-      {/* Form Side (Bottom on Mobile, Right on Desktop) */}
-      <div className="w-full md:w-7/12 flex flex-col justify-center px-6 py-8 md:px-24 flex-1">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="w-full max-w-md mx-auto"
-        >
-          <div className="mb-8">
-            <h2 className="text-3xl font-display font-bold text-brand-secondary mb-2 tracking-tight">Start Application</h2>
-            <p className="text-brand-gray-dark">Enter your details and upload your resume to begin.</p>
-          </div>
-
-          <form className="space-y-5" onSubmit={handleApply}>
-            <AnimatePresence>
-              {error && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0 }} 
-                  animate={{ opacity: 1, height: 'auto' }} 
-                  exit={{ opacity: 0, height: 0 }}
-                  className="mb-6 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 overflow-hidden shadow-sm"
-                >
-                  <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm font-medium">{error}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            
-            {user ? (
-              <div className="bg-[#F7F9F9] p-5 rounded-2xl border border-brand-gray-light/40 flex items-center justify-between shadow-sm">
-                <div>
-                  <p className="text-xs font-bold text-brand-gray-dark uppercase tracking-wider mb-1">Applying as</p>
-                  <p className="text-base font-bold text-brand-secondary">{user.full_name}</p>
-                  <p className="text-sm text-brand-gray-medium">{user.email}</p>
+      <main className="max-w-6xl mx-auto w-full px-4 py-8 md:py-12">
+        <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-start">
+          
+          {/* Left Column: Job Details */}
+          <div className="flex-1 w-full bg-white rounded-2xl border border-gray-200/80 shadow-xs p-6 md:p-10">
+            <div className="mb-8">
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#F26522] uppercase tracking-wider mb-3">
+                <Portfolio className="w-4 h-4" />
+                <span>{job?.company_name || "Perusahaan Target"}</span>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-6 tracking-tight">
+                {job?.title || "Evaluasi Peran"}
+              </h1>
+              <div className="flex flex-wrap gap-3 text-xs text-gray-600 font-medium border-b border-gray-100 pb-6">
+                <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full">
+                  <Location className="w-4 h-4 text-[#F26522]" /> {job?.location || "Remote"}
                 </div>
-                <div className="w-12 h-12 bg-brand-primary/10 rounded-full flex items-center justify-center text-brand-primary border border-brand-primary/20">
-                  <User className="w-6 h-6" />
+                <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full">
+                  <Time className="w-4 h-4 text-[#F26522]" /> Evaluasi Terbatas Waktu
+                </div>
+                <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full">
+                  <CheckmarkOutline className="w-4 h-4 text-[#F26522]" /> AI Telemetry Active
                 </div>
               </div>
-            ) : (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-brand-secondary mb-1.5">Full Name</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <User className="h-5 w-5 text-brand-gray-light" />
-                    </div>
+            </div>
+
+            <div className="prose prose-sm max-w-none text-gray-700">
+              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-gray-900">
+                <Document className="w-5 h-5 text-[#F26522]" />
+                Deskripsi Peran & Panduan
+              </h3>
+              <div className="whitespace-pre-line leading-relaxed bg-gray-50 p-6 rounded-2xl border border-gray-100 text-sm font-normal">
+                {cleanDescription}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Application Form */}
+          <div className="w-full lg:w-[420px] bg-white rounded-2xl border border-gray-200/80 shadow-xs p-6 md:p-8 shrink-0 lg:sticky lg:top-24">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2 tracking-tight">Lengkapi Data</h2>
+            <p className="text-xs text-gray-500 mb-6 font-normal">Unggah resume PDF untuk memulai tes simulasi AI.</p>
+            
+            <form className="space-y-5" onSubmit={handleApply}>
+              <AnimatePresence>
+                {error && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }} 
+                    animate={{ opacity: 1, height: 'auto' }} 
+                    className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-xs font-semibold mb-4"
+                  >
+                    <Warning className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                    <p>{error}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              {user ? (
+                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200/80 flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Melamar sebagai</p>
+                    <p className="font-bold text-gray-900 text-sm">{user.full_name}</p>
+                    <p className="text-xs text-gray-500 font-mono">{user.email}</p>
+                  </div>
+                  <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                    {user.full_name.slice(0, 2).toUpperCase()}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Nama Lengkap</label>
                     <input
                       type="text"
                       name="name"
                       required
                       value={formData.name}
                       onChange={handleChange}
-                      className="block w-full pl-11 pr-4 py-3.5 bg-brand-white border border-brand-gray-light/50 rounded-xl text-sm text-brand-secondary placeholder:text-brand-gray-light focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all shadow-sm"
-                      placeholder="e.g. Alex Thompson"
+                      className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
+                      placeholder="Alex Thompson"
                     />
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-brand-secondary mb-1.5">Email Address</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-brand-gray-light" />
-                    </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Email Address</label>
                     <input
                       type="email"
                       name="email"
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="block w-full pl-11 pr-4 py-3.5 bg-brand-white border border-brand-gray-light/50 rounded-xl text-sm text-brand-secondary placeholder:text-brand-gray-light focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all shadow-sm"
+                      className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
                       placeholder="alex@example.com"
                     />
                   </div>
-                </div>
-              </>
-            )}
+                </>
+              )}
 
-            <div>
-              <label className="block text-sm font-medium text-brand-secondary mb-1.5">Upload Resume (PDF only)</label>
-              <div className="relative group">
-                <input
-                  type="file"
-                  accept=".pdf"
-                  required
-                  onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                />
-                <div className={`flex items-center gap-3 w-full px-4 py-3.5 bg-brand-white border-2 border-dashed ${file ? 'border-brand-primary bg-brand-primary/5' : 'border-brand-gray-light/50 group-hover:border-brand-primary/50 group-hover:bg-[#F7F9F9]'} rounded-xl transition-all`}>
-                  <div className={`p-2 rounded-lg ${file ? 'bg-brand-primary text-brand-white' : 'bg-brand-gray-light/20 text-brand-gray-dark'}`}>
-                    <UploadCloud className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 truncate">
-                    <p className={`text-sm font-medium truncate ${file ? 'text-brand-primary' : 'text-brand-gray-dark'}`}>
-                      {file ? file.name : "Click or drag PDF here"}
-                    </p>
-                    {!file && <p className="text-xs text-brand-gray-medium mt-0.5">Maximum file size 5MB</p>}
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Unggah Resume (PDF)</label>
+                <div className="relative group">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    required
+                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className={`flex items-center gap-3 w-full px-4 py-4 bg-white border-2 border-dashed ${file ? 'border-[#F26522] bg-orange-50/50' : 'border-gray-200 group-hover:border-[#F26522]/50 group-hover:bg-gray-50'} rounded-2xl transition-all`}>
+                    <div className={`p-2 rounded-full ${file ? 'bg-[#F26522] text-white' : 'bg-gray-100 text-gray-500'}`}>
+                      <CloudUpload className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 truncate">
+                      <p className={`text-xs font-semibold truncate ${file ? 'text-[#F26522]' : 'text-gray-700'}`}>
+                        {file ? file.name : "Klik atau seret PDF ke sini"}
+                      </p>
+                      {!file && <p className="text-[10px] text-gray-400 mt-0.5">Maksimum ukuran berkas 5MB</p>}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="pt-4">
-              <button
-                type="submit"
-                disabled={loading || !job}
-                className="w-full flex justify-center items-center gap-2 py-4 px-4 rounded-xl shadow-lg shadow-brand-primary/20 text-sm font-bold text-brand-white bg-brand-primary hover:bg-brand-dark-teal focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
-              >
-                {loading ? (
-                  <><Loader2 className="w-5 h-5 animate-spin" /> Preparing Assessment...</>
-                ) : (
-                  <>Continue to Instructions <ArrowRight className="w-5 h-5 ml-1" /></>
-                )}
-              </button>
-            </div>
-            
-            <p className="text-xs text-center text-brand-gray-medium mt-4 max-w-xs mx-auto leading-relaxed">
-              By continuing, you agree to being proctored by our AI engine for anti-cheat verification purposes.
-            </p>
-          </form>
-
-          <div className="mt-12 pt-8 border-t border-brand-gray-light/20">
-            <SponsorLogos />
+              <div className="pt-4">
+                <button type="submit" disabled={loading || !job} className="w-full">
+                  <TextRollButton
+                    text={loading ? 'Memproses...' : 'Lanjut Ke Petunjuk Ujian'}
+                    variant="orange"
+                    size="lg"
+                    className="w-full justify-between"
+                  />
+                </button>
+              </div>
+            </form>
           </div>
-        </motion.div>
-      </div>
+        </div>
+
+        <div className="mt-16">
+          <SponsorLogos />
+        </div>
+      </main>
     </div>
   );
 }

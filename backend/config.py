@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 from pydantic import field_validator
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "SkillLens API"
+    PROJECT_NAME: str = "Skillens API"
     ENVIRONMENT: str = "development"
     DATABASE_URL: str
     REDIS_URL: str = "redis://localhost:6379/0"

@@ -21,6 +21,9 @@ def create_job(db: Session, job: schemas.JobCreate, current_user: models.User) -
         location=job.location,
         salary_range=job.salary_range,
         job_type=job.job_type,
+        max_questions=job.max_questions,
+        kkm_score=job.kkm_score,
+        deadline=job.deadline,
         status="open",
         magic_link_token=magic_token
     )
@@ -37,13 +40,26 @@ def create_job(db: Session, job: schemas.JobCreate, current_user: models.User) -
     return db_job
 
 def get_jobs(db: Session, skip: int = 0, limit: int = 100) -> List[models.Job]:
-    jobs = db.query(models.Job).filter(models.Job.status == "open").offset(skip).limit(limit).all()
+    from sqlalchemy.orm import selectinload
+    jobs = db.query(models.Job)\
+        .options(selectinload(models.Job.applications).load_only(models.Application.id))\
+        .filter(models.Job.status == "open")\
+        .offset(skip).limit(limit).all()
     return jobs
 
 def get_my_jobs(db: Session, current_user: models.User, skip: int = 0, limit: int = 100) -> List[models.Job]:
     if current_user.role not in ["recruiter", "admin"]:
         raise HTTPException(status_code=403, detail="Only recruiters can view their managed jobs")
-    jobs = db.query(models.Job).filter(models.Job.owner_id == current_user.id).offset(skip).limit(limit).all()
+    from sqlalchemy.orm import selectinload
+    query = db.query(models.Job).options(selectinload(models.Job.applications).load_only(models.Application.id))
+    
+    if current_user.company_id:
+        company_users = db.query(models.User.id).filter(models.User.company_id == current_user.company_id).subquery()
+        query = query.filter(models.Job.owner_id.in_(company_users))
+    else:
+        query = query.filter(models.Job.owner_id == current_user.id)
+        
+    jobs = query.offset(skip).limit(limit).all()
     return jobs
 
 def get_job(db: Session, job_id: int) -> models.Job:
@@ -55,7 +71,12 @@ def get_job(db: Session, job_id: int) -> models.Job:
 def update_job(db: Session, job_id: int, job_update: schemas.JobUpdate, current_user: models.User) -> models.Job:
     if current_user.role not in ["recruiter", "admin"]:
         raise HTTPException(status_code=403, detail="Not authorized")
-    job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == current_user.id).first()
+        
+    if current_user.company_id:
+        company_users = db.query(models.User.id).filter(models.User.company_id == current_user.company_id).subquery()
+        job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id.in_(company_users)).first()
+    else:
+        job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == current_user.id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     
@@ -70,7 +91,12 @@ def update_job(db: Session, job_id: int, job_update: schemas.JobUpdate, current_
 def delete_job(db: Session, job_id: int, current_user: models.User):
     if current_user.role not in ["recruiter", "admin"]:
         raise HTTPException(status_code=403, detail="Not authorized")
-    job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == current_user.id).first()
+        
+    if current_user.company_id:
+        company_users = db.query(models.User.id).filter(models.User.company_id == current_user.company_id).subquery()
+        job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id.in_(company_users)).first()
+    else:
+        job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == current_user.id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     

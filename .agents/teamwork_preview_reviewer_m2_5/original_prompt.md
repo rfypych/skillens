@@ -1,0 +1,3 @@
+## 2026-07-13T20:02:00Z
+
+You are a Reviewer. Your working directory is d:\projects\JHIC-rev\.agents\teamwork_preview_reviewer_m2_5. Read the M2 scope at d:\projects\JHIC-rev\.agents\sub_orch_m2\SCOPE.md and the worker handoff at d:\projects\JHIC-rev\.agents\teamwork_preview_worker_m2\handoff.md. Examine correctness, completeness, robustness, and interface conformance. Run builds / tests and any unit tests. If TEST_READY.md exists at project root, also run E2E tests. Provide your verdict in your handoff report and send me a message with the outcome.

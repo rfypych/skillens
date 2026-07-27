@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, defer
 from fastapi import HTTPException
 from typing import List
 import models, schemas
@@ -7,15 +7,35 @@ def get_applications(db: Session, current_user: models.User, skip: int = 0, limi
     if current_user.role == "candidate":
         # Candidates see their own applications (excluding archived)
         applications = db.query(models.Application)\
-            .options(joinedload(models.Application.assessment_results), joinedload(models.Application.job))\
+            .options(
+                defer(models.Application.resume_text), 
+                joinedload(models.Application.assessment_results)
+                    .defer(models.AssessmentResult.replay_history)
+                    .defer(models.AssessmentResult.candidate_answer)
+                    .defer(models.AssessmentResult.keystroke_metrics)
+                    .defer(models.AssessmentResult.evaluation_feedback),
+                joinedload(models.Application.job)
+            )\
             .filter(models.Application.user_id == current_user.id, models.Application.status != "archived")\
             .offset(skip).limit(limit).all()
         return applications
     elif current_user.role in ["recruiter", "admin"]:
         # Recruiters see applications for their jobs (excluding archived)
-        jobs = db.query(models.Job.id).filter(models.Job.owner_id == current_user.id).subquery()
+        if current_user.company_id:
+            company_users = db.query(models.User.id).filter(models.User.company_id == current_user.company_id).subquery()
+            jobs = db.query(models.Job.id).filter(models.Job.owner_id.in_(company_users)).subquery()
+        else:
+            jobs = db.query(models.Job.id).filter(models.Job.owner_id == current_user.id).subquery()
         applications = db.query(models.Application)\
-            .options(joinedload(models.Application.assessment_results), joinedload(models.Application.user))\
+            .options(
+                defer(models.Application.resume_text), 
+                joinedload(models.Application.assessment_results)
+                    .defer(models.AssessmentResult.replay_history)
+                    .defer(models.AssessmentResult.candidate_answer)
+                    .defer(models.AssessmentResult.keystroke_metrics)
+                    .defer(models.AssessmentResult.evaluation_feedback),
+                joinedload(models.Application.user)
+            )\
             .filter(models.Application.job_id.in_(jobs), models.Application.status != "archived")\
             .offset(skip).limit(limit).all()
         return applications
@@ -35,7 +55,11 @@ def get_application(db: Session, application_id: int, current_user: models.User)
         
     if current_user.role == "recruiter":
         job = db.query(models.Job).filter(models.Job.id == app.job_id).first()
-        if job.owner_id != current_user.id:
+        if current_user.company_id:
+            company_users = [u[0] for u in db.query(models.User.id).filter(models.User.company_id == current_user.company_id).all()]
+            if job.owner_id not in company_users:
+                raise HTTPException(status_code=403, detail="Not authorized for this company's applications")
+        elif job.owner_id != current_user.id:
             raise HTTPException(status_code=403, detail="Not authorized")
             
     return app
@@ -47,7 +71,11 @@ def update_application(db: Session, application_id: int, app_update: schemas.App
     if not app:
         raise HTTPException(status_code=404, detail="Application not found")
     job = db.query(models.Job).filter(models.Job.id == app.job_id).first()
-    if job.owner_id != current_user.id:
+    if current_user.company_id:
+        company_users = [u[0] for u in db.query(models.User.id).filter(models.User.company_id == current_user.company_id).all()]
+        if job.owner_id not in company_users:
+            raise HTTPException(status_code=403, detail="Not authorized for this company's applications")
+    elif job.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
         
     app.status = app_update.status
@@ -62,7 +90,11 @@ def delete_application(db: Session, application_id: int, current_user: models.Us
     if not app:
         raise HTTPException(status_code=404, detail="Application not found")
     job = db.query(models.Job).filter(models.Job.id == app.job_id).first()
-    if job.owner_id != current_user.id:
+    if current_user.company_id:
+        company_users = [u[0] for u in db.query(models.User.id).filter(models.User.company_id == current_user.company_id).all()]
+        if job.owner_id not in company_users:
+            raise HTTPException(status_code=403, detail="Not authorized for this company's applications")
+    elif job.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
         
     app.status = "archived"

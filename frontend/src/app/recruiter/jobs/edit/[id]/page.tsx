@@ -1,17 +1,14 @@
 'use client';
+import { Archive, Lightning, Locked, MagicWand, Target } from '@carbon/icons-react';
+
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  ArchiveIcon, 
-  TargetIcon, 
-  LockClosedIcon, 
-  LightningBoltIcon, 
-  MagicWandIcon 
-} from '@radix-ui/react-icons';
+
 import { useRouter, useParams } from 'next/navigation';
 import { toast, Toaster } from 'react-hot-toast';
 import { api } from '@/lib/api';
+import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 
 export default function EditJob() {
   const router = useRouter();
@@ -70,7 +67,7 @@ export default function EditJob() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <Toaster position="top-right" />
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
@@ -90,12 +87,12 @@ export default function EditJob() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="clean-card rounded-xl p-8 space-y-6 bg-white"
+          className="clean-card rounded-none p-8 space-y-6 bg-white"
         >
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1.5">
-                <ArchiveIcon className="w-4 h-4 text-gray-500" />
+                <Archive className="w-4 h-4 text-gray-500" />
                 Job Title
               </label>
               <input 
@@ -103,7 +100,7 @@ export default function EditJob() {
                 name="title"
                 type="text" 
                 defaultValue={job.title}
-                className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm"
+                className="w-full bg-white border border-gray-200 rounded-none px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm"
               />
             </div>
             
@@ -114,7 +111,7 @@ export default function EditJob() {
               <select 
                 name="language"
                 defaultValue={job.language}
-                className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm"
+                className="w-full bg-white border border-gray-200 rounded-none px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm"
               >
                 <option value="English">English</option>
                 <option value="Indonesian">Indonesian</option>
@@ -125,15 +122,15 @@ export default function EditJob() {
           <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1.5">Location</label>
-              <input required name="location" type="text" defaultValue={job.location} className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm" />
+              <input required name="location" type="text" defaultValue={job.location} className="w-full bg-white border border-gray-200 rounded-none px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm" />
             </div>
             <div>
               <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1.5">Salary Range</label>
-              <input required name="salary_range" type="text" defaultValue={job.salary_range} className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm" />
+              <input required name="salary_range" type="text" defaultValue={job.salary_range} className="w-full bg-white border border-gray-200 rounded-none px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm" />
             </div>
             <div>
               <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1.5">Job Type</label>
-              <select name="job_type" defaultValue={job.job_type} className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm">
+              <select name="job_type" defaultValue={job.job_type} className="w-full bg-white border border-gray-200 rounded-none px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm">
                 <option value="Full-time">Full-time</option>
                 <option value="Contract">Contract</option>
                 <option value="Internship">Internship</option>
@@ -143,37 +140,37 @@ export default function EditJob() {
 
           <div>
             <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1">
-              <TargetIcon className="w-4 h-4 text-gray-500" />
+              <Target className="w-4 h-4 text-gray-500" />
               Expected Outcomes (6-12 Months)
             </label>
             <textarea 
               required name="expected_outcomes" rows={2}
               defaultValue={job.expected_outcomes}
-              className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all resize-none text-sm"
+              className="w-full bg-white border border-gray-200 rounded-none px-4 py-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all resize-none text-sm"
             />
           </div>
 
           <div>
             <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1">
-              <LightningBoltIcon className="w-4 h-4 text-gray-500" />
+              <Lightning className="w-4 h-4 text-gray-500" />
               Non-Trainable Specific Skills
             </label>
             <textarea 
               required name="specific_skills" rows={2}
               defaultValue={job.specific_skills}
-              className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all resize-none text-sm"
+              className="w-full bg-white border border-gray-200 rounded-none px-4 py-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all resize-none text-sm"
             />
           </div>
 
           <div>
             <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1">
-              <LockClosedIcon className="w-4 h-4 text-gray-500" />
+              <Locked className="w-4 h-4 text-gray-500" />
               Compliance & Non-Negotiables
             </label>
             <textarea 
               required name="compliance_criteria" rows={2}
               defaultValue={job.compliance_criteria}
-              className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all resize-none text-sm"
+              className="w-full bg-white border border-gray-200 rounded-none px-4 py-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all resize-none text-sm"
             />
           </div>
         </motion.div>
@@ -187,19 +184,19 @@ export default function EditJob() {
           <button 
             type="button" 
             onClick={() => router.back()}
-            className="px-5 py-2.5 rounded-lg font-medium text-gray-600 hover:text-black hover:bg-gray-100 transition-colors text-sm"
+            className="px-5 py-2.5 rounded-none font-medium text-gray-600 hover:text-black hover:bg-gray-100 transition-colors text-sm"
           >
             Cancel
           </button>
           <button 
             type="submit" 
             disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-lg font-medium bg-black hover:bg-gray-800 text-white shadow-sm transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed text-sm"
+            className="px-6 py-2.5 rounded-none font-medium bg-black hover:bg-gray-800 text-white shadow-none transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed text-sm"
           >
             {isSubmitting ? (
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <ThinkingIndicator />
             ) : (
-              <ArchiveIcon className="w-4 h-4" />
+              <Archive className="w-4 h-4" />
             )}
             <span>Save Changes</span>
           </button>

@@ -2,12 +2,14 @@
 
 import { motion } from 'framer-motion';
 import {
-  Briefcase, Code2, CheckCircle2, Clock, ArrowRight, MapPin, CircleDollarSign, ChevronRight, User
-} from 'lucide-react';
+  Portfolio as Briefcase, Code as Code2, CheckmarkOutline as CheckCircle2, Time as Clock, ArrowRight, Location as MapPin, Currency as CircleDollarSign, User
+} from '@carbon/icons-react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import TextRollButton from '@/components/TextRollButton';
+import ShaderBackground from '@/components/ShaderBackground';
 
 export default function CandidateDashboard() {
   const router = useRouter();
@@ -18,8 +20,6 @@ export default function CandidateDashboard() {
   const [activeTab, setActiveTab] = useState<'applications' | 'positions'>('applications');
 
   useEffect(() => {
-
-
     Promise.all([
       api.get('/jobs'),
       api.get('/applications')
@@ -38,49 +38,49 @@ export default function CandidateDashboard() {
 
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <div className="w-8 h-8 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-[#F26522] border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
   return (
-    <div className="max-w-6xl mx-auto space-y-10">
+    <div className="w-full space-y-8 font-sans">
 
-      {/* Compact Greeting Banner */}
+      {/* Greeting Banner */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="bg-brand-secondary rounded-xl px-8 py-5 text-brand-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden"
+        className="bg-[#0F172A] rounded-2xl p-8 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden shadow-sm"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-brand-dark-teal/30 to-transparent pointer-events-none" />
-        <div className="relative z-10">
-          <h1 className="text-xl font-display font-bold leading-tight tracking-tight">
-            Your Assessment Dashboard
+        {/* WebGL Shader Overlay */}
+        <ShaderBackground variant="dark" />
+
+        <div className="relative z-20">
+          <h1 className="text-2xl font-semibold leading-tight tracking-tight text-white">
+            Pusat Penilaian Kandidat
           </h1>
-          <p className="text-brand-gray-light text-sm mt-0.5">
-            Track your applications and explore open positions.
+          <p className="text-gray-300 text-sm mt-1 font-normal">
+            Pantau evaluasi aktif, kirimkan tanggapan simulasi, dan jelajahi posisi terbuka.
           </p>
         </div>
-        <Link href="/candidate/profile" className="relative z-10 flex-shrink-0 px-4 py-2 bg-brand-primary text-brand-white text-sm font-semibold rounded-lg hover:bg-brand-dark-teal transition-colors flex items-center gap-2">
-          <User className="w-4 h-4" />
-          Update Profile
+        <Link href="/candidate/profile" className="relative z-10 flex-shrink-0">
+          <TextRollButton text="Edit Profil" variant="orange" size="sm" />
         </Link>
       </motion.div>
 
-
       {/* Mobile Tabs */}
-      <div className="flex lg:hidden bg-brand-white p-1 rounded-xl border border-brand-gray-light/30 shadow-sm">
+      <div className="flex lg:hidden bg-white p-1.5 rounded-full border border-gray-200 shadow-xs">
         <button
           onClick={() => setActiveTab('applications')}
-          className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-colors ${activeTab === 'applications' ? 'bg-brand-primary/10 text-brand-primary' : 'text-brand-gray-dark hover:bg-brand-gray-light/20'}`}
+          className={`flex-1 py-2 text-xs font-semibold rounded-full transition-colors ${activeTab === 'applications' ? 'bg-gray-900 text-white' : 'text-gray-600'}`}
         >
-          My Applications
+          Lamaran Saya
         </button>
         <button
           onClick={() => setActiveTab('positions')}
-          className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-colors ${activeTab === 'positions' ? 'bg-brand-primary/10 text-brand-primary' : 'text-brand-gray-dark hover:bg-brand-gray-light/20'}`}
+          className={`flex-1 py-2 text-xs font-semibold rounded-full transition-colors ${activeTab === 'positions' ? 'bg-gray-900 text-white' : 'text-gray-600'}`}
         >
-          Open Positions
+          Posisi Terbuka
         </button>
       </div>
 
@@ -90,15 +90,15 @@ export default function CandidateDashboard() {
         <div className={`space-y-6 ${activeTab === 'applications' ? 'block' : 'hidden lg:block'}`}>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-display font-bold text-brand-secondary">My Applications</h2>
-              <p className="text-brand-gray-dark mt-1 text-sm">Track your active assessments.</p>
+              <h2 className="text-2xl font-semibold text-gray-900">Lamaran Saya</h2>
+              <p className="text-gray-500 mt-0.5 text-xs font-normal">Pantau evaluasi aktif dan laporan Anda.</p>
             </div>
           </div>
 
           {applications.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-brand-gray-light/40 rounded-2xl bg-brand-white">
-              <Briefcase className="w-10 h-10 text-brand-gray-light mb-3" />
-              <p className="text-brand-gray-dark text-sm">No applications yet. Apply to an open position below.</p>
+            <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-2xl bg-white">
+              <Briefcase className="w-10 h-10 text-gray-300 mb-3" />
+              <p className="text-gray-500 text-sm font-medium">Belum ada lamaran aktif. Pilih posisi di bawah untuk melamar.</p>
             </div>
           )}
 
@@ -109,57 +109,48 @@ export default function CandidateDashboard() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + i * 0.1, ease: 'easeOut' }}
-                className="group relative bg-brand-white p-5 rounded-xl border border-brand-gray-light/30 shadow-sm hover:border-brand-gray-light/60 transition-all duration-200"
+                className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs hover:border-[#F26522]/40 transition-all duration-200"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                   <div className="flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      app.status === 'testing' ? 'bg-brand-primary/10 text-brand-primary' : 'bg-green-50 text-green-600'
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      app.status === 'testing' ? 'bg-orange-50 text-[#F26522]' : 'bg-emerald-50 text-emerald-700'
                     }`}>
                       {app.status === 'testing' ? <Code2 className="w-6 h-6" /> : <CheckCircle2 className="w-6 h-6" />}
                     </div>
                     <div>
-                      <h3 className="font-display font-bold text-brand-secondary text-lg mb-1">{app.job?.title ?? 'Assessment'}</h3>
-                      <div className="flex items-center gap-3 text-xs text-brand-gray-dark font-medium">
-                        <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {new Date(app.created_at).toLocaleDateString()}</span>
+                      <h3 className="font-semibold text-gray-900 text-lg mb-1">{app.job?.title ?? 'Evaluasi AI'}</h3>
+                      <div className="flex items-center gap-3 text-xs text-gray-500 font-normal">
+                        <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-[#F26522]" /> {new Date(app.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
                     {app.status === 'testing' ? (
-                      <Link
-                        href={`/candidate/test/${app.id}`}
-                        className="w-full sm:w-auto px-5 py-2.5 bg-brand-secondary text-brand-white text-sm font-bold rounded-xl hover:bg-brand-dark-teal transition-colors flex items-center justify-center gap-2"
-                      >
-                        Take Assessment
-                        <ArrowRight className="w-4 h-4" />
+                      <Link href={`/candidate/test/${app.id}`}>
+                        <TextRollButton text="Mulai Tes AI" variant="orange" size="sm" />
                       </Link>
                     ) : (
                       <div className="flex flex-wrap sm:flex-col sm:items-end gap-2 w-full">
                         {app.status === 'evaluated' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border uppercase tracking-wider bg-blue-50 text-blue-700 border-blue-200">
-                            <Clock className="w-3.5 h-3.5" /> In Review
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                            <Clock className="w-3.5 h-3.5" /> Dalam Peninjauan
                           </span>
                         )}
                         {app.status === 'interview' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border uppercase tracking-wider bg-purple-50 text-purple-700 border-purple-200">
-                            <User className="w-3.5 h-3.5" /> Interview
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+                            <User className="w-3.5 h-3.5" /> Wawancara
                           </span>
                         )}
                         {app.status === 'hired' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border uppercase tracking-wider bg-green-50 text-green-700 border-green-200">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Hired
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Diterima
                           </span>
                         )}
                         {app.status === 'rejected' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border uppercase tracking-wider bg-red-50 text-red-700 border-red-200">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Not Selected
-                          </span>
-                        )}
-                        {!['testing', 'evaluated', 'interview', 'hired', 'rejected'].includes(app.status) && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border uppercase tracking-wider bg-brand-gray-light/20 text-brand-gray-dark border-brand-gray-light">
-                            {app.status}
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-700 border border-red-200">
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Tidak Terpilih
                           </span>
                         )}
                       </div>
@@ -175,14 +166,14 @@ export default function CandidateDashboard() {
         <div className={`space-y-6 ${activeTab === 'positions' ? 'block' : 'hidden lg:block'}`}>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-display font-bold text-brand-secondary">Open Positions</h2>
-              <p className="text-brand-gray-dark mt-1 text-sm">Available roles with AI-proctored assessments.</p>
+              <h2 className="text-2xl font-semibold text-gray-900">Posisi Terbuka</h2>
+              <p className="text-gray-500 mt-0.5 text-xs font-normal">Peran dengan evaluasi studi kasus interaktif.</p>
             </div>
           </div>
 
           {jobs.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-brand-gray-light/40 rounded-2xl bg-brand-white">
-              <p className="text-brand-gray-dark text-sm">No open positions available right now. Check back later.</p>
+            <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-2xl bg-white">
+              <p className="text-gray-500 text-sm font-medium">Tidak ada posisi terbuka saat ini.</p>
             </div>
           )}
 
@@ -195,54 +186,48 @@ export default function CandidateDashboard() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 + i * 0.1, ease: 'easeOut' }}
-                  className="group bg-brand-white p-5 rounded-xl border border-brand-gray-light/30 shadow-sm hover:border-brand-gray-light/60 transition-all duration-200"
+                  className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs hover:border-[#F26522]/40 transition-all duration-200"
                 >
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex justify-between items-start mb-3">
                     <div>
-                      <h3 className="font-display font-bold text-brand-secondary text-lg mb-1 group-hover:text-brand-primary transition-colors">{job.title}</h3>
+                      <h3 className="font-semibold text-gray-900 text-lg mb-1">{job.title}</h3>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-brand-gray-light/10 border border-brand-gray-light/20 flex items-center justify-center text-brand-secondary text-xs font-bold font-mono">
+                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-900 text-xs font-mono font-bold">
                       {job.id}
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 mb-6">
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {job.location && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-gray-light/10 text-brand-gray-dark text-xs font-semibold rounded-lg">
-                        <MapPin className="w-3.5 h-3.5" />
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
+                        <MapPin className="w-3.5 h-3.5 text-[#F26522]" />
                         {job.location}
                       </span>
                     )}
                     {job.salary_range && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-gray-light/10 text-brand-gray-dark text-xs font-semibold rounded-lg">
-                        <CircleDollarSign className="w-3.5 h-3.5" />
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
+                        <CircleDollarSign className="w-3.5 h-3.5 text-[#F26522]" />
                         {job.salary_range}
-                      </span>
-                    )}
-                    {job.job_type && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-gray-light/10 text-brand-gray-dark text-xs font-semibold rounded-lg">
-                        {job.job_type}
                       </span>
                     )}
                   </div>
 
-                  <p className="text-sm text-brand-gray-dark mb-6 line-clamp-2 leading-relaxed">{job.expected_outcomes}</p>
+                  <p className="text-xs text-gray-600 mb-4 line-clamp-2 leading-relaxed font-normal">{job.expected_outcomes}</p>
 
-                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-brand-gray-light/20">
-                    <p className="text-xs font-medium text-brand-gray-dark">
-                      <span className="font-bold text-brand-secondary">{job.candidate_count ?? 0}</span> applicants
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <p className="text-xs font-normal text-gray-500">
+                      <span className="font-bold text-gray-900">{job.candidate_count ?? 0}</span> pelamar
                     </p>
                     {hasApplied ? (
-                      <button disabled className="px-5 py-2 bg-brand-gray-light/20 text-brand-gray-dark text-sm font-bold rounded-lg cursor-not-allowed">
-                        Already Applied
+                      <button disabled className="px-5 py-2 bg-gray-100 text-gray-400 text-xs font-semibold rounded-full cursor-not-allowed">
+                        Sudah Melamar
                       </button>
                     ) : (
                       <button
                         onClick={() => handleApply(job.id)}
                         disabled={applyingTo === job.id}
-                        className="px-5 py-2 bg-brand-white border border-brand-gray-light text-brand-secondary text-sm font-bold rounded-lg hover:border-brand-primary hover:text-brand-primary transition-colors disabled:opacity-50"
                       >
-                        {applyingTo === job.id ? 'Loading...' : 'Apply Now'}
+                        <TextRollButton text={applyingTo === job.id ? 'Memuat...' : 'Lamar Sekarang'} variant="orange" size="sm" />
                       </button>
                     )}
                   </div>

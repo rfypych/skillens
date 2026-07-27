@@ -53,6 +53,7 @@ class CandidateProfileResponse(CandidateProfileBase):
 class UserRole(str, Enum):
     CANDIDATE = "candidate"
     RECRUITER = "recruiter"
+    ADMIN = "admin"
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -79,6 +80,7 @@ class UserResponse(BaseModel):
     full_name: Optional[str] = None
     company_id: Optional[int] = None
     company_name: Optional[str] = None
+    parent_account_id: Optional[int] = None
     created_at: datetime
     profile: Optional[CandidateProfileResponse] = None
     
@@ -95,11 +97,14 @@ class JobBase(BaseModel):
     description: str
     expected_outcomes: str
     specific_skills: str
-    compliance_criteria: str
+    compliance_criteria: Optional[str] = None
     language: str = "English"
     location: Optional[str] = None
     salary_range: Optional[str] = None
     job_type: str = "Full-time"
+    max_questions: Optional[int] = 5
+    kkm_score: Optional[float] = 0.0
+    deadline: Optional[datetime] = None
 
 class JobCreate(JobBase):
     pass
@@ -114,7 +119,10 @@ class JobUpdate(BaseModel):
     location: Optional[str] = None
     salary_range: Optional[str] = None
     job_type: Optional[str] = None
+    max_questions: Optional[int] = None
+    kkm_score: Optional[float] = None
     status: Optional[str] = None
+    deadline: Optional[datetime] = None
 
 class JobResponse(JobBase):
     id: int
@@ -189,3 +197,28 @@ class ApplicationResponse(ApplicationBase):
 
 class ApplicationApplyResponse(ApplicationResponse):
     access_token: Optional[str] = None
+
+class CandidateDocumentResponse(BaseModel):
+    id: int
+    user_id: int
+    document_type: Optional[str] = None
+    file_url: Optional[str] = None
+    name: Optional[str] = None
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+class NotificationResponse(BaseModel):
+    id: int
+    user_id: int
+    message: Optional[str] = None
+    is_read: bool
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+class CandidateApplicationDetailedResponse(ApplicationResponse):
+    rank: Optional[int] = None
+    passed_kkm: Optional[bool] = None

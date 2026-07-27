@@ -68,13 +68,19 @@ def apply_telemetry_penalties(result, eval_data, candidate_answer):
     cps = total_chars / time_taken
             
     # Proctoring Criteria:
-    # A professional human typing speed limit is ~10 CPS. 
-    # If CPS > 12 for answers > 150 chars, they injected/pasted text.
-    is_superhuman_speed = cps > 12.0 and total_chars > 150
-    is_suspicious_paste = (result.copy_paste_attempts > 0 or result.tab_switches > 2) and time_taken < 90 and total_chars > 200
-    is_transcribing = (backspace_ratio < 0.02) and cps > 4.0 and total_chars > 300 # <2% backspaces while typing fast = transcription
+    # A professional human typing speed limit is ~15 CPS (180 WPM) in short bursts.
+    # We set superhuman speed to > 30.0 CPS (360 WPM), which is physically impossible for human typing.
+    is_superhuman_speed = cps > 30.0 and total_chars > 200
     
-    if is_superhuman_speed or is_suspicious_paste or is_transcribing:
+    # Suspicious paste: they pasted significantly (e.g. pasted_chars > 30% of total chars) 
+    # Since we only track paste attempts, not pasted chars, we assume a paste attempt implies they pasted a chunk.
+    # If time taken is extremely short and they pasted, it's a guaranteed bypass.
+    is_suspicious_paste = result.copy_paste_attempts > 0 and time_taken < 45 and total_chars > 300
+    
+    # We no longer penalize a 0 backspace ratio as transcription, because expert typists can type cleanly.
+    # We rely purely on the superhuman speed (CPS > 30.0).
+    
+    if is_superhuman_speed or is_suspicious_paste:
         ai_cheating_detected = True
         claim_vs_evidence_label = "Likely Fabricated"
         score_problem_understanding = min(score_problem_understanding, 10)
@@ -85,8 +91,6 @@ def apply_telemetry_penalties(result, eval_data, candidate_answer):
         
         if is_superhuman_speed:
             evaluation_feedback = f"Telemetry override: Superhuman typing speed detected ({cps:.1f} chars/sec). The candidate injected or pasted text using a tool that bypasses browser paste event listeners."
-        elif is_transcribing:
-            evaluation_feedback = f"Telemetry override: Transcription Rhythm Detected. The candidate typed {total_chars} characters with an unnaturally low backspace ratio ({(backspace_ratio*100):.1f}%), indicating they were directly transcribing text from a secondary device/AI."
         else:
             evaluation_feedback = "Telemetry override: Suspicious paste/switch pattern detected. The candidate submitted a pre-written answer in a duration too short for manual entry."
 
@@ -144,15 +148,15 @@ Specific Skills Required: {job.specific_skills}
 
 Anti-Cheat & Telemetry Rules (CRITICAL):
 You will be provided with the chat transcript of the candidate's interview, and their telemetry data (tab switches, copy-paste attempts, time taken).
-If any of the candidate's messages contain the word "{trap_word}" or act completely irrelevant by explicitly ignoring the task, you MUST flag `ai_cheating_detected` as true.
-Furthermore, if the telemetry indicates suspicious copy-pasting (e.g., large transcript but very short time <120s):
-1. You MUST flag `ai_cheating_detected` as true.
-2. You MUST set `claim_vs_evidence_label` to "Likely Fabricated".
-3. You MUST lower all evaluation scores to a maximum of 10/100 (overall score must be <= 10).
-4. The `evaluation_feedback` MUST state that the candidate copy-pasted/cheated.
+If any of the candidate's messages contain the word "{trap_word}", you MUST flag `ai_cheating_detected` as true. 
+Important: Do NOT flag nonsense, gibberish, or irrelevant answers as cheating. Such answers just indicate a poor candidate and should receive a score of 0 and a "Mismatch" label.
 
 Stylistic AI Signature Analysis:
-Analyze the formatting, grammar, and syntax of the candidate's messages. If their chat messages have perfect markdown headers, lists with bold summaries (e.g., "**Key Concept:** explanation"), perfect Mermaid diagrams, zero typos, and read exactly like a standard LLM output (ChatGPT/Claude) rather than a human typing in a chat box, you should flag `ai_cheating_detected` as true and label them as "Likely Fabricated".
+Analyze the formatting, grammar, and syntax of the candidate's messages. Be very careful: do NOT flag a candidate as cheating simply because they write clean code, use bullet points, or have good grammar. Many professional developers type clean markdown naturally.
+Only flag `ai_cheating_detected` as true if they have clear AI hallmarks, such as:
+1. Conversational AI filler/preamble phrases (e.g., "As an AI...", "Here is the solution to your request...", "Let me know if you need anything else!").
+2. Perfect, complex Mermaid diagrams or massive blocks of structured text generated in a way that doesn't match the chat flow.
+Otherwise, default to `ai_cheating_detected` as false.
 
 Claim vs Evidence Alignment (For candidates who passed proctoring):
 Compare their CV claims (experience duration, skills, seniorities) with the depth and quality of their answers.
@@ -176,7 +180,18 @@ Do NOT output markdown (like ```json), just the raw JSON object.
 """
 
         resume_text = app.resume_text if app.resume_text else "No resume uploaded."
-        user_prompt = f"Candidate Resume/CV Content:\n{resume_text}\n\nTelemetry Data:\n- Tab Switches: {result.tab_switches}\n- Copy-Paste Attempts: {result.copy_paste_attempts}\n- Time Taken: {result.time_taken_seconds} seconds\n\nCandidate Answer:\n{result.candidate_answer}"
+        
+        # Parse the JSON transcript so the LLM doesn't have to read raw JSON syntax
+        formatted_transcript = ""
+        try:
+            transcript_data = json.loads(result.candidate_answer)
+            for msg in transcript_data:
+                role = "Interviewer" if msg.get("role") == "assistant" else "Candidate"
+                formatted_transcript += f"{role}: {msg.get('content', '')}\n\n"
+        except Exception:
+            formatted_transcript = result.candidate_answer
+
+        user_prompt = f"Candidate Resume/CV Content:\n{resume_text}\n\nTelemetry Data:\n- Tab Switches: {result.tab_switches}\n- Copy-Paste Attempts: {result.copy_paste_attempts}\n- Time Taken: {result.time_taken_seconds} seconds\n\nCandidate Chat Transcript:\n{formatted_transcript}"
 
         response = await client.chat.completions.create(
             model=model_name,

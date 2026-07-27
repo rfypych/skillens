@@ -1,0 +1,31 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "interviews": "Interviews",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Log out",
+    "command_center": "Command Center",
+    "active_roles": "Active Roles",
+    "candidates": "Candidates",
+    "analytics": "Analytics"
+  },
+  "header": {
+    "welcome_back": "Welcome back",
+    "candidate": "Candidate",
+    "recruiter": "Recruiter"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your profile and platform preferences.",
+    "manage_team": "Manage Team Accounts",
+    "profile_info": "Profile Information",
+    "full_name": "Full Name",
+    "company_name": "Company Name",
+    "email": "Email Address",
+    "email_locked": "Email address cannot be changed.",
+    "save": "Save Changes",
+    "language": "Language",
+    "language_desc": "Choose your preferred language for the application."
+  }
+}

@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 
 export default function JobDetail() {
   const params = useParams();
@@ -59,7 +60,7 @@ export default function JobDetail() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+        <ThinkingIndicator />
       </div>
     );
   }
@@ -112,7 +113,7 @@ export default function JobDetail() {
               <h1 className="text-3xl font-bold tracking-tight text-black mb-1">
                 {job.title}
               </h1>
-              <p className="text-gray-500 text-sm mb-4">SkillLens Platform</p>
+              <p className="text-gray-500 text-sm mb-4">Skillens Platform</p>
 
               {/* Meta tags */}
               <div className="flex flex-wrap gap-2 mb-6">
@@ -203,13 +204,13 @@ export default function JobDetail() {
               </div>
             )}
 
-            {/* About SkillLens */}
+            {/* About Skillens */}
             <div className="border-t border-gray-100 pt-8">
               <h2 className="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-4">
-                About SkillLens
+                About Skillens
               </h2>
               <p className="text-sm text-gray-500 leading-relaxed">
-                SkillLens is an evidence-based hiring platform that replaces résumé
+                Skillens is an evidence-based hiring platform that replaces résumé
                 screening with AI-proctored micro-simulations. Every candidate is evaluated
                 on actual performance, not self-reported credentials.
               </p>
@@ -227,7 +228,7 @@ export default function JobDetail() {
               >
                 {applying ? (
                   <>
-                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <ThinkingIndicator />
                     Starting…
                   </>
                 ) : alreadyApplied ? (

@@ -3,7 +3,7 @@ version: '3.8'
 services:
   db:
     image: postgres:15-alpine
-    container_name: skilllens_db
+    container_name: skillens_db
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-jhic_user}
@@ -16,7 +16,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: skilllens_redis
+    container_name: skillens_redis
     restart: always
     ports:
       - "6379:6379"
@@ -26,7 +26,7 @@ services:
   backend:
     build:
       context: ./backend
-    container_name: skilllens_backend
+    container_name: skillens_backend
     restart: always
     ports:
       - "8000:8000"
@@ -45,7 +45,7 @@ services:
   worker:
     build:
       context: ./backend
-    container_name: skilllens_worker
+    container_name: skillens_worker
     restart: always
     command: celery -A celery_app.celery worker --loglevel=info
     env_file:
@@ -61,7 +61,7 @@ services:
   frontend:
     build:
       context: ./frontend
-    container_name: skilllens_frontend
+    container_name: skillens_frontend
     restart: always
     ports:
       - "3000:3000"

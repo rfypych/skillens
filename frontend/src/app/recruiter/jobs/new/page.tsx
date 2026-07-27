@@ -1,32 +1,159 @@
 'use client';
 
-import { useState } from 'react';
+import { Add, Aperture, ArrowLeft, ArrowRight, Calendar, CheckmarkOutline, Close, EarthAmericas, Help, Idea, Lightning, Location, Money, Portfolio, Renew, Security, Target, TrashCan, UserFollow } from '@carbon/icons-react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Briefcase,
-  MapPin,
-  Banknote,
-  Globe,
-  Clock,
-  Target,
-  Zap,
-  ShieldCheck,
-  ArrowRight,
-  ArrowLeft,
-  Sparkles,
-  CheckCircle2,
-  Aperture,
-  Loader2
-} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import Link from 'next/link';
+import { ThinkingIndicator } from '@/components/ThinkingIndicator';
+import TextRollButton from '@/components/TextRollButton';
+
+function OnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [currentTab, setCurrentTab] = useState(0);
+
+  if (!isOpen) return null;
+
+  const guides = [
+    {
+      title: 'Langkah 1: Overview & Spesifikasi Peran',
+      icon: Portfolio,
+      color: 'text-[#F26522]',
+      bullets: [
+        'Isi **Nama Posisi**, **Lokasi**, **Rentang Gaji**, dan **Tipe Pekerjaan**.',
+        'Pilih **Bahasa Wawancara AI** (English / Indonesian) & **Deadline Ujian**.',
+        'Aktifkan **Auto-Generate AI** untuk deskripsi otomatis atau tulis deskripsi manual.'
+      ]
+    },
+    {
+      title: 'Langkah 2: Parameter Evaluator AI & KKM',
+      icon: Aperture,
+      color: 'text-[#F26522]',
+      bullets: [
+        '**Interaction Limit**: Jumlah pertanyaan pendalaman AI (1–15, Default: 5).',
+        '**Nilai KKM**: Skor minimum kelulusan (0–100, Default: 70).',
+        '**Expected Outcomes & Skills**: Target kriteria yang akan diuji simulasi AI.'
+      ]
+    },
+    {
+      title: 'Langkah 3: Tinjau & Deploy',
+      icon: Idea,
+      color: 'text-[#F26522]',
+      bullets: [
+        'Periksa kembali seluruh parameter peran & kriteria AI.',
+        'Klik **Rilis Ujian AI Sekarang** untuk membuat link evaluasi publik!'
+      ]
+    }
+  ];
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden font-sans">
+      {/* Header Window */}
+      <div className="bg-gray-900 p-4 text-white flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <Idea className="w-5 h-5 text-[#F26522]" />
+          <span className="font-semibold text-sm tracking-wide">Panduan Pembuatan Posisi</span>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-1 text-white/80 hover:text-white hover:bg-red-500/20 transition-colors rounded-full"
+          title="Tutup"
+        >
+          <Close className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex border-b border-gray-100 bg-gray-50">
+        {guides.map((g, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrentTab(idx)}
+            className={`flex-1 py-2.5 text-[11px] font-semibold uppercase tracking-wider transition-colors border-b-2 ${
+              currentTab === idx
+                ? 'border-[#F26522] text-[#F26522] bg-white'
+                : 'border-transparent text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            Tahap {idx + 1}
+          </button>
+        ))}
+      </div>
+
+      {/* Body Content */}
+      <div className="p-5 space-y-4">
+        {(() => {
+          const current = guides[currentTab];
+          const Icon = current.icon;
+          return (
+            <div>
+              <h4 className="font-semibold text-gray-900 text-sm flex items-center gap-2 mb-3">
+                <Icon className={`w-5 h-5 ${current.color}`} />
+                {current.title}
+              </h4>
+              <ul className="space-y-2 text-xs text-gray-600 leading-relaxed">
+                {current.bullets.map((b, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="text-[#F26522] font-bold mt-0.5">•</span>
+                    <span dangerouslySetInnerHTML={{ __html: b.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* Footer Navigation */}
+      <div className="p-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+        <button
+          disabled={currentTab === 0}
+          onClick={() => setCurrentTab(t => t - 1)}
+          className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 disabled:opacity-30"
+        >
+          Sebelumnya
+        </button>
+        <div className="text-[10px] font-semibold text-gray-500">
+          {currentTab + 1} / {guides.length}
+        </div>
+        {currentTab < guides.length - 1 ? (
+          <button
+            onClick={() => setCurrentTab(t => t + 1)}
+            className="px-3 py-1.5 text-xs font-semibold bg-gray-900 text-white rounded-full hover:bg-gray-800"
+          >
+            Lanjut
+          </button>
+        ) : (
+          <button
+            onClick={onClose}
+            className="px-3 py-1.5 text-xs font-semibold bg-[#F26522] text-white rounded-full hover:bg-[#e05a1a]"
+          >
+            Paham, Tutup
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function NewJobWizard() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [showGuide, setShowGuide] = useState(false);
+
+  useEffect(() => {
+    const hasSeenTour = localStorage.getItem('hasSeenNewJobTour');
+    if (!hasSeenTour) {
+      setShowGuide(true);
+    }
+  }, []);
+
+  const handleCloseGuide = () => {
+    setShowGuide(false);
+    localStorage.setItem('hasSeenNewJobTour', 'true');
+  };
 
   const [formData, setFormData] = useState({
     title: '',
@@ -34,27 +161,57 @@ export default function NewJobWizard() {
     location: '',
     salary_range: '',
     job_type: 'Full-time',
-    expected_outcomes: '',
-    specific_skills: '',
-    compliance_criteria: '',
+    description: '',
+    max_questions: 5,
+    kkm_score: 70,
+    deadline: '',
   });
 
+  const [autoGenerateDescription, setAutoGenerateDescription] = useState(true);
+  const [expectedOutcomes, setExpectedOutcomes] = useState<string[]>(['Mampu merancang arsitektur terdistribusi dengan toleransi kegagalan tinggi']);
+  const [specificSkills, setSpecificSkills] = useState<string[]>(['React', 'Node.js', 'PostgreSQL', 'Docker']);
+  const [complianceCriteria, setComplianceCriteria] = useState<string[]>(['Kode bersih', 'Dokumentasi rapi', 'Bebas kerentanan OWASP']);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value, type } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'number' ? parseFloat(value) || 0 : value
+    }));
+  };
+
+  // Helper handlers for dynamic lists
+  const handleListAdd = (setter: React.Dispatch<React.SetStateAction<string[]>>) => {
+    setter(prev => [...prev, '']);
+  };
+
+  const handleListChange = (setter: React.Dispatch<React.SetStateAction<string[]>>, index: number, value: string) => {
+    setter(prev => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+  };
+
+  const handleListRemove = (setter: React.Dispatch<React.SetStateAction<string[]>>, index: number) => {
+    setter(prev => prev.filter((_, i) => i !== index));
   };
 
   const nextStep = () => {
     setError('');
-    // Basic validation per step
     if (step === 1) {
-      if (!formData.title || !formData.location || !formData.salary_range) {
-        setError('Please fill in all required fields.');
+      if (!formData.title.trim() || !formData.location.trim() || !formData.salary_range.trim()) {
+        setError('Harap isi semua kolom wajib: Nama Posisi, Lokasi Kerja, dan Rentang Gaji.');
+        return;
+      }
+      if (!autoGenerateDescription && !formData.description.trim()) {
+        setError('Tuliskan deskripsi pekerjaan atau aktifkan Auto-Generate AI.');
         return;
       }
     }
     if (step === 2) {
-      if (!formData.expected_outcomes || !formData.specific_skills || !formData.compliance_criteria) {
-        setError('Please define the AI simulation parameters.');
+      if (!expectedOutcomes.some(i => i.trim()) || !specificSkills.some(i => i.trim()) || !complianceCriteria.some(i => i.trim())) {
+        setError('Harap isi minimal satu item untuk Target Hasil, Keahlian Spesifik, dan Kriteria Kelulusan.');
         return;
       }
     }
@@ -69,281 +226,487 @@ export default function NewJobWizard() {
     try {
       const payload = {
         ...formData,
-        description: 'Autogenerated by AI Proctoring Engine'
+        deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
+        description: autoGenerateDescription ? 'AUTO_GENERATE' : formData.description,
+        expected_outcomes: expectedOutcomes.filter(i => i.trim()).join('\n'),
+        specific_skills: specificSkills.filter(i => i.trim()).join('\n'),
+        compliance_criteria: complianceCriteria.filter(i => i.trim()).join('\n')
       };
       const newJob = await api.post('/jobs', payload);
       router.push(`/recruiter/jobs/${newJob.id}`);
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Gagal menyimpan posisi pekerjaan baru');
       setIsSubmitting(false);
     }
   };
 
   const steps = [
-    { num: 1, title: 'Role Overview' },
-    { num: 2, title: 'AI Parameters' },
-    { num: 3, title: 'Review & Deploy' }
+    { num: 1, title: 'Detail & Spesifikasi Peran' },
+    { num: 2, title: 'Parameter AI & KKM' },
+    { num: 3, title: 'Tinjau & Deploy' }
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="w-full space-y-8 relative font-sans">
+      <OnboardingModal isOpen={showGuide} onClose={handleCloseGuide} />
+      
+      {/* Help Button */}
+      <button 
+        onClick={() => setShowGuide(true)}
+        className="absolute top-0 right-0 p-2.5 text-gray-600 hover:text-gray-900 bg-white border border-gray-200/80 rounded-full shadow-xs transition-colors z-10 flex items-center gap-2"
+        title="Buka Panduan"
+      >
+        <Help className="w-5 h-5 text-[#F26522]" />
+        <span className="text-xs font-semibold hidden md:block">Panduan Wizard</span>
+      </button>
+
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <Link href="/recruiter/jobs" className="inline-flex items-center gap-2 text-sm font-medium text-brand-gray-dark hover:text-brand-secondary transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Active Roles
-          </Link>
-          <h1 className="text-3xl font-display font-bold text-brand-secondary tracking-tight flex items-center gap-3">
-            Program New Assessment
-            <span className="px-2.5 py-1 rounded-md bg-brand-primary/20 text-brand-primary text-[10px] font-bold uppercase tracking-widest border border-brand-primary/30">Wizard</span>
-          </h1>
-          <p className="text-brand-gray-dark mt-2">Configure parameters for the AI evaluator engine.</p>
-        </div>
+      <div>
+        <Link href="/recruiter/jobs" className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors mb-3">
+          <ArrowLeft className="w-4 h-4" />
+          Kembali ke Posisi Aktif
+        </Link>
+        <h1 className="text-3xl font-semibold text-gray-900 tracking-tight flex items-center gap-3">
+          Buat Posisi Evaluasi Baru
+        </h1>
+        <p className="text-gray-600 text-sm mt-1">Konfigurasikan simulasi studi kasus AI untuk kandidat secara otomatis.</p>
       </div>
 
-      {/* Stepper */}
-      <div className="bg-brand-white p-6 md:px-12 rounded-3xl border border-brand-gray-light/30 shadow-sm flex items-center justify-between relative overflow-hidden">
-        <div className="absolute top-[40%] left-12 right-12 h-1 bg-brand-gray-light/20 -translate-y-1/2 z-0 rounded-full" />
-        <div className="absolute top-[40%] left-12 h-1 bg-brand-primary -translate-y-1/2 transition-all duration-700 ease-out z-0 rounded-full" style={{ width: `calc(${((step - 1) / 2) * 100}% - 4rem)` }} />
-        
-        {steps.map(s => (
-          <div key={s.num} className="relative z-10 flex flex-col items-center gap-3 bg-brand-white px-4">
-            <motion.div 
-              animate={step === s.num ? { scale: 1.1, y: -2 } : { scale: 1, y: 0 }}
-              className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-base transition-all duration-300 shadow-sm ${
-                step > s.num 
-                  ? 'bg-brand-primary text-brand-white shadow-brand-primary/20'
-                  : step === s.num
-                    ? 'bg-brand-secondary text-brand-accent shadow-brand-secondary/20 ring-4 ring-brand-primary/10'
-                    : 'bg-[#F7F9F9] text-brand-gray-light border border-brand-gray-light/30'
-              }`}
-            >
-              {step > s.num ? <CheckCircle2 className="w-6 h-6" /> : s.num}
-            </motion.div>
-            <span className={`text-[10px] md:text-xs font-bold uppercase tracking-widest transition-colors ${step === s.num ? 'text-brand-primary' : step > s.num ? 'text-brand-secondary' : 'text-brand-gray-light'}`}>
-              {s.title}
-            </span>
+      {/* Wizard Steps Bar */}
+      <div className="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-xs flex items-center justify-between">
+        {steps.map((s, idx) => (
+          <div key={s.num} className="flex items-center flex-1">
+            <div className={`flex items-center gap-3 ${step === s.num ? 'text-[#F26522]' : step > s.num ? 'text-gray-900' : 'text-gray-400'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                step === s.num ? 'bg-[#F26522] text-white' : step > s.num ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-400'
+              }`}>
+                {step > s.num ? <CheckmarkOutline className="w-4 h-4" /> : s.num}
+              </div>
+              <span className="text-xs sm:text-sm font-semibold hidden sm:block">{s.title}</span>
+            </div>
+            {idx < steps.length - 1 && (
+              <div className={`flex-1 h-0.5 mx-4 ${step > s.num ? 'bg-gray-900' : 'bg-gray-200'}`} />
+            )}
           </div>
         ))}
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-700 text-sm p-4 rounded-xl border border-red-200 font-medium flex items-center gap-3 shadow-sm">
-          <ShieldCheck className="w-5 h-5" />
+        <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-xs font-semibold">
           {error}
         </div>
       )}
 
-      {/* Wizard Content */}
-      <div className="bg-brand-white rounded-2xl border border-brand-gray-light/30 shadow-sm overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-        
-        <div className="p-8">
-          <AnimatePresence mode="wait">
+      {/* STEP 1: ROLE OVERVIEW */}
+      {step === 1 && (
+        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200/80 shadow-xs space-y-6">
+          <div className="border-b border-gray-100 pb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">1. Detail & Spesifikasi Peran</h2>
+              <p className="text-xs text-gray-500 mt-0.5">Tentukan nama posisi, lokasi, gaji, dan metode evaluasi.</p>
+            </div>
+            <span className="text-xs font-mono text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Tahap 1 dari 3</span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Nama Posisi / Pekerjaan *</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="Contoh: Senior Fullstack Engineer"
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Tipe Pekerjaan *</label>
+              <select
+                name="job_type"
+                value={formData.job_type}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
+              >
+                <option value="Full-time">Full-time (Penuh Waktu)</option>
+                <option value="Part-time">Part-time (Paruh Waktu)</option>
+                <option value="Contract">Kontrak / Freelance</option>
+                <option value="Internship">Magang / Internship</option>
+                <option value="Remote">Remote (Kerja Jarak Jauh)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Lokasi Kerja *</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="Contoh: Jakarta (Hybrid / Remote)"
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Rentang Gaji *</label>
+              <input
+                type="text"
+                name="salary_range"
+                value={formData.salary_range}
+                onChange={handleChange}
+                placeholder="Contoh: Rp 18.000.000 - 25.000.000"
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Bahasa Wawancara AI *</label>
+              <select
+                name="language"
+                value={formData.language}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
+              >
+                <option value="English">English</option>
+                <option value="Indonesian">Bahasa Indonesia</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Batas Waktu Ujian (Deadline)</label>
+              <input
+                type="date"
+                name="deadline"
+                value={formData.deadline}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
+              />
+            </div>
+          </div>
+
+          {/* AI Description Option */}
+          <div className="pt-4 border-t border-gray-100 space-y-4">
+            <div className="flex items-center justify-between bg-gray-50 p-4 rounded-2xl border border-gray-200/60">
+              <div className="space-y-0.5">
+                <span className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                  <Lightning className="w-4 h-4 text-[#F26522]" />
+                  Auto-Generate Deskripsi Pekerjaan dengan AI
+                </span>
+                <p className="text-xs text-gray-500">AI akan menyusun deskripsi posisi secara cerdas berdasarkan kriteria yang diisi.</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  checked={autoGenerateDescription} 
+                  onChange={e => setAutoGenerateDescription(e.target.checked)}
+                  className="sr-only peer" 
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#F26522]"></div>
+              </label>
+            </div>
+
+            {!autoGenerateDescription && (
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Deskripsi Pekerjaan Manual *</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={4}
+                  placeholder="Tuliskan penjelasan tanggung jawab dan kualifikasi posisi..."
+                  className="w-full p-4 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end pt-4">
+            <button onClick={nextStep}>
+              <TextRollButton text="Lanjut Ke Parameter AI" variant="orange" size="md" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 2: AI SIMULATOR PARAMETERS */}
+      {step === 2 && (
+        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200/80 shadow-xs space-y-6">
+          <div className="border-b border-gray-100 pb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">2. Parameter Simulasi & Evaluator AI</h2>
+              <p className="text-xs text-gray-500 mt-0.5">Atur intensitas pertanyaan AI, nilai passing score (KKM), dan kriteria penilaian.</p>
+            </div>
+            <span className="text-xs font-mono text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Tahap 2 dari 3</span>
+          </div>
+
+          {/* AI Settings Controls: Max Questions & KKM Score */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-2xl border border-gray-200/60">
+            <div>
+              <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <span>Batas Pertanyaan Pendalaman AI (Interaction Limit)</span>
+                <span className="text-[#F26522] font-bold text-sm">{formData.max_questions} Soal</span>
+              </label>
+              <input
+                type="range"
+                name="max_questions"
+                min={1}
+                max={15}
+                value={formData.max_questions}
+                onChange={handleChange}
+                className="w-full accent-[#F26522] cursor-pointer"
+              />
+              <p className="text-[11px] text-gray-500 mt-1.5">Jumlah maksimum pertanyaan studi kasus interaktif yang diajukan AI kepada kandidat.</p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <span>Nilai KKM Minimum Kelulusan (Passing Score)</span>
+                <span className="text-[#F26522] font-bold text-sm">{formData.kkm_score} / 100</span>
+              </label>
+              <input
+                type="range"
+                name="kkm_score"
+                min={0}
+                max={100}
+                step={5}
+                value={formData.kkm_score}
+                onChange={handleChange}
+                className="w-full accent-[#F26522] cursor-pointer"
+              />
+              <p className="text-[11px] text-gray-500 mt-1.5">Kandidat dengan skor di bawah KKM ini akan ditandai perlu pertimbangan ulang.</p>
+            </div>
+          </div>
+
+          {/* Dynamic List Builders */}
+          <div className="space-y-6">
             
-            {/* STEP 1 */}
-            {step === 1 && (
-              <motion.div
-                key="step1"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-6"
-              >
-                <h2 className="text-xl font-display font-bold text-brand-secondary flex items-center gap-2 mb-6">
-                  <Briefcase className="w-5 h-5 text-brand-primary" />
-                  Role Specifications
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="col-span-1 md:col-span-2">
-                    <label className="block text-sm font-bold text-brand-secondary mb-2">Job Title</label>
-                    <input 
-                      name="title" value={formData.title} onChange={handleChange}
-                      placeholder="e.g. Senior Backend Engineer"
-                      className="w-full bg-transparent border border-brand-gray-light rounded-xl px-4 py-3 text-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary transition-colors text-sm font-medium"
+            {/* Expected Outcomes */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">Target Hasil & Skenario Studi Kasus *</label>
+                <button
+                  type="button"
+                  onClick={() => handleListAdd(setExpectedOutcomes)}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#F26522] hover:text-[#e05a1a]"
+                >
+                  <Add className="w-4 h-4" />
+                  Tambah Kriteria
+                </button>
+              </div>
+              <div className="space-y-3">
+                {expectedOutcomes.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={e => handleListChange(setExpectedOutcomes, idx, e.target.value)}
+                      placeholder={`Target ${idx + 1}: Contoh Mampu merancang arsitektur microservices terdistribusi`}
+                      className="flex-1 px-4 py-2.5 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
                     />
+                    {expectedOutcomes.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleListRemove(setExpectedOutcomes, idx)}
+                        className="p-2 text-gray-400 hover:text-red-500 rounded-full transition-colors"
+                        title="Hapus"
+                      >
+                        <TrashCan className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
-                  <div>
-                    <label className="block text-sm font-bold text-brand-secondary mb-2 flex items-center gap-1.5"><MapPin className="w-4 h-4 text-brand-gray-dark" /> Location</label>
-                    <input 
-                      name="location" value={formData.location} onChange={handleChange}
-                      placeholder="e.g. Remote / Jakarta"
-                      className="w-full bg-transparent border border-brand-gray-light rounded-xl px-4 py-3 text-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary transition-colors text-sm font-medium"
+                ))}
+              </div>
+            </div>
+
+            {/* Specific Skills */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">Keahlian Spesifik Yang Dievaluasi *</label>
+                <button
+                  type="button"
+                  onClick={() => handleListAdd(setSpecificSkills)}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#F26522] hover:text-[#e05a1a]"
+                >
+                  <Add className="w-4 h-4" />
+                  Tambah Skill
+                </button>
+              </div>
+              <div className="space-y-3">
+                {specificSkills.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={e => handleListChange(setSpecificSkills, idx, e.target.value)}
+                      placeholder={`Skill ${idx + 1}: Contoh React, Node.js, PostgreSQL`}
+                      className="flex-1 px-4 py-2.5 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
                     />
+                    {specificSkills.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleListRemove(setSpecificSkills, idx)}
+                        className="p-2 text-gray-400 hover:text-red-500 rounded-full transition-colors"
+                        title="Hapus"
+                      >
+                        <TrashCan className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
-                  <div>
-                    <label className="block text-sm font-bold text-brand-secondary mb-2 flex items-center gap-1.5"><Banknote className="w-4 h-4 text-brand-gray-dark" /> Salary Range</label>
-                    <input 
-                      name="salary_range" value={formData.salary_range} onChange={handleChange}
-                      placeholder="e.g. Rp 15M - 25M"
-                      className="w-full bg-transparent border border-brand-gray-light rounded-xl px-4 py-3 text-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary transition-colors text-sm font-medium"
+                ))}
+              </div>
+            </div>
+
+            {/* Compliance Criteria */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">Kriteria Kelulusan & Kepatuhan *</label>
+                <button
+                  type="button"
+                  onClick={() => handleListAdd(setComplianceCriteria)}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#F26522] hover:text-[#e05a1a]"
+                >
+                  <Add className="w-4 h-4" />
+                  Tambah Kriteria Kepatuhan
+                </button>
+              </div>
+              <div className="space-y-3">
+                {complianceCriteria.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={e => handleListChange(setComplianceCriteria, idx, e.target.value)}
+                      placeholder={`Kriteria ${idx + 1}: Contoh Kode bersih, bebas bug OWASP`}
+                      className="flex-1 px-4 py-2.5 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
                     />
+                    {complianceCriteria.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleListRemove(setComplianceCriteria, idx)}
+                        className="p-2 text-gray-400 hover:text-red-500 rounded-full transition-colors"
+                        title="Hapus"
+                      >
+                        <TrashCan className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
-                  <div>
-                    <label className="block text-sm font-bold text-brand-secondary mb-2 flex items-center gap-1.5"><Globe className="w-4 h-4 text-brand-gray-dark" /> Interview Language</label>
-                    <select 
-                      name="language" value={formData.language} onChange={handleChange}
-                      className="w-full bg-transparent border border-brand-gray-light rounded-xl px-4 py-3 text-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary transition-colors text-sm font-medium"
-                    >
-                      <option value="English">English</option>
-                      <option value="Indonesian">Indonesian</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-brand-secondary mb-2 flex items-center gap-1.5"><Clock className="w-4 h-4 text-brand-gray-dark" /> Job Type</label>
-                    <select 
-                      name="job_type" value={formData.job_type} onChange={handleChange}
-                      className="w-full bg-transparent border border-brand-gray-light rounded-xl px-4 py-3 text-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary transition-colors text-sm font-medium"
-                    >
-                      <option value="Full-time">Full-time</option>
-                      <option value="Contract">Contract</option>
-                      <option value="Internship">Internship</option>
-                    </select>
-                  </div>
-                </div>
-              </motion.div>
-            )}
+                ))}
+              </div>
+            </div>
 
-            {/* STEP 2 */}
-            {step === 2 && (
-              <motion.div
-                key="step2"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-6"
-              >
-                <div className="mb-6">
-                  <h2 className="text-xl font-display font-bold text-brand-secondary flex items-center gap-2 mb-2">
-                    <Aperture className="w-5 h-5 text-brand-accent" />
-                    AI Evaluator Parameters
-                  </h2>
-                  <p className="text-sm text-brand-gray-dark">Instruct the AI on exactly what to measure during the Micro-Interview.</p>
-                </div>
-                
-                <div className="space-y-6">
-                  <div className="bg-[#F7F9F9] p-6 rounded-3xl border border-brand-gray-light/40 shadow-sm transition-all focus-within:ring-2 focus-within:ring-brand-primary/20">
-                    <label className="block text-sm font-bold text-brand-secondary mb-2 flex items-center gap-2">
-                      <Target className="w-5 h-5 text-brand-primary" />
-                      Expected Outcomes (6-12 Months)
-                    </label>
-                    <p className="text-xs text-brand-gray-dark mb-4">What must they achieve? The AI will test if they have a realistic plan.</p>
-                    <textarea 
-                      name="expected_outcomes" value={formData.expected_outcomes} onChange={handleChange}
-                      placeholder="e.g. Migrate the monolith to microservices within 6 months while maintaining 99.9% uptime."
-                      className="w-full bg-brand-white border border-brand-gray-light/50 rounded-2xl px-5 py-4 text-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all text-sm font-medium resize-none shadow-sm placeholder:text-brand-gray-light min-h-[120px] scrollbar-thin scrollbar-thumb-brand-gray-light"
-                    />
-                  </div>
+          </div>
 
-                  <div className="bg-[#F7F9F9] p-6 rounded-3xl border border-brand-gray-light/40 shadow-sm transition-all focus-within:ring-2 focus-within:ring-brand-primary/20">
-                    <label className="block text-sm font-bold text-brand-secondary mb-2 flex items-center gap-2">
-                      <Zap className="w-5 h-5 text-brand-accent" />
-                      Specific Skills (Non-Trainable)
-                    </label>
-                    <p className="text-xs text-brand-gray-dark mb-4">Skills they MUST possess on day one.</p>
-                    <textarea 
-                      name="specific_skills" value={formData.specific_skills} onChange={handleChange}
-                      placeholder="e.g. Expert-level Go, Kubernetes orchestration, and PostgreSQL performance tuning."
-                      className="w-full bg-brand-white border border-brand-gray-light/50 rounded-2xl px-5 py-4 text-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all text-sm font-medium resize-none shadow-sm placeholder:text-brand-gray-light min-h-[120px] scrollbar-thin scrollbar-thumb-brand-gray-light"
-                    />
-                  </div>
-
-                  <div className="bg-[#F7F9F9] p-6 rounded-3xl border border-brand-gray-light/40 shadow-sm transition-all focus-within:ring-2 focus-within:ring-brand-primary/20">
-                    <label className="block text-sm font-bold text-brand-secondary mb-2 flex items-center gap-2">
-                      <ShieldCheck className="w-5 h-5 text-red-500" />
-                      Compliance & Red Flags
-                    </label>
-                    <p className="text-xs text-brand-gray-dark mb-4">What should immediately disqualify them?</p>
-                    <textarea 
-                      name="compliance_criteria" value={formData.compliance_criteria} onChange={handleChange}
-                      placeholder="e.g. Lack of security-first mindset, unable to explain basic ACID properties."
-                      className="w-full bg-brand-white border border-brand-gray-light/50 rounded-2xl px-5 py-4 text-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all text-sm font-medium resize-none shadow-sm placeholder:text-brand-gray-light min-h-[120px] scrollbar-thin scrollbar-thumb-brand-gray-light"
-                    />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* STEP 3 */}
-            {step === 3 && (
-              <motion.div
-                key="step3"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-6"
-              >
-                <div className="text-center py-6">
-                  <div className="w-16 h-16 bg-brand-primary/20 text-brand-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="w-8 h-8" />
-                  </div>
-                  <h2 className="text-2xl font-display font-bold text-brand-secondary mb-2">Ready to Deploy</h2>
-                  <p className="text-sm text-brand-gray-dark max-w-md mx-auto">
-                    Review the role details below. Upon generating, the AI engine will construct a dynamic scenario specifically for this position.
-                  </p>
-                </div>
-
-                <div className="bg-[#F7F9F9] rounded-xl border border-brand-gray-light/50 p-6 space-y-4">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="block text-brand-gray-dark text-xs uppercase font-bold mb-1">Title</span>
-                      <span className="font-bold text-brand-secondary">{formData.title}</span>
-                    </div>
-                    <div>
-                      <span className="block text-brand-gray-dark text-xs uppercase font-bold mb-1">Location & Type</span>
-                      <span className="font-bold text-brand-secondary">{formData.location} • {formData.job_type}</span>
-                    </div>
-                  </div>
-                  <div className="pt-4 border-t border-brand-gray-light/30">
-                    <span className="block text-brand-gray-dark text-xs uppercase font-bold mb-1">Core Requirement</span>
-                    <span className="font-medium text-brand-secondary text-sm">{formData.expected_outcomes.substring(0, 100)}...</span>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-          </AnimatePresence>
-        </div>
-
-        {/* Footer Actions */}
-        <div className="p-6 bg-brand-gray-light/5 border-t border-brand-gray-light/30 flex items-center justify-between">
-          <button 
-            type="button" 
-            onClick={step === 1 ? () => router.back() : prevStep}
-            className="px-6 py-2.5 rounded-lg font-bold text-brand-gray-dark hover:text-brand-secondary hover:bg-brand-gray-light/20 transition-colors text-sm"
-          >
-            {step === 1 ? 'Cancel' : 'Back'}
-          </button>
-
-          {step < 3 ? (
-            <button 
-              type="button" 
-              onClick={nextStep}
-              className="px-6 py-2.5 rounded-lg font-bold bg-brand-secondary hover:bg-brand-dark-teal text-brand-white transition-all flex items-center gap-2 text-sm shadow-sm"
-            >
-              Continue
-              <ArrowRight className="w-4 h-4" />
+          <div className="flex justify-between pt-4">
+            <button onClick={prevStep} className="px-6 py-2.5 border border-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-50 text-sm">
+              Kembali
             </button>
-          ) : (
-            <button 
-              type="button" 
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="px-8 py-3 rounded-lg font-bold bg-brand-primary hover:bg-brand-dark-teal text-brand-white transition-all flex items-center gap-2 text-sm shadow-md disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Deploying...</>
-              ) : (
-                <><Aperture className="w-4 h-4" /> Generate AI Assessment</>
-              )}
+            <button onClick={nextStep}>
+              <TextRollButton text="Lanjut Ke Tinjauan & Deploy" variant="orange" size="md" />
             </button>
-          )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* STEP 3: REVIEW & DEPLOY */}
+      {step === 3 && (
+        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200/80 shadow-xs space-y-6">
+          <div className="border-b border-gray-100 pb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">3. Tinjau Ringkasan & Rilis Ujian AI</h2>
+              <p className="text-xs text-gray-500 mt-0.5">Konfirmasi seluruh parameter sebelum merilis simulasi ujian AI secara publik.</p>
+            </div>
+            <span className="text-xs font-mono text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Tahap 3 dari 3</span>
+          </div>
+
+          <div className="bg-gray-50 p-6 rounded-2xl space-y-6 text-sm text-gray-900 border border-gray-200/60">
+            {/* Grid Specs */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 border-b border-gray-200/60 pb-6">
+              <div>
+                <span className="text-xs text-gray-500 font-medium">Nama Posisi:</span>
+                <p className="font-bold text-gray-900 text-base">{formData.title}</p>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 font-medium">Tipe Pekerjaan:</span>
+                <p className="font-bold text-gray-900">{formData.job_type}</p>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 font-medium">Bahasa AI:</span>
+                <p className="font-bold text-gray-900">{formData.language}</p>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 font-medium">Lokasi:</span>
+                <p className="font-bold text-gray-900">{formData.location}</p>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 font-medium">Rentang Gaji:</span>
+                <p className="font-bold text-gray-900">{formData.salary_range}</p>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 font-medium">Batas Deadline:</span>
+                <p className="font-bold text-gray-900">{formData.deadline || 'Tanpa Batas'}</p>
+              </div>
+            </div>
+
+            {/* AI Evaluator Specs */}
+            <div className="grid grid-cols-2 gap-6 border-b border-gray-200/60 pb-6">
+              <div>
+                <span className="text-xs text-gray-500 font-medium">Interaction Limit (Maks Pertanyaan):</span>
+                <p className="font-bold text-[#F26522]">{formData.max_questions} Pertanyaan AI</p>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 font-medium">Nilai Minimum KKM Kelulusan:</span>
+                <p className="font-bold text-[#F26522]">{formData.kkm_score} / 100</p>
+              </div>
+            </div>
+
+            {/* Outcomes & Skills Lists */}
+            <div className="space-y-4">
+              <div>
+                <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider block mb-1">Target Hasil & Skenario:</span>
+                <ul className="list-disc list-inside text-xs text-gray-700 space-y-1">
+                  {expectedOutcomes.filter(i => i.trim()).map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider block mb-1">Keahlian Spesifik Yang Dievaluasi:</span>
+                <div className="flex flex-wrap gap-1.5 mt-1">
+                  {specificSkills.filter(i => i.trim()).map((skill, i) => (
+                    <span key={i} className="px-2.5 py-1 bg-white border border-gray-200 rounded-full text-xs font-semibold text-gray-800">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider block mb-1">Kriteria Kepatuhan & Kelulusan:</span>
+                <ul className="list-disc list-inside text-xs text-gray-700 space-y-1">
+                  {complianceCriteria.filter(i => i.trim()).map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+          </div>
+
+          {isSubmitting && <ThinkingIndicator statusText="Membuat ujian AI dan tautan evaluasi sakti..." />}
+
+          <div className="flex justify-between pt-4">
+            <button onClick={prevStep} disabled={isSubmitting} className="px-6 py-2.5 border border-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-50 text-sm disabled:opacity-50">
+              Kembali
+            </button>
+            <button onClick={handleSubmit} disabled={isSubmitting}>
+              <TextRollButton text={isSubmitting ? 'Membuat Ujian...' : 'Rilis Ujian AI Sekarang'} variant="orange" size="md" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

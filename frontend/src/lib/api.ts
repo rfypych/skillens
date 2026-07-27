@@ -59,22 +59,24 @@ const fetchWithInterceptor = async (endpoint: string, options: FetchOptions = {}
       errorMessage = response.statusText || 'An error occurred';
     }
     
-    // Auto-logout on 401, but try refresh first
+    // Auto-logout on 401, but try refresh first if authentication is required
     if (response.status === 401 && typeof window !== 'undefined') {
-      if (!_isRetry && endpoint !== '/auth/refresh' && endpoint !== '/auth/login') {
-        try {
-          await fetch(`${API_URL}/auth/refresh`, { method: 'POST', credentials: 'include' });
-          // If refresh succeeds, retry the original request
-          return fetchWithInterceptor(endpoint, options, true);
-        } catch {
-          // If refresh fails, redirect to login
+      if (requireAuth) {
+        if (!_isRetry && endpoint !== '/auth/refresh' && endpoint !== '/auth/login') {
+          try {
+            await fetch(`${API_URL}/auth/refresh`, { method: 'POST', credentials: 'include' });
+            // If refresh succeeds, retry the original request
+            return fetchWithInterceptor(endpoint, options, true);
+          } catch {
+            // If refresh fails, redirect to login
+            if (window.location.pathname !== '/login' && window.location.pathname !== '/signup' && window.location.pathname !== '/') {
+              window.location.href = '/login';
+            }
+          }
+        } else {
           if (window.location.pathname !== '/login' && window.location.pathname !== '/signup' && window.location.pathname !== '/') {
             window.location.href = '/login';
           }
-        }
-      } else {
-        if (window.location.pathname !== '/login' && window.location.pathname !== '/signup' && window.location.pathname !== '/') {
-          window.location.href = '/login';
         }
       }
     }

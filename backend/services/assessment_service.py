@@ -29,6 +29,10 @@ def apply_for_job(
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
 
+    from datetime import datetime, timezone
+    if job.deadline and datetime.now(timezone.utc) > job.deadline:
+        raise HTTPException(status_code=400, detail="Job posting expired")
+
     if current_user:
         user = current_user
     else:

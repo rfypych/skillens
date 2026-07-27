@@ -1,17 +1,8 @@
 'use client';
 
+import { Activity, Calendar, ChartBar, ChartLineData, Group, Idea, Security, Target } from '@carbon/icons-react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  BarChart3, 
-  ShieldAlert, 
-  Sparkles, 
-  Target, 
-  TrendingUp, 
-  Activity,
-  Users,
-  CalendarDays
-} from 'lucide-react';
 import { api } from '@/lib/api';
 
 export default function MetricsDashboard() {
@@ -22,11 +13,11 @@ export default function MetricsDashboard() {
     hiddenGems: 0,
     averageScore: 0,
     labels: {
-      'Highly Validated': 0,
-      'Solid Match': 0,
-      'Mismatch': 0,
-      'Likely Fabricated': 0,
-      'Pending': 0,
+      'Sangat Valid': 0,
+      'Cocok Solid': 0,
+      'Ketidakcocokan': 0,
+      'Terindikasi Palsu': 0,
+      'Menunggu': 0,
     },
     trendData: [] as { dateStr: string, label: string, count: number }[]
   });
@@ -39,11 +30,11 @@ export default function MetricsDashboard() {
         let gems = 0;
         let scoreSum = 0;
         let labels = {
-          'Highly Validated': 0,
-          'Solid Match': 0,
-          'Mismatch': 0,
-          'Likely Fabricated': 0,
-          'Pending': 0,
+          'Sangat Valid': 0,
+          'Cocok Solid': 0,
+          'Ketidakcocokan': 0,
+          'Terindikasi Palsu': 0,
+          'Menunggu': 0,
         };
 
         const trendMap = new Map();
@@ -52,7 +43,7 @@ export default function MetricsDashboard() {
           const d = new Date();
           d.setDate(d.getDate() - i);
           const dateStr = d.toISOString().split('T')[0];
-          const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          const label = d.toLocaleDateString('id-ID', { month: 'short', day: 'numeric' });
           trendMap.set(dateStr, { dateStr, label, count: 0 });
           trendArray.push(trendMap.get(dateStr));
         }
@@ -72,15 +63,13 @@ export default function MetricsDashboard() {
               if (label === 'Hidden Gem') gems++;
               if (!isCheat && score > 0) scoreSum += score;
 
-              const displayLabel = isCheat ? 'Likely Fabricated' : (label || 'Pending');
+              const displayLabel = isCheat ? 'Terindikasi Palsu' : (label === 'Highly Validated' ? 'Sangat Valid' : label === 'Solid Match' || label === 'Validated' ? 'Cocok Solid' : 'Menunggu');
               if (labels[displayLabel as keyof typeof labels] !== undefined) {
                 labels[displayLabel as keyof typeof labels]++;
               } else if (label === 'Hidden Gem') {
-                labels['Highly Validated']++;
-              } else if (label === 'Validated') {
-                labels['Solid Match']++;
+                labels['Sangat Valid']++;
               } else {
-                labels['Pending']++;
+                labels['Menunggu']++;
               }
             }
 
@@ -93,7 +82,7 @@ export default function MetricsDashboard() {
           });
         }
 
-        const validScoreCount = total - fraud - labels['Pending'];
+        const validScoreCount = total - fraud - labels['Menunggu'];
         
         setMetrics({
           totalProcessed: total,
@@ -113,39 +102,39 @@ export default function MetricsDashboard() {
     : 0;
 
   const kpis = [
-    { name: 'Total Evaluated', value: loading ? '...' : metrics.totalProcessed, icon: Users, color: 'text-brand-primary', bg: 'bg-brand-primary/10' },
-    { name: 'Average Evidence Score', value: loading ? '...' : metrics.averageScore, icon: Target, color: 'text-brand-secondary', bg: 'bg-brand-secondary/10' },
-    { name: 'Fraud Prevention Rate', value: loading ? '...' : `${fraudRate}%`, icon: ShieldAlert, color: 'text-red-600', bg: 'bg-red-50' },
-    { name: 'Hidden Gems Found', value: loading ? '...' : metrics.hiddenGems, icon: Sparkles, color: 'text-brand-accent', bg: 'bg-brand-accent/20' },
+    { name: 'Total Evaluasi', value: loading ? '...' : metrics.totalProcessed, icon: Group, color: 'text-[#F26522]', bg: 'bg-orange-50' },
+    { name: 'Rata-rata Skor Bukti', value: loading ? '...' : metrics.averageScore, icon: Target, color: 'text-gray-900', bg: 'bg-gray-100' },
+    { name: 'Tingkat Pencegahan Kecurangan', value: loading ? '...' : `${fraudRate}%`, icon: Security, color: 'text-red-700', bg: 'bg-red-50' },
+    { name: 'Kandidat Tersembunyi (Gem)', value: loading ? '...' : metrics.hiddenGems, icon: Idea, color: 'text-emerald-700', bg: 'bg-emerald-50' },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="w-full space-y-8 font-sans">
       <div>
-        <h1 className="text-3xl font-display font-bold text-brand-secondary tracking-tight flex items-center gap-3 mb-2">
-          <BarChart3 className="w-8 h-8 text-brand-primary" />
-          Analytics & Insights
+        <h1 className="text-3xl font-semibold text-gray-900 tracking-tight flex items-center gap-3 mb-1">
+          <ChartBar className="w-8 h-8 text-[#F26522]" />
+          Analitik & Laporan Performa
         </h1>
-        <p className="text-brand-gray-dark text-lg">AI performance and talent pipeline telemetry.</p>
+        <p className="text-gray-600 text-base font-normal">Telemetri alur kerja perekrutan dan performa evaluasi AI.</p>
       </div>
 
       {/* KPI Grid */}
-      <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 overflow-x-auto pb-4 md:pb-0 snap-x hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {kpis.map((kpi, idx) => (
           <motion.div
             key={kpi.name}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="min-w-[240px] md:min-w-0 flex-shrink-0 snap-center bg-brand-white p-6 rounded-2xl border border-brand-gray-light/30 shadow-sm"
+            className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md transition-all duration-300"
           >
             <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-xl ${kpi.bg}`}>
+              <div className={`p-3 rounded-full ${kpi.bg}`}>
                 <kpi.icon className={`w-6 h-6 ${kpi.color}`} />
               </div>
             </div>
-            <h3 className="text-4xl font-display font-bold text-brand-secondary mb-1">{kpi.value}</h3>
-            <p className="text-xs font-bold text-brand-gray-dark uppercase tracking-wider">{kpi.name}</p>
+            <h3 className="text-4xl font-semibold text-gray-900 mb-1 tracking-tight">{kpi.value}</h3>
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{kpi.name}</p>
           </motion.div>
         ))}
       </div>
@@ -157,31 +146,31 @@ export default function MetricsDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="lg:col-span-2 bg-brand-white p-8 rounded-2xl border border-brand-gray-light/30 shadow-sm"
+          className="lg:col-span-2 bg-white p-8 rounded-2xl border border-gray-200/80 shadow-xs"
         >
-          <h2 className="text-xl font-display font-bold text-brand-secondary mb-6 flex items-center gap-2">
-            <Activity className="w-5 h-5 text-brand-primary" />
-            Candidate Alignment Distribution
+          <h2 className="text-xl font-medium text-gray-900 mb-6 flex items-center gap-2">
+            <Activity className="w-5 h-5 text-[#F26522]" />
+            Distribusi Keselarasan Kandidat
           </h2>
           
           <div className="space-y-6">
             {Object.entries(metrics.labels).map(([label, count], idx) => {
-              if (label === 'Pending') return null;
+              if (label === 'Menunggu') return null;
               const total = metrics.totalProcessed || 1;
               const percentage = Math.round((count / total) * 100);
               
-              let barColor = 'bg-brand-primary';
-              if (label === 'Likely Fabricated') barColor = 'bg-red-500';
-              if (label === 'Mismatch') barColor = 'bg-yellow-500';
-              if (label === 'Solid Match') barColor = 'bg-blue-500';
+              let barColor = 'bg-[#F26522]';
+              if (label === 'Terindikasi Palsu') barColor = 'bg-red-500';
+              if (label === 'Ketidakcocokan') barColor = 'bg-amber-500';
+              if (label === 'Cocok Solid') barColor = 'bg-blue-600';
 
               return (
                 <div key={label}>
-                  <div className="flex justify-between text-sm font-bold text-brand-secondary mb-2">
+                  <div className="flex justify-between text-sm font-semibold text-gray-900 mb-2">
                     <span>{label}</span>
                     <span>{percentage}% ({count})</span>
                   </div>
-                  <div className="w-full h-3 bg-brand-gray-light/20 rounded-full overflow-hidden">
+                  <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
                       animate={{ width: `${percentage}%` }}
@@ -200,15 +189,15 @@ export default function MetricsDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-brand-secondary p-8 rounded-2xl border border-brand-dark-teal text-brand-white shadow-sm flex flex-col justify-between"
+          className="bg-gray-900 p-8 rounded-2xl text-white shadow-sm flex flex-col justify-between"
         >
           <div>
-            <div className="w-12 h-12 bg-brand-primary/20 rounded-xl flex items-center justify-center mb-6">
-              <TrendingUp className="w-6 h-6 text-brand-accent" />
+            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-6 border border-white/10">
+              <ChartLineData className="w-6 h-6 text-[#F26522]" />
             </div>
-            <h2 className="text-xl font-display font-bold mb-3">AI Engine ROI</h2>
-            <p className="text-brand-gray-light text-sm leading-relaxed">
-              By filtering out <strong>{metrics.fraudCount}</strong> fabricated or mismatching candidates automatically, the SkillLens AI has saved your engineering team approximately <strong>{metrics.fraudCount * 1.5} hours</strong> of technical screening time this quarter.
+            <h2 className="text-xl font-medium mb-3">Nilai Efisiensi Skillens AI</h2>
+            <p className="text-gray-300 text-sm leading-relaxed font-normal">
+              Dengan menyaring <strong className="text-white font-semibold">{metrics.fraudCount} kandidat</strong> terindikasi palsu secara otomatis, Skillens AI telah menghemat waktu tim Anda sekitar <strong className="text-white font-semibold">{metrics.fraudCount * 1.5} jam</strong> sesi wawancara teknis.
             </p>
           </div>
         </motion.div>
@@ -219,31 +208,31 @@ export default function MetricsDashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
-        className="bg-brand-white p-8 rounded-2xl border border-brand-gray-light/30 shadow-sm"
+        className="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-xs"
       >
-        <h2 className="text-xl font-display font-bold text-brand-secondary mb-8 flex items-center gap-2">
-          <CalendarDays className="w-5 h-5 text-brand-primary" />
-          Assessment Volume (Last 7 Days)
+        <h2 className="text-xl font-medium text-gray-900 mb-8 flex items-center gap-2">
+          <Calendar className="w-5 h-5 text-[#F26522]" />
+          Volume Evaluasi (7 Hari Terakhir)
         </h2>
         
-        <div className="flex items-end gap-2 h-48 w-full mt-4">
+        <div className="flex items-end gap-3 h-48 w-full mt-4">
           {metrics.trendData.map((day, idx) => {
             const maxCount = Math.max(...metrics.trendData.map(d => d.count), 1);
             const heightPercentage = (day.count / maxCount) * 100;
             return (
               <div key={day.dateStr} className="flex-1 h-full flex flex-col justify-end items-center group cursor-pointer">
-                <div className="w-full relative flex justify-center items-end h-full bg-brand-gray-light/5 hover:bg-brand-gray-light/10 transition-colors rounded-t-md max-w-[40px]">
-                  <div className="absolute -top-8 bg-brand-secondary text-brand-white text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="w-full relative flex justify-center items-end h-full bg-gray-50 hover:bg-gray-100 transition-colors rounded-t-xl max-w-[40px]">
+                  <div className="absolute -top-8 bg-gray-900 text-white text-xs font-bold py-1 px-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                     {day.count}
                   </div>
                   <motion.div
                     initial={{ height: 0 }}
-                    animate={{ height: day.count === 0 ? '4px' : `${heightPercentage}%` }}
+                    animate={{ height: day.count === 0 ? '6px' : `${heightPercentage}%` }}
                     transition={{ duration: 0.8, delay: 0.7 + (idx * 0.1) }}
-                    className="w-full bg-brand-primary/40 group-hover:bg-brand-primary rounded-t-md transition-colors"
+                    className="w-full bg-gray-900 group-hover:bg-[#F26522] rounded-t-xl transition-colors"
                   />
                 </div>
-                <span className="text-xs font-bold text-brand-gray-dark mt-3">{day.label}</span>
+                <span className="text-xs font-semibold text-gray-500 mt-3">{day.label}</span>
               </div>
             );
           })}

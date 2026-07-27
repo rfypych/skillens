@@ -1,0 +1,11 @@
+PASS: Admin signup: expected 200, got 200. Response: {'id': 2, 'email': 'admin@example.com', 'role': 'admin', 'full_name': 'Admin User', 'company_id': None, 'company_name': None, 'created_at': '2026-07-13T20:06:04', 'profile': None}
+PASS: Admin login: expected 200, got 200
+PASS: Create sub-account: expected 200, got 200. Response: {'id': 3, 'email': 'recruiter@example.com', 'role': 'recruiter', 'full_name': 'Recruiter User', 'company_id': None, 'company_name': None, 'created_at': '2026-07-13T20:06:08', 'profile': None}
+PASS: Recruiter creating sub-account: expected 403, got 403
+PASS: Admin list sub-accounts: expected 200 and >0 items, got 200
+PASS: Recruiter job creation: expected 200, got 200
+PASS: Admin get jobs: expected 200, got 200
+FAIL: Admin sees recruiter job, titles: []
+FAIL: Apply to future job: expected 200, got 404. Response: {'detail': 'Not Found'}
+PASS: Admin creates expired job
+FAIL: Apply to expired job: expected 400, got 404. Response: {'detail': 'Not Found'}

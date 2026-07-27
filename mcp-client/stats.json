@@ -1,0 +1,64 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "4 result(s) across 21st.dev (metadata only).\n\n### [component] Stats  [id: 5450]\nby meschacirung\nHere is Stats component\npreview: https://cdn.21st.dev/larsen66/stats/stats-metric/preview.1755258121204.png\ninstall: npx shadcn@latest add \"https://21st.dev/r/meschacirung/stats?api_key=$API_KEY_21ST\"\n\u2192 get the code: get_component({ id: 5450 })\n\n### [component] Stats Card  [id: 8321]\nby ravikatiyar162\nStats Card\nThis component is designed to display a single, key statistic. It includes a title, a primary value, an icon, and a percentage change indicator that is color-coded for positive or negative trends.\npreview: https://cdn.21st.dev/ravikatiyar162/stats-card-1/default/preview.1759173339031.png\ninstall: npx shadcn@latest add \"https://21st.dev/r/ravikatiyar162/stats-card-1?api_key=$API_KEY_21ST\"\n\u2192 get the code: get_component({ id: 8321 })\n\n### [component] Stats Card  [id: 7841]\nby kavikatiyar\nStats Card\nThis is a reusable card component designed to display a key metric, a descriptive summary, and a mini bar chart for trend visualization. It features animations that trigger when the component enters the view.\npreview: https://cdn.21st.dev/kavikatiyar/stats-card-1/default/preview.1758356287705.png\ninstall: npx shadcn@latest add \"https://21st.dev/r/kavikatiyar/stats-card-1?api_key=$API_KEY_21ST\"\n\u2192 get the code: get_component({ id: 7841 })\n\n### [component] Statistics Card 10  [id: 4245]\nby sean0205\nStatistics Card is designed to present key metrics and insights featuring unique layouts, data visualizations, and styling options. Perfect for dashboards, admin panels, and analytics pages.\npreview: https://cdn.21st.dev/sean0205/statistics-card-10/default/preview.1753168295511.png\ninstall: npx shadcn@latest add \"https://21st.dev/r/sean0205/statistics-card-10?api_key=$API_KEY_21ST\"\n\u2192 get the code: get_component({ id: 4245 })\n\nMetadata is free. get_component (the code) is the PAID step - on the free tier it uses your daily retrieval quota (see get_usage)."
+      }
+    ],
+    "structuredContent": {
+      "results": [
+        {
+          "type": "component",
+          "id": 5450,
+          "name": "Stats",
+          "description": "Here is Stats component",
+          "previewUrl": "https://cdn.21st.dev/larsen66/stats/stats-metric/preview.1755258121204.png",
+          "videoUrl": null,
+          "author": "meschacirung",
+          "authorImage": "https://vucvdpamtrjkzmubwlts.supabase.co/storage/v1/object/public/users/user_2tUYFzCDCVfrMrVC3TfB9DUBAyx/avatar.png",
+          "installCommand": "npx shadcn@latest add \"https://21st.dev/r/meschacirung/stats?api_key=$API_KEY_21ST\"",
+          "url": "https://21st.dev/@meschacirung/components/stats"
+        },
+        {
+          "type": "component",
+          "id": 8321,
+          "name": "Stats Card",
+          "description": "Stats Card\nThis component is designed to display a single, key statistic. It includes a title, a primary value, an icon, and a percentage change indicator that is color-coded for positive or negative trends.",
+          "previewUrl": "https://cdn.21st.dev/ravikatiyar162/stats-card-1/default/preview.1759173339031.png",
+          "videoUrl": "https://cdn.21st.dev/ravikatiyar162/stats-card-1/default/video.1759173339031.mp4",
+          "author": "ravikatiyar162",
+          "authorImage": "https://vucvdpamtrjkzmubwlts.supabase.co/storage/v1/object/public/users/user_2zMtrqo9RMaaIn4f8F2z3oeY497/avatar.png",
+          "installCommand": "npx shadcn@latest add \"https://21st.dev/r/ravikatiyar162/stats-card-1?api_key=$API_KEY_21ST\"",
+          "url": "https://21st.dev/@ravikatiyar162/components/stats-card-1"
+        },
+        {
+          "type": "component",
+          "id": 7841,
+          "name": "Stats Card",
+          "description": "Stats Card\nThis is a reusable card component designed to display a key metric, a descriptive summary, and a mini bar chart for trend visualization. It features animations that trigger when the component enters the view.",
+          "previewUrl": "https://cdn.21st.dev/kavikatiyar/stats-card-1/default/preview.1758356287705.png",
+          "videoUrl": "https://cdn.21st.dev/kavikatiyar/stats-card-1/default/video.1758356287706.mp4",
+          "author": "kavikatiyar",
+          "authorImage": "https://vucvdpamtrjkzmubwlts.supabase.co/storage/v1/object/public/users/user_32hbh6QoSVv3IJTJfaQWBLHRl6N/avatar.jpeg",
+          "installCommand": "npx shadcn@latest add \"https://21st.dev/r/kavikatiyar/stats-card-1?api_key=$API_KEY_21ST\"",
+          "url": "https://21st.dev/@kavikatiyar/components/stats-card-1"
+        },
+        {
+          "type": "component",
+          "id": 4245,
+          "name": "Statistics Card 10",
+          "description": "Statistics Card is designed to present key metrics and insights featuring unique layouts, data visualizations, and styling options. Perfect for dashboards, admin panels, and analytics pages.",
+          "previewUrl": "https://cdn.21st.dev/sean0205/statistics-card-10/default/preview.1753168295511.png",
+          "videoUrl": null,
+          "author": "sean0205",
+          "authorImage": "https://vucvdpamtrjkzmubwlts.supabase.co/storage/v1/object/public/users/user_2wpPk1CyWKAxM46S7k5UoCQhmqF/avatar.png",
+          "installCommand": "npx shadcn@latest add \"https://21st.dev/r/sean0205/statistics-card-10?api_key=$API_KEY_21ST\"",
+          "url": "https://21st.dev/@sean0205/components/statistics-card-10"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "sidebar": {
+    "dashboard": "Dasbor",
+    "interviews": "Wawancara",
+    "profile": "Profil",
+    "settings": "Pengaturan",
+    "logout": "Keluar",
+    "command_center": "Pusat Komando",
+    "active_roles": "Posisi Aktif",
+    "candidates": "Kandidat",
+    "analytics": "Analitik"
+  },
+  "header": {
+    "welcome_back": "Selamat datang kembali",
+    "candidate": "Kandidat",
+    "recruiter": "Perekrut"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "subtitle": "Kelola profil dan preferensi platform Anda.",
+    "manage_team": "Kelola Akun Tim",
+    "profile_info": "Informasi Profil",
+    "full_name": "Nama Lengkap",
+    "company_name": "Nama Perusahaan",
+    "email": "Alamat Email",
+    "email_locked": "Alamat email tidak dapat diubah.",
+    "save": "Simpan Perubahan",
+    "language": "Bahasa",
+    "language_desc": "Pilih bahasa yang Anda inginkan untuk aplikasi."
+  }
+}

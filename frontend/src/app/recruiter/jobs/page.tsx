@@ -1,12 +1,13 @@
 'use client';
 
+import { Add, CheckmarkOutline, CloseOutline, Copy, Edit, Group, OverflowMenuVertical, Portfolio, Time } from '@carbon/icons-react';
 import { motion } from 'framer-motion';
-import { Plus, Copy, CheckCircle2, Users, Clock, MoreVertical, Briefcase, Edit2, XCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast, Toaster } from 'react-hot-toast';
 import { api } from '@/lib/api';
+import TextRollButton from '@/components/TextRollButton';
 
 export default function ActiveRolesPage() {
   const [jobs, setJobs] = useState<any[]>([]);
@@ -15,7 +16,6 @@ export default function ActiveRolesPage() {
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const router = useRouter();
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: any) => {
       if (e.target && typeof e.target.closest === 'function') {
@@ -40,13 +40,13 @@ export default function ActiveRolesPage() {
   }, []);
 
   const handleArchive = async (jobId: number) => {
-    if (!confirm('Are you sure you want to close and archive this job? Candidates will no longer see this position.')) return;
+    if (!confirm('Apakah Anda yakin ingin menutup dan mengarsipkan posisi ini? Kandidat tidak akan dapat melihat posisi ini lagi.')) return;
     try {
       await api.delete(`/jobs/${jobId}`);
       setJobs(jobs.filter(j => j.id !== jobId));
-      toast.success('Job closed and archived.');
+      toast.success('Posisi berhasil ditutup dan diarsipkan.');
     } catch {
-      toast.error('An error occurred.');
+      toast.error('Terjadi kesalahan.');
     }
   };
 
@@ -54,35 +54,35 @@ export default function ActiveRolesPage() {
     const url = `${window.location.origin}/candidate/apply/${job.magic_link_token}`;
     navigator.clipboard.writeText(url);
     setCopiedId(job.id);
-    toast.success('Magic link copied!');
+    toast.success('Tautan sakti berhasil disalin!');
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const isExpired = (deadline: string) => {
+    if (!deadline) return false;
+    return new Date() > new Date(deadline);
+  };
+
   return (
-    <div className="max-w-7xl mx-auto space-y-10">
+    <div className="w-full space-y-8 font-sans">
       <Toaster position="top-right" />
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-brand-secondary mb-2 tracking-tight">Active Roles</h1>
-          <p className="text-brand-gray-dark text-lg">Manage open positions and generate assessment links.</p>
+          <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-2 tracking-tight">Posisi Aktif</h1>
+          <p className="text-gray-600 text-base font-normal">Kelola posisi terbuka dan buat tautan evaluasi kandidat.</p>
         </div>
         <Link href="/recruiter/jobs/new" className="w-full sm:w-auto">
-          <button className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 sm:px-5 sm:py-2.5 bg-brand-primary text-brand-white rounded-xl font-bold text-sm sm:text-base hover:bg-brand-dark-teal transition-all shadow-sm hover:-translate-y-0.5 active:translate-y-0">
-            <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-            Create New Role
-          </button>
+          <TextRollButton text="Buat Posisi Baru" variant="orange" size="md" />
         </Link>
       </div>
 
       {!loading && jobs.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-brand-gray-light/40 rounded-2xl bg-brand-white">
-          <Briefcase className="w-12 h-12 text-brand-gray-light mb-4" />
-          <h3 className="text-xl font-display font-bold text-brand-secondary mb-2">No Active Roles</h3>
-          <p className="text-brand-gray-dark text-sm max-w-sm mb-6">Create your first role to start evaluating candidates with AI-powered assessments.</p>
+        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-gray-200 rounded-2xl bg-white">
+          <Portfolio className="w-12 h-12 text-gray-400 mb-3" />
+          <h3 className="text-xl font-bold text-gray-900 mb-1">Belum Ada Posisi Aktif</h3>
+          <p className="text-gray-500 text-sm max-w-sm mb-6 font-normal">Buat posisi pertama Anda untuk mulai mengevaluasi kandidat dengan penilaian berbasis AI.</p>
           <Link href="/recruiter/jobs/new">
-            <button className="px-5 py-2.5 bg-brand-secondary text-brand-white rounded-xl font-bold hover:bg-brand-dark-teal transition-colors text-sm">
-              Create New Role
-            </button>
+            <TextRollButton text="Buat Posisi Baru" variant="orange" size="md" />
           </Link>
         </div>
       )}
@@ -94,81 +94,84 @@ export default function ActiveRolesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1, ease: 'easeOut' }}
-            className={`group bg-brand-white p-6 rounded-2xl border border-brand-gray-light/30 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full hover:border-brand-primary/40 relative ${openMenuId === job.id ? 'z-50' : 'z-10'}`}
+            className={`group bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col h-full relative ${openMenuId === job.id ? 'z-50' : 'z-10'}`}
           >
             <div className="flex justify-between items-start mb-4 relative z-20">
-              <span className="inline-flex px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider border bg-green-50 text-green-700 border-green-200 shadow-sm">
-                Active
+              <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border ${isExpired(job.deadline) ? 'bg-red-50 text-red-700 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
+                {isExpired(job.deadline) ? 'Kadaluarsa' : 'Aktif'}
               </span>
               <div className="relative action-menu-trigger" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setOpenMenuId(openMenuId === job.id ? null : job.id)}
-                  className={`p-1.5 rounded-lg transition-colors ${openMenuId === job.id ? 'bg-brand-gray-light/20 text-brand-secondary' : 'text-brand-gray-dark hover:text-brand-secondary hover:bg-brand-gray-light/10'}`}
+                  className={`p-2 rounded-full transition-colors ${openMenuId === job.id ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
                 >
-                  <MoreVertical className="w-5 h-5" />
+                  <OverflowMenuVertical className="w-5 h-5" />
                 </button>
                 
                 {openMenuId === job.id && (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95, y: -10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className="absolute right-0 mt-1 w-40 bg-brand-white border border-brand-gray-light/30 rounded-xl shadow-lg overflow-hidden py-1 z-50"
+                    className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden py-1 z-50"
                   >
-                    <Link href={`/recruiter/jobs/${job.id}`} onClick={() => setOpenMenuId(null)} className="w-full text-left px-4 py-2 text-sm text-brand-secondary hover:bg-brand-gray-light/10 transition-colors font-medium flex items-center gap-2">
-                      <Edit2 className="w-3.5 h-3.5" /> Edit Job
+                    <Link href={`/recruiter/jobs/${job.id}`} onClick={() => setOpenMenuId(null)} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors font-medium flex items-center gap-2">
+                      <Edit className="w-4 h-4 text-[#F26522]" /> Edit Posisi
                     </Link>
-                    <button onClick={() => { handleArchive(job.id); setOpenMenuId(null); }} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium flex items-center gap-2">
-                      <XCircle className="w-3.5 h-3.5" /> Close Role
+                    <button onClick={() => { handleArchive(job.id); setOpenMenuId(null); }} className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium flex items-center gap-2">
+                      <CloseOutline className="w-4 h-4" /> Tutup Posisi
                     </button>
                   </motion.div>
                 )}
               </div>
             </div>
 
-            <div className="relative z-10">
-              <h3 className="text-xl font-display font-bold text-brand-secondary mb-1 group-hover:text-brand-primary transition-colors">{job.title}</h3>
-              <div className="flex flex-wrap items-center gap-2 mb-4">
-                <span className="text-xs font-medium text-brand-gray-dark flex items-center gap-1">
-                  <Briefcase className="w-3.5 h-3.5" />{job.department || 'Engineering'}
+            <div className="relative z-10 mb-4">
+              <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-[#F26522] transition-colors">{job.title}</h3>
+              <div className="flex flex-wrap items-center gap-2 text-xs font-normal text-gray-500">
+                <span className="flex items-center gap-1">
+                  <Portfolio className="w-3.5 h-3.5 text-[#F26522]" />{job.department || 'Rekayasa'}
                 </span>
-                {job.location && <span className="text-xs font-medium text-brand-gray-dark">· {job.location}</span>}
-                {job.salary_range && <span className="text-xs font-medium text-brand-primary">· {job.salary_range}</span>}
+                {job.location && <span>· {job.location}</span>}
+                {job.salary_range && <span className="text-gray-900 font-semibold">· {job.salary_range}</span>}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 flex-1 relative z-10">
-              <div className="bg-brand-gray-light/5 rounded-xl p-3 sm:p-4 border border-brand-gray-light/20 group-hover:bg-brand-white group-hover:border-brand-primary/20 transition-colors">
-                <div className="flex items-center gap-1.5 sm:gap-2 text-brand-gray-dark mb-1 sm:mb-2">
-                  <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Candidates</span>
+            <div className="grid grid-cols-2 gap-3 mb-6 flex-1 relative z-10">
+              <div className="bg-gray-50/80 rounded-2xl p-4 border border-gray-100">
+                <div className="flex items-center gap-1.5 text-gray-500 mb-1">
+                  <Group className="w-3.5 h-3.5 text-[#F26522]" />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider">Kandidat</span>
                 </div>
-                <p className="text-xl sm:text-2xl font-bold text-brand-secondary">{job.candidate_count ?? 0}</p>
+                <p className="text-2xl font-bold text-gray-900">{job.candidate_count ?? 0}</p>
               </div>
-              <div className="bg-brand-gray-light/5 rounded-xl p-3 sm:p-4 border border-brand-gray-light/20 group-hover:bg-brand-white group-hover:border-brand-primary/20 transition-colors">
-                <div className="flex items-center gap-1.5 sm:gap-2 text-brand-gray-dark mb-1 sm:mb-2">
-                  <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Posted</span>
+              <div className="bg-gray-50/80 rounded-2xl p-4 border border-gray-100">
+                <div className="flex items-center gap-1.5 text-gray-500 mb-1">
+                  <Time className="w-3.5 h-3.5 text-[#F26522]" />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider">Dibuat</span>
                 </div>
-                <p className="text-xs sm:text-sm font-bold text-brand-secondary mt-1">
-                  {new Date(job.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                <p className="text-xs font-semibold text-gray-900 mt-1">
+                  {new Date(job.created_at).toLocaleDateString('id-ID', { month: 'short', day: 'numeric' })}
                 </p>
               </div>
             </div>
 
             <div className="mt-auto relative z-10">
-              <div className="text-xs font-bold uppercase tracking-wider text-brand-gray-dark mb-2">Assessment Magic Link</div>
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Tautan Penilaian AI</div>
               <button
                 onClick={() => copyMagicLink(job)}
-                className={`w-full flex items-center justify-center gap-2 py-2 sm:py-3 px-4 rounded-xl font-bold text-sm transition-all border ${
+                disabled={isExpired(job.deadline)}
+                className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full font-semibold text-xs transition-all border shadow-xs ${
                   copiedId === job.id
-                    ? 'bg-green-50 border-green-200 text-green-700'
-                    : 'bg-brand-white border-brand-gray-light hover:border-brand-primary text-brand-secondary hover:text-brand-primary hover:bg-brand-gray-light/10'
+                    ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                    : isExpired(job.deadline)
+                      ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-gray-900 hover:bg-gray-800 text-white border-transparent'
                 }`}
               >
                 {copiedId === job.id ? (
-                  <><CheckCircle2 className="w-4 h-4" />Copied to Clipboard</>
+                  <><CheckmarkOutline className="w-4 h-4" />Tersalin ke Papan Klip</>
                 ) : (
-                  <><Copy className="w-4 h-4" />Copy Magic Link</>
+                  <><Copy className="w-4 h-4" />{isExpired(job.deadline) ? 'Kadaluarsa' : 'Salin Tautan Evaluasi'}</>
                 )}
               </button>
             </div>
