@@ -1,33 +1,42 @@
-# Skillens
+# 🚀 Skillens AI Platform
 
-> Platform Perekrutan Berbasis Bukti Nyata (*Evidence-Based Hiring Platform*) & AI Case Study Simulation Engine.
+> **Skillens AI Platform** — Platform Penilai Bakat & Wawancara AI Interaktif Berbasis Conversational AI.
 
-## 🚀 Overview
-Skillens mengeliminasi klaim palsu resume dan bias perekrutan dengan menyimulasikan studi kasus interaktif cerdas berbasis AI untuk menguji kemampuan pemecahan masalah kandidat secara obyektif.
+[![Live App](https://img.shields.io/badge/Production-Live_App-orange?style=for-the-badge&logo=vercel)](https://skillens-app.vercel.app)
+[![API Docs](https://img.shields.io/badge/API-Swagger_Docs-blue?style=for-the-badge&logo=fastapi)](https://skillens-backend-production.up.railway.app/docs)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/rfypych/skillens)
+
+---
+
+## 🌟 Quick Links & Documentation
+
+- 📘 **[PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md)**: Dokumentasi Lengkap Aplikasi, Studi Kasus, Solusi Masalah, & Arsitektur Sistem.
+- 🔌 **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)**: Dokumentasi Lengkap REST API & Endpoint Swagger.
+
+---
+
+## 🌐 Live URLs
+
+- **Web Application**: [https://skillens-app.vercel.app](https://skillens-app.vercel.app)
+- **Backend API**: [https://skillens-backend-production.up.railway.app](https://skillens-backend-production.up.railway.app)
+- **Interactive Swagger Docs**: [https://skillens-backend-production.up.railway.app/docs](https://skillens-backend-production.up.railway.app/docs)
+
+---
+
+## 🔑 Demo Access Credentials
+
+| Role | Email | Password | Access |
+| :--- | :--- | :--- | :--- |
+| **Recruiter** | `recruiter@skillens.com` | `password123` | Buat Job, Atur KKM, Pantau Ranking Kandidat |
+| **Candidate** | `kandidat@skillens.com` | `password123` | Apply Job, Upload Resume PDF, Wawancara AI |
+
+---
 
 ## 🛠️ Tech Stack
-- **Frontend**: Next.js 16 (App Router / Turbopack), React, Tailwind CSS, Framer Motion, Carbon Icons, WebGL Shaders.
-- **Backend**: Python FastAPI, SQLAlchemy, SQLite/PostgreSQL, Pydantic, JWT Authentication.
-- **AI Engine**: Gemini AI / AI Evaluator Telemetry Engine.
 
-## 💻 Getting Started
+- **Frontend**: Next.js 16 (Turbopack), TypeScript, Tailwind CSS, WebGL Shaders (`shaders/react`), Lucide Icons. Hosted on **Vercel**.
+- **Backend**: FastAPI (Python), SQLAlchemy, Pydantic, OAuth2 / JWT, Slowapi. Hosted on **Railway**.
+- **AI Engine**: Llama 3.3 70B Versatile via **Groq Cloud API**.
+- **Database & Cache**: **Neon Cloud Serverless PostgreSQL** & **Upstash Cloud Redis**.
 
-### 1. Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### 2. Backend
-```bash
-cd backend
-python -m venv venv
-# On Windows:
-.\venv\Scripts\activate
-# On Unix:
-source venv/bin/activate
-
-pip install -r requirements.txt
-python main.py
-```
+© 2026 **Skillens AI Platform**. All Rights Reserved.
