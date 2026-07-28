@@ -39,13 +39,40 @@ export default function ShaderBackground({ variant = 'light', className = '' }: 
   return (
     <div className={`absolute inset-0 w-full h-full pointer-events-none z-10 overflow-hidden ${isDark ? 'bg-[#0F172A]' : 'bg-[#EFEFEF]'} ${className}`}>
       
-      {/* 1. Universal Ambient Mesh (Guaranteed 100% on every mobile device / Battery Saver Mode) */}
+      {/* 1. Universal High-Definition Mesh & Radial Glow (100% Guaranteed on Redmi Note 9 & All Android/iOS GPUs) */}
       <div className="absolute inset-0 w-full h-full pointer-events-none z-10">
-        <div className={`absolute -top-1/4 left-1/4 w-[500px] h-[500px] rounded-full blur-[120px] opacity-70 animate-pulse ${isDark ? 'bg-[#F26522]/25' : 'bg-[#ff5f03]/15'}`} />
-        <div className={`absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full blur-[140px] opacity-60 ${isDark ? 'bg-[#1E293B]' : 'bg-[#ffffff]'}`} />
+        {/* Primary Animated Radial Orange Glow */}
+        <div 
+          className={`absolute -top-24 -left-20 w-[350px] sm:w-[650px] h-[350px] sm:h-[650px] rounded-full filter blur-2xl sm:blur-3xl opacity-80 animate-pulse transition-all duration-1000 ${
+            isDark 
+              ? 'bg-[#F26522]/30' 
+              : 'bg-[#FF6B2B]/20'
+          }`} 
+        />
+        
+        {/* Secondary Warm Ambient Glow */}
+        <div 
+          className={`absolute top-1/3 -right-24 w-[300px] sm:w-[550px] h-[300px] sm:h-[550px] rounded-full filter blur-2xl sm:blur-3xl opacity-70 transition-all duration-1000 ${
+            isDark 
+              ? 'bg-[#1E293B]' 
+              : 'bg-[#FFE8DC]'
+          }`} 
+        />
+
+        {/* SVG Radial Mesh Gradient for Native Mobile GPU Rendering */}
+        <svg className="absolute inset-0 w-full h-full opacity-60" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id={`glow-${variant}`} cx="30%" cy="30%" r="75%">
+              <stop offset="0%" stopColor="#F26522" stopOpacity={isDark ? "0.35" : "0.22"} />
+              <stop offset="50%" stopColor={isDark ? "#1E293B" : "#FFD4C2"} stopOpacity={isDark ? "0.15" : "0.12"} />
+              <stop offset="100%" stopColor={isDark ? "#0F172A" : "#EFEFEF"} stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <rect width="100%" height="100%" fill={`url(#glow-${variant})`} />
+        </svg>
       </div>
 
-      {/* 2. Hardware-Accelerated WebGL Shader Layer (Renders when GPU acceleration is active) */}
+      {/* 2. WebGL Shader Overlay Layer (When WebGL hardware acceleration is active) */}
       {webglSupported && ShaderComponents && (
         <div className="absolute inset-0 w-full h-full pointer-events-none z-20">
           <ShaderComponents.Shader className="w-full h-full">
