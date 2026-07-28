@@ -29,15 +29,15 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#EFEFEF] text-gray-900 font-sans selection:bg-[#F26522] selection:text-white">
+    <div className="min-h-screen bg-[#EFEFEF] text-gray-900 font-sans selection:bg-[#F26522] selection:text-white overflow-x-hidden">
       
       {/* ========================================================================= */}
-      {/* SECTION 1: HERO (Full viewport height) */}
+      {/* SECTION 1: HERO (Full viewport height - Light Gray #EFEFEF) */}
       {/* ========================================================================= */}
-      <section className="relative w-full h-screen min-h-[700px] flex flex-col justify-between overflow-hidden bg-[#EFEFEF]">
+      <section className="relative w-full h-screen min-h-[700px] flex flex-col justify-between overflow-hidden bg-[#EFEFEF] text-gray-900">
         
         {/* Animated Shader Overlay */}
-        <ShaderBackground />
+        <ShaderBackground variant="light" />
 
         {/* --- NAVIGATION (z-20, relative) --- */}
         <header className="relative z-20 w-full max-w-[1440px] mx-auto p-3 sm:p-4 md:p-6">
@@ -45,7 +45,7 @@ export default function LandingPage() {
             
             {/* LEFT */}
             <div className="flex items-center gap-6">
-              <Link href="/" className="flex items-center gap-3 group">
+              <Link href="/" className="flex items-center gap-3 group pl-1">
                 <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-[10px] sm:text-[11px] font-bold tracking-tight group-hover:bg-[#F26522] transition-colors duration-300">
                   SK
                 </div>
@@ -61,7 +61,7 @@ export default function LandingPage() {
             </div>
 
             {/* RIGHT */}
-            <div className="hidden md:flex items-center gap-4 lg:gap-6">
+            <div className="hidden md:flex items-center gap-4 lg:gap-6 pr-1">
               <span className="text-[13px] text-gray-600 hidden lg:inline font-medium">
                 Menerima evaluasi kandidat Q1 2026
               </span>
@@ -108,12 +108,33 @@ export default function LandingPage() {
                 </button>
               </div>
 
-              <div className="flex flex-col gap-4 text-2xl font-medium text-gray-900 mb-8">
-                <a href="#about" onClick={() => setMobileMenuOpen(false)}>Platform</a>
-                <a href="#cases" onClick={() => setMobileMenuOpen(false)}>Studi Kasus</a>
-                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Masuk</Link>
-                <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>Daftar</Link>
+              <div className="flex flex-col gap-3.5 mb-6">
+                <a href="#about" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Platform</a>
+                <a href="#cases" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Studi Kasus</a>
+                
+                <div className="bg-[#F5F5F5] rounded-full p-1 pl-4 pr-1 border border-gray-200/80 flex items-center justify-between mt-2">
+                  <span className="text-xs font-medium text-gray-600">Belum punya akun?</span>
+                  <Link 
+                    href="/signup" 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-xs font-semibold text-white bg-gray-900 hover:bg-[#F26522] px-4 py-1.5 rounded-full transition-colors shadow-xs"
+                  >
+                    Daftar
+                  </Link>
+                </div>
+
+                <div className="bg-[#F5F5F5] rounded-full p-1 pl-4 pr-1 border border-gray-200/80 flex items-center justify-between">
+                  <span className="text-xs font-medium text-gray-600">Sudah punya akun?</span>
+                  <Link 
+                    href="/login" 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-xs font-semibold text-white bg-[#F26522] hover:bg-[#e05a1a] px-4 py-1.5 rounded-full transition-colors shadow-xs"
+                  >
+                    Masuk
+                  </Link>
+                </div>
               </div>
+
 
               <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="block w-full">
                 <TextRollButton
@@ -222,7 +243,6 @@ export default function LandingPage() {
 
             {/* DESKTOP (hidden lg:grid) */}
             <div className="hidden lg:grid grid-cols-[26%_1fr_48%] items-end gap-6 xl:gap-8">
-              {/* Left column */}
               <div className="self-end">
                 <img
                   src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260516_090123_74be96d4-9c1b-40cf-932a-96f4f4babed3.png&w=1280&q=85"
@@ -231,7 +251,6 @@ export default function LandingPage() {
                 />
               </div>
 
-              {/* Center column */}
               <div className="self-start flex flex-col items-end justify-between h-full py-2">
                 <p className="text-[16px] xl:text-[18px] leading-[1.65] font-medium text-gray-900 whitespace-normal xl:whitespace-nowrap">
                   Melalui studi kasus nyata,<br />
@@ -248,22 +267,22 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Right column */}
               <div className="self-end">
                 <img
                   src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260516_090133_c157d30b-a99a-4477-bec1-a446149ec3f2.png&w=1280&q=85"
                   alt="Skillens Studio 2"
-                  className="w-full aspect-[3/2] rounded-2xl object-cover"
+                  className="w-full aspect-[900/600] rounded-2xl object-cover"
                 />
               </div>
             </div>
 
           </div>
+
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 3: CASE STUDIES (Light gray background) */}
+      {/* SECTION 3: CASE STUDIES (Light gray background #F5F5F5) */}
       {/* ========================================================================= */}
       <section id="cases" className="bg-[#F5F5F5] pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28">
         <div className="max-w-[1440px] mx-auto">
@@ -274,19 +293,19 @@ export default function LandingPage() {
               2
             </div>
             <span className="text-[12px] sm:text-[13px] font-medium border border-gray-300 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-gray-900">
-              Studi Kasus & Proyek
+              Studi Kasus Terpilih
             </span>
           </div>
 
           {/* HEADING H2 */}
           <div className="px-5 sm:px-8 lg:px-12">
             <h2 className="text-[clamp(1.75rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.2rem)] font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 mb-10 sm:mb-14 lg:mb-16">
-              Hasil Evaluasi Kami
+              Studi Kasus Kami
             </h2>
           </div>
 
           {/* CARDS GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 lg:gap-7 px-5 sm:px-8 lg:px-12">
+          <div className="px-5 sm:px-8 lg:px-12 grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 lg:gap-7">
             
             {/* CARD 1 (Narrativ) */}
             <div className="flex flex-col">
@@ -300,7 +319,6 @@ export default function LandingPage() {
                   className="w-full h-full object-cover"
                 />
 
-                {/* Hover Button */}
                 <div className="absolute bottom-4 left-4 h-9 w-9 group-hover:w-[148px] bg-white rounded-full flex items-center justify-between px-2.5 transition-all duration-300 ease-in-out overflow-hidden shadow-md">
                   <span className="text-[13px] font-medium text-gray-900 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 pl-1">
                     Pelajari
@@ -334,7 +352,6 @@ export default function LandingPage() {
                   className="w-full h-full object-cover"
                 />
 
-                {/* Hover Button */}
                 <div className="absolute bottom-4 left-4 h-9 w-9 group-hover:w-[168px] bg-gray-900 rounded-full flex items-center justify-between px-2.5 transition-all duration-300 ease-in-out overflow-hidden shadow-md">
                   <span className="text-[13px] font-medium text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 pl-1">
                     Lihat Studi Kasus
@@ -359,19 +376,130 @@ export default function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* FOOTER */}
+      {/* SECTION 4: FOOTER (Clean Anti-Slop Design) */}
       {/* ========================================================================= */}
-      <footer className="bg-gray-900 text-white py-12 px-6 sm:px-12 border-t border-gray-800">
-        <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white text-gray-900 rounded-full flex items-center justify-center text-[10px] font-bold">
-              SK
+      <footer className="bg-gray-900 text-white pt-16 sm:pt-20 pb-12 px-6 sm:px-12 font-sans border-t border-gray-800">
+        <div className="max-w-[1440px] mx-auto space-y-12">
+          
+          {/* TOP STATEMENT ROW */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-gray-800/60">
+            <div className="max-w-2xl space-y-3">
+              <p className="text-xs font-semibold text-[#F26522] uppercase tracking-widest">
+                Skillens Studio
+              </p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight text-white leading-[1.12]">
+                Merekrut bakat tepat,<br />
+                <span className="text-[#F26522]">dengan kepastian mutlak.</span>
+              </h2>
             </div>
-            <span className="font-bold text-lg text-white">Skillens</span>
+
+            <div className="flex items-center gap-4">
+              <Link href="/signup">
+                <TextRollButton text="Mulai Simulasi Sekarang" variant="orange" size="md" />
+              </Link>
+            </div>
           </div>
-          <p className="text-xs text-gray-400 font-medium">
-            © {new Date().getFullYear()} Skillens Inc. Hak Cipta Dilindungi Undang-Undang.
-          </p>
+
+          {/* MAIN 4-COLUMN ARCHITECTURAL GRID */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10">
+            
+            {/* BRAND COLUMN */}
+            <div className="lg:col-span-2 space-y-4">
+              <Link href="/" className="inline-flex items-center gap-3">
+                <div className="w-9 h-9 bg-white text-gray-900 rounded-full flex items-center justify-center font-bold text-xs shadow-md">
+                  SK
+                </div>
+                <span className="text-2xl font-bold text-white tracking-tight">Skillens</span>
+              </Link>
+
+              <p className="text-sm text-gray-400 font-normal leading-relaxed max-w-sm">
+                Platform penilai kemampuan kandidat interaktif berbasis telemetri AI cerdas untuk mengeliminasi manipulasi resume.
+              </p>
+            </div>
+
+            {/* COLUMN 2: SOLUSI */}
+            <div className="space-y-3">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Solusi</p>
+              <ul className="space-y-2 text-sm font-normal text-gray-300">
+                <li>
+                  <a href="#about" className="hover:text-[#F26522] transition-colors inline-block">
+                    Simulasi Studi Kasus
+                  </a>
+                </li>
+                <li>
+                  <a href="#about" className="hover:text-[#F26522] transition-colors inline-block">
+                    Telemetri Perilaku AI
+                  </a>
+                </li>
+                <li>
+                  <a href="#cases" className="hover:text-[#F26522] transition-colors inline-block">
+                    Deteksi Kecurangan
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* COLUMN 3: PLATFORM */}
+            <div className="space-y-3">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Platform</p>
+              <ul className="space-y-2 text-sm font-normal text-gray-300">
+                <li>
+                  <Link href="/login" className="hover:text-[#F26522] transition-colors inline-block">
+                    Portal Rekruter
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/login" className="hover:text-[#F26522] transition-colors inline-block">
+                    Portal Kandidat
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/signup" className="hover:text-[#F26522] transition-colors inline-block">
+                    Registrasi Akun Baru
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* COLUMN 4: LEGAL */}
+            <div className="space-y-3">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Legal</p>
+              <ul className="space-y-2 text-sm font-normal text-gray-300">
+                <li>
+                  <a href="#" className="hover:text-[#F26522] transition-colors inline-block">
+                    Kebijakan Privasi
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-[#F26522] transition-colors inline-block">
+                    Syarat & Ketentuan
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+
+          {/* SPONSOR LOGOS FOOTER BAR */}
+          <div className="pt-6 border-t border-gray-800/80">
+            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 opacity-60 hover:opacity-100 transition-opacity">
+              <img src="/sponsors/jhic.png" alt="JHIC" className="h-5 w-auto grayscale object-contain" />
+              <img src="/sponsors/jagoanhosting.png" alt="Jagoan Hosting" className="h-5 w-auto grayscale object-contain" />
+              <img src="/sponsors/komdigi.png" alt="Komdigi" className="h-5 w-auto grayscale object-contain" />
+              <img src="/sponsors/garudaspark.png" alt="Garuda Spark" className="h-5 w-auto grayscale object-contain" />
+              <img src="/sponsors/ngalup.png" alt="Ngalup" className="h-5 w-auto grayscale object-contain" />
+            </div>
+          </div>
+
+          {/* BOTTOM COPYRIGHT BAR */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 font-medium pt-2">
+            <p>© {new Date().getFullYear()} Skillens Inc. Hak Cipta Dilindungi Undang-Undang.</p>
+            <div className="flex items-center gap-4 text-gray-400 font-normal">
+              <span>Platform Penilai Bakat AI Interaktif</span>
+            </div>
+          </div>
+
+
         </div>
       </footer>
 

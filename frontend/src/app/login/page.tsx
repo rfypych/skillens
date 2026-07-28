@@ -35,16 +35,14 @@ export default function LoginPage() {
       });
       
       const me = await api.get('/auth/me');
-      if (me.role === 'recruiter') {
-        router.push('/recruiter');
-      } else {
-        router.push('/candidate/dashboard');
-      }
+      const targetUrl = me.role === 'recruiter' ? '/recruiter' : '/candidate/dashboard';
+      window.location.href = targetUrl;
     } catch (err: any) {
       setError(err.message || 'Kredensial tidak valid. Silakan coba lagi.');
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-[#EFEFEF] font-sans overflow-x-hidden">
@@ -58,15 +56,16 @@ export default function LoginPage() {
             <Link href="/" className="p-2 text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/10">
               <ChevronLeft className="w-6 h-6" />
             </Link>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-white/80 font-medium">Belum punya akun?</span>
+            <div className="bg-white rounded-full p-1 pl-3.5 pr-1 shadow-sm border border-gray-200/60 flex items-center gap-2">
+              <span className="text-xs font-medium text-gray-700">Belum punya akun?</span>
               <Link 
                 href="/signup" 
-                className="text-xs font-semibold text-white bg-white/20 hover:bg-white/30 backdrop-blur-md px-4 py-1.5 rounded-full transition-colors border border-white/20 shadow-xs"
+                className="text-xs font-semibold text-white bg-gray-900 hover:bg-[#F26522] px-3.5 py-1.5 rounded-full transition-colors shadow-xs"
               >
                 Daftar
               </Link>
             </div>
+
           </div>
           <div className="relative z-20 w-full text-center my-auto pb-4">
             <Link href="/" className="inline-flex items-center gap-3">

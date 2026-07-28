@@ -18,6 +18,14 @@ const fetchWithInterceptor = async (endpoint: string, options: FetchOptions = {}
     requestHeaders.set('Content-Type', 'application/json');
   }
 
+  // Attach Bearer token from localStorage for robust cross-domain authentication
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    if (token && !requestHeaders.has('Authorization')) {
+      requestHeaders.set('Authorization', `Bearer ${token}`);
+    }
+  }
+
   const url = `${API_URL}${endpoint}`;
   
   const controller = new AbortController();
@@ -59,24 +67,12 @@ const fetchWithInterceptor = async (endpoint: string, options: FetchOptions = {}
       errorMessage = response.statusText || 'An error occurred';
     }
     
-    // Auto-logout on 401, but try refresh first if authentication is required
-    if (response.status === 401 && typeof window !== 'undefined') {
-      if (requireAuth) {
-        if (!_isRetry && endpoint !== '/auth/refresh' && endpoint !== '/auth/login') {
-          try {
-            await fetch(`${API_URL}/auth/refresh`, { method: 'POST', credentials: 'include' });
-            // If refresh succeeds, retry the original request
-            return fetchWithInterceptor(endpoint, options, true);
-          } catch {
-            // If refresh fails, redirect to login
-            if (window.location.pathname !== '/login' && window.location.pathname !== '/signup' && window.location.pathname !== '/') {
-              window.location.href = '/login';
-            }
-          }
-        } else {
-          if (window.location.pathname !== '/login' && window.location.pathname !== '/signup' && window.location.pathname !== '/') {
-            window.location.href = '/login';
-          }
+    // Auto-logout on 401 only if requireAuth is true and not login/signup
+    if (response.status === 401 && typeof window !== 'undefined' && requireAuth) {
+      if (endpoint !== '/auth/login' && endpoint !== '/auth/signup') {
+        localStorage.removeItem('token');
+        if (window.location.pathname !== '/login' && window.location.pathname !== '/signup' && window.location.pathname !== '/') {
+          window.location.href = '/login';
         }
       }
     }
@@ -87,7 +83,13 @@ const fetchWithInterceptor = async (endpoint: string, options: FetchOptions = {}
   // Check if response is json before parsing
   const contentType = response.headers.get('content-type');
   if (contentType && contentType.includes('application/json')) {
-    return response.json();
+    const resData = await response.json();
+    if (resData && typeof window !== 'undefined') {
+      if (resData.access_token) {
+        localStorage.setItem('token', resData.access_token);
+      }
+    }
+    return resData;
   }
   
   return response.text();

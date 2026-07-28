@@ -34,19 +34,20 @@ def login(request: Request, response: Response, form_data: OAuth2PasswordRequest
         key="access_token",
         value=token_data["access_token"],
         httponly=True,
-        secure=settings.ENVIRONMENT == "production",
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=1800
     )
     res.set_cookie(
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=settings.ENVIRONMENT == "production",
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=7 * 24 * 3600
     )
     return res
+
 
 @router.post("/refresh")
 def refresh_token_route(request: Request, db: Session = Depends(get_db)):

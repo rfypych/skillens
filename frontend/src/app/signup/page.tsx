@@ -46,16 +46,17 @@ export default function Signup() {
           requireAuth: false
         });
         await api.get('/auth/me');
-        router.push(role === 'recruiter' ? '/recruiter' : '/candidate/dashboard');
+        const targetUrl = role === 'recruiter' ? '/recruiter' : '/candidate/dashboard';
+        window.location.href = targetUrl;
       } catch {
-        router.push('/login');
+        window.location.href = '/login';
       }
     } catch (err: any) {
       setError(err.message || 'Terjadi kesalahan saat pendaftaran');
-    } finally {
       setLoading(false);
     }
   };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -73,15 +74,16 @@ export default function Signup() {
             <Link href="/" className="p-2 text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/10">
               <ChevronLeft className="w-6 h-6" />
             </Link>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-white/80 font-medium">Already have an account?</span>
+            <div className="bg-white rounded-full p-1 pl-3.5 pr-1 shadow-sm border border-gray-200/60 flex items-center gap-2">
+              <span className="text-xs font-medium text-gray-700">Sudah punya akun?</span>
               <Link 
                 href="/login" 
-                className="text-xs font-semibold text-white bg-white/20 hover:bg-white/30 backdrop-blur-md px-4 py-1.5 rounded-full transition-colors border border-white/20 shadow-xs"
+                className="text-xs font-semibold text-white bg-gray-900 hover:bg-[#F26522] px-3.5 py-1.5 rounded-full transition-colors shadow-xs"
               >
-                Sign in
+                Masuk
               </Link>
             </div>
+
           </div>
           <div className="relative z-20 w-full text-center my-auto pb-4">
             <Link href="/" className="inline-flex items-center gap-3">
