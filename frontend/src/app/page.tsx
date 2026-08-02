@@ -136,11 +136,6 @@ export default function LandingPage() {
         {/* HERO CONTENT */}
         <div className="relative z-20 flex-1 flex flex-col justify-end w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
           
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-gray-200/80 w-fit mb-6 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-[#F26522] animate-ping" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-gray-800">Evaluasi Bakat Berbasis Telemetri AI</span>
-          </div>
-
           <h1 className="text-[clamp(1.85rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.2rem)] font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 max-w-5xl">
             Merekrut tanpa tebakan.
             <br className="hidden sm:block" />

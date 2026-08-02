@@ -48,8 +48,8 @@ export function ServicesSection() {
         
         {/* HEADING */}
         <FadeIn delay={0} y={40} className="text-center mb-16 sm:mb-20 md:mb-24">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#F26522] border border-orange-200 bg-orange-50 rounded-full px-4 py-1.5 inline-block mb-4">
-            Kapabilitas Utama Platform
+          <span className="text-xs font-mono uppercase tracking-widest text-[#F26522] font-semibold block mb-3">
+            KAPABILITAS PLATFORM
           </span>
           <h2 className="text-[clamp(2.2rem,6vw,4rem)] font-bold text-gray-900 leading-[1.08] tracking-tight">
             Fitur Evaluasi Berstandar Industri

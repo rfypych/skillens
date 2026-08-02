@@ -70,12 +70,12 @@ export function ProjectsSection() {
       <div className="max-w-6xl mx-auto space-y-16">
         
         {/* HEADING */}
-        <div className="text-center space-y-3">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#F26522] border border-[#F26522]/30 bg-[#F26522]/10 rounded-full px-4 py-1.5 inline-block">
-            Skenario Evaluasi
+        <div className="text-center space-y-2">
+          <span className="text-xs font-mono uppercase tracking-widest text-[#F26522] font-semibold block">
+            SKENARIO EVALUASI
           </span>
           <h2 className="text-[clamp(2rem,5vw,3.8rem)] font-bold tracking-tight text-white leading-tight">
-            Demontrasi Studi Kasus Interaktif
+            Demonstrasi Studi Kasus Interaktif
           </h2>
         </div>
 
@@ -130,7 +130,7 @@ function StickyCard({ card, index, total, progress, targetScale }: StickyCardPro
               {card.number}
             </span>
             <div>
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#F26522] bg-[#F26522]/10 border border-[#F26522]/30 px-3 py-1 rounded-full">
+              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#F26522] block">
                 {card.badgeText}
               </span>
               <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white mt-1">
