@@ -5,6 +5,12 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { LiveProjectButton } from './LiveProjectButton';
 import { Terminal } from 'lucide-react';
 
+
+interface VisualBlock {
+  label: string;
+  lines: string[];
+}
+
 interface ScenarioCardData {
   number: string;
   category: string;
@@ -14,7 +20,7 @@ interface ScenarioCardData {
   badgeText: string;
   metrics: { label: string; value: string }[];
   codeSnippet?: string;
-  imageRight: string;
+  visual: VisualBlock[];
 }
 
 const SCENARIOS: ScenarioCardData[] = [
@@ -29,13 +35,16 @@ const SCENARIOS: ScenarioCardData[] = [
     metrics: [
       { label: 'THROUGHPUT', value: '5,000 req/s' },
       { label: 'LATENCY CAP', value: '< 45ms' },
-      { label: 'DETEKSI AI', value: '100% Presisi' },
+      { label: 'AI DETECTION', value: '< 0.3s' },
     ],
     codeSnippet: `// Live Telemetry Event Stream
 [SYS_ALERT] CPU Spiked to 98% on Node-04
 [PROBE_AI] Candidate executed DB connection pooling fix
 [STATUS] Latency stabilized to 32ms. Score: 98/100`,
-    imageRight: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1000&auto=format&fit=crop&q=80',
+    visual: [
+      { label: 'NODE STATUS', lines: ['Node-01  ██████████  12ms OK', 'Node-02  ████████░░  28ms OK', 'Node-03  ██████████  15ms OK', 'Node-04  ██████████  98% !! ALERT'] },
+      { label: 'PROBE ACTIVE', lines: ['AI monitoring 4 decision points', 'Pattern: Connection Pool Strategy', 'Risk flags: 0 detected'] },
+    ],
   },
   {
     number: '02',
@@ -54,7 +63,10 @@ const SCENARIOS: ScenarioCardData[] = [
 [HRD_PROBE] "Mengapa memilih metode cohort analysis ini?"
 [CANDIDATE] "Untuk memisahkan dampak seasonal dari UI drop."
 [EVALUATION] High Strategic Depth Identified.`,
-    imageRight: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=1000&auto=format&fit=crop&q=80',
+    visual: [
+      { label: 'FUNNEL TRACE', lines: ['Visit    → 12,400  (100%)', 'PDP      →  8,100  (65.3%)', 'Cart     →  4,200  (33.9%)', 'Checkout →  1,890  (15.2%)', 'Purchase →    808   (6.5%)'] },
+      { label: 'HYPOTHESIS', lines: ['H1: Checkout friction -34%', 'A/B: CTA placement test active', 'Confidence: 94.2%'] },
+    ],
   },
   {
     number: '03',
@@ -73,7 +85,10 @@ const SCENARIOS: ScenarioCardData[] = [
 [PROFILER] 120 Component Re-renders Detected
 [CANDIDATE_FIX] Applied React.memo & Context Selector
 [RESULT] Render Time Reduced from 140ms -> 8ms.`,
-    imageRight: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1000&auto=format&fit=crop&q=80',
+    visual: [
+      { label: 'RENDER TRACE', lines: ['Before  140ms  ████████████████████░', 'After     8ms  █░░░░░░░░░░░░░░░░░░░', 'Saves  132ms  ████████████████████'] },
+      { label: 'MEMORY', lines: ['Heap used: 24.1 MB → 19.4 MB', 'Leaks resolved: 3/3', 'GC pressure: LOW'] },
+    ],
   },
 ];
 
@@ -204,15 +219,21 @@ function StickyCard({ card, index, total, progress, targetScale }: StickyCardPro
             </div>
           </div>
 
-          {/* RIGHT 7 COLUMNS: Interactive Interface Showcase */}
-          <div className="md:col-span-7 h-full relative overflow-hidden rounded-xl bg-slate-950 border border-slate-800/90 group">
-            <img
-              src={card.imageRight}
-              alt={card.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"
-            />
-            {/* Simple dark-to-transparent gradient — no floating badge */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+          {/* RIGHT 7 COLUMNS: Purpose-built telemetry visual — no stock photos */}
+          <div className="md:col-span-7 h-full relative overflow-hidden rounded-xl bg-[#0A0E1A] border border-slate-800/90 p-4 flex flex-col gap-3 font-mono text-[11px]">
+            {card.visual.map((block, i) => (
+              <div key={i} className="flex-1 bg-slate-900/60 border border-slate-800/60 rounded-lg p-3">
+                <div className="text-[9px] uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse inline-block" />
+                  {block.label}
+                </div>
+                <div className="space-y-1">
+                  {block.lines.map((line, j) => (
+                    <div key={j} className="text-slate-300 leading-tight">{line}</div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
 
         </div>
