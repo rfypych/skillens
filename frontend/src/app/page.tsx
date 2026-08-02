@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ShieldCheck, Menu, X } from 'lucide-react';
+import { Clock, Menu, X, ShieldCheck, ArrowRight } from 'lucide-react';
 import ShaderBackground from '@/components/ShaderBackground';
+import TextRollButton from '@/components/TextRollButton';
 import { InfoSection } from '@/components/landing/InfoSection';
 import { BackedBySection } from '@/components/landing/BackedBySection';
 import { UseCasesSection } from '@/components/landing/UseCasesSection';
@@ -21,92 +22,92 @@ const HERO_TERMS = [
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [timeString, setTimeString] = useState('');
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const updateTime = () => {
+      const now = new Date();
+      setTimeString(
+        new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'Asia/Jakarta',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }).format(now)
+      );
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <div
-      className="flex flex-col bg-[#EFEFEF] selection:bg-[#F26522] selection:text-white overflow-x-clip"
-      style={{ fontFamily: "'Neue Haas Grotesk Display Pro 55 Roman', 'Neue Haas Grotesk Text Pro', ui-sans-serif, system-ui, sans-serif" }}
-    >
+    <div className="flex flex-col bg-[#EFEFEF] font-sans selection:bg-[#F26522] selection:text-white overflow-x-clip">
 
       {/* ================================================================ */}
       {/* SCREEN 1 — h-screen wrapper: Navbar (absolute) + Hero Card       */}
       {/* ================================================================ */}
       <div className="h-screen flex flex-col overflow-hidden">
 
-        {/* ── NAVBAR ── absolute, transparent, exact reference layout */}
-        <nav className="absolute top-0 left-0 right-0 z-20 px-6 py-5">
-          <div className="flex items-center justify-between max-w-[88rem] mx-auto">
+        {/* ── NAVBAR ── frosted glass pill — original style */}
+        <header className="absolute top-0 left-0 right-0 z-20 px-4 sm:px-6 py-4 sm:py-5">
+          <nav className="bg-white/85 backdrop-blur-md rounded-full px-2 py-1.5 shadow-sm border border-gray-200/60 flex items-center justify-between max-w-[88rem] mx-auto">
 
-            {/* LEFT: Logo + wordmark */}
-            <Link href="/" className="flex items-center gap-3 text-2xl font-medium tracking-tight text-gray-900">
-              <img src="/skillens-logo-text.png" alt="Skillens" className="h-8 w-auto object-contain" />
-            </Link>
-
-            {/* CENTER: Nav links — hidden below md */}
-            <div className="hidden md:flex items-center gap-8 text-base text-gray-700 font-medium">
-              <a href="#about" className="hover:text-gray-900 transition-colors duration-200">Solusi</a>
-              <a href="#scenarios" className="hover:text-gray-900 transition-colors duration-200">Skenario</a>
-              <Link href="/recruiter" className="hover:text-gray-900 transition-colors duration-200">Rekruiter</Link>
-              <Link href="/login" className="hover:text-gray-900 transition-colors duration-200">Masuk</Link>
+            {/* LEFT: Logo + Links */}
+            <div className="flex items-center gap-6">
+              <Link href="/" className="flex items-center pl-2">
+                <img src="/skillens-logo-text.png" alt="Skillens" className="h-8 sm:h-9 w-auto object-contain" />
+              </Link>
+              <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
+                <a href="#about" className="hover:text-gray-900 transition-colors duration-200">Solusi</a>
+                <a href="#scenarios" className="hover:text-gray-900 transition-colors duration-200">Skenario</a>
+                <Link href="/recruiter" className="hover:text-gray-900 transition-colors duration-200">Rekruiter</Link>
+                <Link href="/login" className="hover:text-gray-900 transition-colors duration-200">Masuk</Link>
+              </div>
             </div>
 
-            {/* RIGHT: CTA pill — reference style: bg-black text-white rounded-full */}
-            <div className="hidden md:flex items-center gap-4">
-              <Link
-                href="/signup"
-                className="bg-gray-900 text-white text-base font-medium px-7 py-2.5 rounded-full hover:bg-[#F26522] transition-colors duration-200"
-              >
-                Mulai Gratis
+            {/* RIGHT: Clock + CTA */}
+            <div className="hidden md:flex items-center gap-4 pr-1">
+              <div className="flex items-center gap-1.5 text-[13px] text-gray-500 font-medium">
+                <Clock size={13} />
+                <span>{timeString || '08:00'} WIB</span>
+              </div>
+              <Link href="/signup">
+                <TextRollButton text="Mulai Evaluasi" variant="dark" size="sm" />
               </Link>
             </div>
 
             {/* Mobile toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center"
+              className="md:hidden w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center mr-1 focus:outline-none"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
-          </div>
-        </nav>
+          </nav>
+        </header>
 
         {/* Mobile overlay menu */}
         {mobileMenuOpen && (
-          <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/70 backdrop-blur-sm">
-            <div className="bg-[#EFEFEF] rounded-t-3xl mx-0 p-8 shadow-2xl">
-              <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-300/60">
-                <img src="/skillens-logo-text.png" alt="Skillens" className="h-7 w-auto object-contain" />
-                <button onClick={() => setMobileMenuOpen(false)} className="w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center">
+          <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/60 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl mx-3 mb-3 p-6 shadow-2xl animate-in slide-in-from-bottom duration-300 ease-out">
+              <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                <span className="flex items-center gap-2 text-xs text-gray-500">
+                  <Clock size={13} />{timeString} WIB
+                </span>
+                <button onClick={() => setMobileMenuOpen(false)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
                   <X size={16} />
                 </button>
               </div>
-              <div className="flex flex-col gap-4 mb-8">
-                {['Solusi', 'Skenario', 'Rekruiter', 'Masuk'].map((item) => (
-                  <a
-                    key={item}
-                    href={item === 'Solusi' ? '#about' : item === 'Skenario' ? '#scenarios' : item === 'Masuk' ? '/login' : '/recruiter'}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-2xl font-medium tracking-tight text-gray-900"
-                    style={{ letterSpacing: '-0.02em' }}
-                  >
-                    {item}
-                  </a>
-                ))}
+              <div className="flex flex-col gap-3.5 mb-6">
+                <a href="#about" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Solusi</a>
+                <a href="#scenarios" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Skenario</a>
+                <Link href="/recruiter" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Rekruiter</Link>
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Masuk</Link>
               </div>
-              <Link
-                href="/signup"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-center bg-gray-900 text-white text-base font-medium px-7 py-3.5 rounded-full hover:bg-[#F26522] transition-colors duration-200"
-              >
-                Mulai Gratis
+              <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="block w-full">
+                <TextRollButton text="Mulai Evaluasi" variant="orange" size="lg" className="w-full justify-between" />
               </Link>
             </div>
           </div>

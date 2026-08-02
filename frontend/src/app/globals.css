@@ -12,8 +12,8 @@
   --color-brand-gray-dark: #586D73;
   --color-brand-white: #FEFEFE;
 
-  --font-sans: 'Neue Haas Grotesk Display Pro 55 Roman', 'Neue Haas Grotesk Text Pro', var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Neue Haas Grotesk Display Pro 55 Roman', var(--font-space-grotesk);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-space-grotesk);
   --font-mono: var(--font-jetbrains-mono);
 }
 
