@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import ShaderBackground from '@/components/ShaderBackground';
 import TextRollButton from '@/components/TextRollButton';
-import { MarqueeSection } from '@/components/landing/MarqueeSection';
 import { AboutSection } from '@/components/landing/AboutSection';
 import { ServicesSection } from '@/components/landing/ServicesSection';
 import { ProjectsSection } from '@/components/landing/ProjectsSection';
@@ -175,12 +174,7 @@ export default function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 2: MARQUEE SHOWCASE (Two Horizontal Scrolling Rows on Scroll) */}
-      {/* ========================================================================= */}
-      <MarqueeSection />
-
-      {/* ========================================================================= */}
-      {/* SECTION 3: ABOUT / MISSION (3D Corner Assets & Scroll Animated Text) */}
+      {/* SECTION 2: ABOUT / MISSION (3D Corner Assets & Scroll Animated Text) */}
       {/* ========================================================================= */}
       <div id="about">
         <AboutSection />
