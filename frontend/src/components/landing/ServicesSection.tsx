@@ -1,6 +1,7 @@
 'use client';
 
-import { FadeIn } from './FadeIn';
+// Hallmark · no eyebrow, no centered-everything, no hover-scale-animation on every row
+// Layout: left-aligned heading + horizontal rule list (editorial list rhythm)
 
 interface CapabilityItem {
   number: string;
@@ -19,7 +20,7 @@ const CAPABILITIES: CapabilityItem[] = [
     number: '02',
     title: 'Telemetri Perilaku Anti-Cheat',
     description:
-      'Melacak kecepatan ketikan, ritme jeda berpikir, dan pola aktivitas jendela perbandingan tanpa mengganggu kenyamanan pengerjaan kandidat.',
+      'Melacak kecepatan ketikan, ritme jeda berpikir, dan pola aktivitas jendela tanpa mengganggu kenyamanan pengerjaan kandidat.',
   },
   {
     number: '03',
@@ -37,48 +38,47 @@ const CAPABILITIES: CapabilityItem[] = [
     number: '05',
     title: 'Laporan Analitik Presisi',
     description:
-      'Skor kompetensi multidimensi dan analisis indikator risiko kecurangan yang komprehensif dalam satu dasbor rekruiter siap pakai.',
+      'Skor kompetensi multidimensi dan analisis indikator risiko kecurangan dalam satu dasbor rekruiter siap pakai.',
   },
 ];
 
 export function ServicesSection() {
   return (
-    <section className="bg-white text-gray-900 rounded-t-[40px] sm:rounded-t-[50px] md:rounded-t-[60px] px-5 sm:px-8 md:px-12 py-20 sm:py-24 md:py-32 relative z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.04)] border-t border-gray-200/80">
+    <section
+      id="capabilities"
+      className="bg-white text-gray-900 rounded-t-[40px] sm:rounded-t-[50px] md:rounded-t-[60px] px-5 sm:px-8 md:px-12 py-20 sm:py-24 md:py-32 relative z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.04)] border-t border-gray-200/80"
+    >
       <div className="max-w-5xl mx-auto">
-        
-        {/* HEADING */}
-        <FadeIn delay={0} y={40} className="text-center mb-16 sm:mb-20 md:mb-24">
-          <span className="text-xs font-mono uppercase tracking-widest text-[#F26522] font-semibold block mb-3">
-            KAPABILITAS PLATFORM
-          </span>
-          <h2 className="text-[clamp(2.2rem,6vw,4rem)] font-bold text-gray-900 leading-[1.08] tracking-tight">
-            Fitur Evaluasi Berstandar Industri
+
+        {/* LEFT-ALIGNED HEADING — no eyebrow, no centred */}
+        <div className="mb-16 sm:mb-20 md:mb-24 max-w-2xl">
+          <h2 className="text-[clamp(2rem,5.5vw,3.8rem)] font-semibold text-gray-900 leading-[1.06] tracking-[-0.03em]">
+            Lima lapisan evaluasi yang tidak bisa diakali.
           </h2>
-        </FadeIn>
+        </div>
 
-        {/* LIST OF CAPABILITIES */}
-        <div className="flex flex-col border-t border-gray-200/80">
-          {CAPABILITIES.map((item, index) => (
-            <FadeIn key={item.number} delay={index * 0.1} y={30}>
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-12 py-8 sm:py-10 md:py-12 border-b border-gray-200/80 group hover:bg-[#F9FAFB] transition-colors px-4 sm:px-6 rounded-2xl">
-                
-                {/* NUMBER LEFT */}
-                <div className="font-bold text-[#F26522] text-[clamp(2.5rem,6vw,5rem)] leading-none select-none group-hover:scale-105 transition-transform">
-                  {item.number}
-                </div>
-
-                {/* CONTENT RIGHT */}
-                <div className="flex flex-col gap-2 max-w-2xl">
-                  <h3 className="font-semibold text-gray-900 text-[clamp(1.1rem,2vw,1.75rem)] tracking-tight">
-                    {item.title}
-                  </h3>
-                  <p className="font-normal text-gray-600 leading-relaxed text-[clamp(0.9rem,1.4vw,1.15rem)]">
-                    {item.description}
-                  </p>
-                </div>
-
+        {/* HORIZONTAL RULE LIST */}
+        <div className="flex flex-col border-t border-gray-200">
+          {CAPABILITIES.map((item) => (
+            <div
+              key={item.number}
+              className="flex flex-col md:flex-row items-start md:items-baseline gap-4 md:gap-12 py-8 sm:py-10 border-b border-gray-200"
+            >
+              {/* NUMBER */}
+              <div className="font-mono text-sm text-gray-400 tabular-nums w-8 shrink-0 pt-0.5">
+                {item.number}
               </div>
-            </FadeIn>
+
+              {/* TITLE + DESCRIPTION */}
+              <div className="flex flex-col sm:flex-row sm:items-baseline gap-3 sm:gap-8 flex-1">
+                <h3 className="font-semibold text-gray-900 text-[clamp(1rem,1.8vw,1.4rem)] tracking-tight shrink-0 sm:min-w-[260px] md:min-w-[300px]">
+                  {item.title}
+                </h3>
+                <p className="font-normal text-gray-500 leading-relaxed text-[clamp(0.9rem,1.3vw,1.05rem)]">
+                  {item.description}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
 

@@ -1,41 +1,53 @@
 'use client';
 
-import { FadeIn } from './FadeIn';
-import { AnimatedText } from './AnimatedText';
 import { ContactButton } from './ContactButton';
 
+// Hallmark · redesign · no eyebrow, left-biased layout, no centred-everything
 export function AboutSection() {
-  const aboutParagraph =
-    "Dengan mengombinasikan simulasi studi kasus interaktif dan telemetri perilaku AI, Skillens mentransformasi alur saringan kandidat menjadi pengalaman evaluasi otomatis yang transparan, presisi, dan bebas dari rekayasa generatif AI. Mari bangun standar perekrutan terbaik bersama kami!";
-
   return (
-    <section className="bg-[#F8F9FA] min-h-[80vh] relative flex flex-col justify-center items-center px-5 sm:px-8 md:px-10 py-24 sm:py-32 overflow-hidden text-gray-900 z-10 border-b border-gray-200/80">
-      
-      {/* CENTER CONTENT CONTAINER */}
-      <div className="relative z-10 w-full max-w-4xl flex flex-col items-center text-center gap-8 sm:gap-10">
-        
-        {/* EYEBROW TEXT */}
-        <span className="text-xs font-mono uppercase tracking-widest text-[#F26522] font-semibold">
-          SOLUSI & MISI
-        </span>
+    <section
+      id="about"
+      className="bg-[#F5F4F0] border-b border-gray-200/60 relative z-10 overflow-hidden"
+    >
+      {/* Two-column asymmetric layout */}
+      <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-[1fr_2fr] min-h-[480px]">
 
-        {/* SECTION HEADING */}
-        <FadeIn delay={0} y={30}>
-          <h2 className="text-[clamp(2.2rem,6vw,4.2rem)] font-bold text-gray-900 leading-[1.08] tracking-tight max-w-3xl">
-            Mentransformasi Rekrutmen dengan <span className="text-[#F26522]">Kepastian Mutlak.</span>
-          </h2>
-        </FadeIn>
+        {/* LEFT — thin column, label + thin rule */}
+        <div className="hidden md:flex flex-col justify-between px-10 lg:px-14 py-20 border-r border-gray-200/60">
+          <div>
+            <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-gray-400 mb-6">
+              Rekrutmen Era Baru
+            </div>
+            <div className="w-8 h-px bg-[#F26522]" />
+          </div>
 
-        {/* SCROLL-ANIMATED CHARACTER-BY-CHARACTER TEXT */}
-        <div className="max-w-[720px] text-gray-800 font-medium leading-relaxed text-[clamp(1.1rem,2vw,1.35rem)]">
-          <AnimatedText text={aboutParagraph} />
+          <div className="text-[11px] font-mono text-gray-400 tabular-nums tracking-wider">
+            Skillens<br />2025
+          </div>
         </div>
 
-        {/* CONTACT / CTA BUTTON */}
-        <FadeIn delay={0.2} y={20} className="mt-4">
-          <ContactButton label="Mulai Evaluasi Sekarang" href="/signup" />
-        </FadeIn>
+        {/* RIGHT — main content, left-aligned */}
+        <div className="flex flex-col justify-center px-6 sm:px-10 md:px-14 lg:px-20 py-20 md:py-24 gap-8 max-w-3xl">
 
+          <h2 className="text-[clamp(2rem,5vw,3.6rem)] font-semibold text-gray-900 leading-[1.06] tracking-[-0.03em]">
+            Kandidat terbaik kalah bukan karena kemampuan —<br className="hidden sm:block" />
+            <span className="text-[#F26522]"> tapi karena cara rekrutmen yang salah.</span>
+          </h2>
+
+          <div className="space-y-4 text-[clamp(1rem,1.6vw,1.2rem)] text-gray-600 font-normal leading-relaxed max-w-2xl">
+            <p>
+              CV yang memoles bisa dibuat AI dalam hitungan detik. Wawancara berbasis hafalan tidak membedakan kandidat yang benar-benar kompeten. Rekruiter menghabiskan waktu mengevaluasi orang yang salah.
+            </p>
+            <p>
+              Skillens mengganti semua itu dengan simulasi studi kasus interaktif yang mengukur eksekusi nyata — bukan performa di atas kertas — dilengkapi telemetri perilaku yang mendeteksi ketergantungan AI secara diam-diam.
+            </p>
+          </div>
+
+          <div className="pt-2">
+            <ContactButton label="Mulai Evaluasi Sekarang" href="/signup" />
+          </div>
+
+        </div>
       </div>
     </section>
   );

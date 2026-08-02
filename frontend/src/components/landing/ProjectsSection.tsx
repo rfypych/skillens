@@ -3,7 +3,7 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { LiveProjectButton } from './LiveProjectButton';
-import { Terminal, ShieldCheck, Activity, Cpu, ArrowUpRight } from 'lucide-react';
+import { Terminal } from 'lucide-react';
 
 interface ScenarioCardData {
   number: string;
@@ -91,13 +91,10 @@ export function ProjectsSection() {
     >
       <div className="max-w-6xl mx-auto space-y-16">
         
-        {/* HEADING */}
-        <div className="text-center space-y-2">
-          <span className="text-xs font-mono uppercase tracking-widest text-[#F26522] font-semibold block">
-            SKENARIO EVALUASI
-          </span>
-          <h2 className="text-[clamp(2rem,5vw,3.8rem)] font-bold tracking-tight text-white leading-tight">
-            Demonstrasi Studi Kasus Interaktif
+        {/* HEADING — no eyebrow, left-aligned */}
+        <div className="max-w-2xl">
+          <h2 className="text-[clamp(2rem,5vw,3.8rem)] font-semibold tracking-[-0.03em] text-white leading-[1.06]">
+            Lihat bagaimana evaluasi yang sesungguhnya bekerja.
           </h2>
         </div>
 
@@ -214,17 +211,8 @@ function StickyCard({ card, index, total, progress, targetScale }: StickyCardPro
               alt={card.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"
             />
-            {/* Dark Gradient Overlay for Sharp Telemetry Look */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
-            
-            {/* Telemetry Badge Overlay */}
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between bg-slate-900/90 backdrop-blur-md border border-slate-800 p-3 rounded-lg text-xs font-mono">
-              <div className="flex items-center gap-2 text-slate-200">
-                <ShieldCheck size={16} className="text-[#F26522]" />
-                <span className="font-medium text-slate-100">Evaluasi Real-Time Telemetri AI</span>
-              </div>
-              <span className="text-[11px] text-slate-400 font-semibold uppercase">Skillens Probe v2.4</span>
-            </div>
+            {/* Simple dark-to-transparent gradient — no floating badge */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
           </div>
 
         </div>

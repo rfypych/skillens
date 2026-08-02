@@ -192,121 +192,43 @@ export default function LandingPage() {
       {/* ========================================================================= */}
       {/* SECTION 6: FOOTER */}
       {/* ========================================================================= */}
-      <footer className="bg-gray-900 text-white pt-16 sm:pt-20 pb-12 px-6 sm:px-12 font-sans border-t border-gray-800 relative z-40">
-        <div className="max-w-[1440px] mx-auto space-y-12">
-          
-          {/* TOP STATEMENT ROW */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-gray-800/60">
-            <div className="max-w-2xl space-y-3">
-              <p className="text-xs font-semibold text-[#F26522] uppercase tracking-widest">
-                Skillens Platform
-              </p>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight text-white leading-[1.12]">
-                Merekrut bakat tepat,<br />
-                <span className="text-[#F26522]">dengan kepastian mutlak.</span>
-              </h2>
-            </div>
+      <footer className="bg-gray-900 text-white px-6 sm:px-12 pt-20 pb-10 relative z-40 border-t border-gray-800">
+        <div className="max-w-[1440px] mx-auto">
 
-            <div className="flex items-center gap-4">
+          {/* STATEMENT — Ft5: closes the page with intent */}
+          <div className="border-b border-gray-800 pb-16 mb-10">
+            <h2 className="text-[clamp(2.2rem,6vw,5rem)] font-semibold tracking-[-0.04em] text-white leading-[1.02] max-w-4xl">
+              Rekrut berdasarkan bukti,<br />
+              bukan asumsi.
+            </h2>
+            <div className="mt-8">
               <Link href="/signup">
-                <TextRollButton text="Mulai Simulasi Sekarang" variant="orange" size="md" />
+                <TextRollButton text="Mulai Gratis" variant="orange" size="lg" />
               </Link>
             </div>
           </div>
 
-          {/* MAIN 4-COLUMN ARCHITECTURAL GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10">
-            
-            {/* BRAND COLUMN */}
-            <div className="lg:col-span-2 space-y-4">
-              <Link href="/" className="inline-flex items-center gap-3">
-                <img src="/skillens-logo-text.png" alt="Skillens" className="h-9 w-auto brightness-0 invert object-contain" />
-              </Link>
+          {/* BOTTOM ROW */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            {/* BRAND */}
+            <Link href="/" className="inline-flex items-center">
+              <img src="/skillens-logo-text.png" alt="Skillens" className="h-8 w-auto brightness-0 invert object-contain" />
+            </Link>
 
-              <p className="text-sm text-gray-400 font-normal leading-relaxed max-w-sm">
-                Platform penilai kemampuan kandidat interaktif berbasis telemetri AI cerdas untuk mengeliminasi manipulasi resume.
-              </p>
+            {/* SPONSOR LOGOS */}
+            <div className="flex flex-wrap items-center gap-5 opacity-40">
+              <img src="/sponsors/jhic.png" alt="JHIC" className="h-4 w-auto grayscale object-contain" />
+              <img src="/sponsors/jagoanhosting.png" alt="Jagoan Hosting" className="h-4 w-auto grayscale object-contain" />
+              <img src="/sponsors/komdigi.png" alt="Komdigi" className="h-4 w-auto grayscale object-contain" />
+              <img src="/sponsors/garudaspark.png" alt="Garuda Spark" className="h-4 w-auto grayscale object-contain" />
+              <img src="/sponsors/ngalup.png" alt="Ngalup" className="h-4 w-auto grayscale object-contain" />
             </div>
 
-            {/* COLUMN 2: SOLUSI */}
-            <div className="space-y-3">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Solusi</p>
-              <ul className="space-y-2 text-sm font-normal text-gray-300">
-                <li>
-                  <a href="#about" className="hover:text-[#F26522] transition-colors inline-block">
-                    Simulasi Studi Kasus
-                  </a>
-                </li>
-                <li>
-                  <a href="#capabilities" className="hover:text-[#F26522] transition-colors inline-block">
-                    Telemetri Perilaku AI
-                  </a>
-                </li>
-                <li>
-                  <a href="#scenarios" className="hover:text-[#F26522] transition-colors inline-block">
-                    Deteksi Kecurangan
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* COLUMN 3: PLATFORM */}
-            <div className="space-y-3">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Platform</p>
-              <ul className="space-y-2 text-sm font-normal text-gray-300">
-                <li>
-                  <Link href="/login" className="hover:text-[#F26522] transition-colors inline-block">
-                    Portal Rekruter
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/login" className="hover:text-[#F26522] transition-colors inline-block">
-                    Portal Kandidat
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/signup" className="hover:text-[#F26522] transition-colors inline-block">
-                    Registrasi Akun Baru
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* COLUMN 4: LEGAL */}
-            <div className="space-y-3">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Legal</p>
-              <ul className="space-y-2 text-sm font-normal text-gray-300">
-                <li>
-                  <a href="#" className="hover:text-[#F26522] transition-colors inline-block">
-                    Kebijakan Privasi
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-[#F26522] transition-colors inline-block">
-                    Syarat & Ketentuan
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-          </div>
-
-          {/* SPONSOR LOGOS FOOTER BAR */}
-          <div className="pt-6 border-t border-gray-800/80">
-            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 opacity-60 hover:opacity-100 transition-opacity">
-              <img src="/sponsors/jhic.png" alt="JHIC" className="h-5 w-auto grayscale object-contain" />
-              <img src="/sponsors/jagoanhosting.png" alt="Jagoan Hosting" className="h-5 w-auto grayscale object-contain" />
-              <img src="/sponsors/komdigi.png" alt="Komdigi" className="h-5 w-auto grayscale object-contain" />
-              <img src="/sponsors/garudaspark.png" alt="Garuda Spark" className="h-5 w-auto grayscale object-contain" />
-              <img src="/sponsors/ngalup.png" alt="Ngalup" className="h-5 w-auto grayscale object-contain" />
-            </div>
-          </div>
-
-          {/* BOTTOM COPYRIGHT BAR */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 font-medium pt-2">
-            <p>© {new Date().getFullYear()} Skillens Inc. Hak Cipta Dilindungi Undang-Undang.</p>
-            <div className="flex items-center gap-4 text-gray-400 font-normal">
-              <span>Platform Penilai Bakat AI Interaktif</span>
+            {/* MINIMAL LINKS */}
+            <div className="flex items-center gap-6 text-xs text-gray-500">
+              <Link href="/login" className="hover:text-gray-300 transition-colors">Masuk</Link>
+              <Link href="/signup" className="hover:text-gray-300 transition-colors">Daftar</Link>
+              <span>© {new Date().getFullYear()} Skillens</span>
             </div>
           </div>
 
