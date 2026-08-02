@@ -44,3 +44,16 @@
     border-color: rgba(175, 188, 190, 0.3);
   }
 }
+
+.hero-heading {
+  background: linear-gradient(180deg, #8E97A0 0%, #F1F5F9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-heading-orange {
+  background: linear-gradient(180deg, #FF9E66 0%, #F26522 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+

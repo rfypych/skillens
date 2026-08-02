@@ -1,10 +1,14 @@
 'use client';
 
-import { Clock, Menu, X, ArrowRight, ShieldCheck, Cpu, Target, FileText, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Clock, Menu, X, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import ShaderBackground from '@/components/ShaderBackground';
 import TextRollButton from '@/components/TextRollButton';
+import { MarqueeSection } from '@/components/landing/MarqueeSection';
+import { AboutSection } from '@/components/landing/AboutSection';
+import { ServicesSection } from '@/components/landing/ServicesSection';
+import { ProjectsSection } from '@/components/landing/ProjectsSection';
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -29,7 +33,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#EFEFEF] text-gray-900 font-sans selection:bg-[#F26522] selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#0C0C0C] text-gray-900 font-sans selection:bg-[#F26522] selection:text-white overflow-x-clip">
       
       {/* ========================================================================= */}
       {/* SECTION 1: HERO (Full viewport height - Light Gray #EFEFEF) */}
@@ -50,9 +54,9 @@ export default function LandingPage() {
               </Link>
 
               <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-900">
-                <a href="#problems" className="hover:text-gray-500 transition-colors duration-300">Tantangan Rekrutmen</a>
-                <a href="#solutions" className="hover:text-gray-500 transition-colors duration-300">Solusi Platform</a>
-                <a href="#cases" className="hover:text-gray-500 transition-colors duration-300">Studi Kasus</a>
+                <a href="#about" className="hover:text-gray-500 transition-colors duration-300">Solusi Kami</a>
+                <a href="#capabilities" className="hover:text-gray-500 transition-colors duration-300">Kapabilitas</a>
+                <a href="#scenarios" className="hover:text-gray-500 transition-colors duration-300">Skenario</a>
                 <Link href="/login" className="hover:text-gray-500 transition-colors duration-300">Masuk</Link>
               </div>
             </div>
@@ -102,9 +106,9 @@ export default function LandingPage() {
               </div>
 
               <div className="flex flex-col gap-3.5 mb-6">
-                <a href="#problems" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Tantangan Rekrutmen</a>
-                <a href="#solutions" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Solusi Platform</a>
-                <a href="#cases" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Studi Kasus</a>
+                <a href="#about" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Solusi Kami</a>
+                <a href="#capabilities" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Kapabilitas</a>
+                <a href="#scenarios" onClick={() => setMobileMenuOpen(false)} className="text-xl font-medium text-gray-900 px-2 py-1">Skenario</a>
                 
                 <div className="bg-[#F5F5F5] rounded-full p-1 pl-4 pr-1 border border-gray-200/80 flex items-center justify-between mt-2">
                   <span className="text-xs font-medium text-gray-600">Belum punya akun?</span>
@@ -171,298 +175,42 @@ export default function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 2: THE UNSPOKEN RECRUITMENT REALITY (Masalah Yang Diselesaikan) */}
+      {/* SECTION 2: MARQUEE SHOWCASE (Two Horizontal Scrolling Rows on Scroll) */}
       {/* ========================================================================= */}
-      <section id="problems" className="bg-white pt-20 sm:pt-28 lg:pt-32 pb-20 sm:pb-24 overflow-hidden border-b border-gray-100">
-        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
-          
-          {/* SECTION HEADER */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-7 h-7 rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">
-              1
-            </div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 border border-gray-200 rounded-full px-4 py-1.5">
-              Realita Rekrutmen Modern
-            </span>
-          </div>
-
-          <h2 className="text-[clamp(1.75rem,4vw,3.2rem)] font-medium leading-[1.12] tracking-[-0.02em] text-gray-900 max-w-4xl mb-14">
-            Ketika resume yang sempurna dan tes hafalan tradisional tak lagi menjamin kompetensi kandidat.
-          </h2>
-
-          {/* PROBLEM CARDS GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
-            {/* CARD 1: Resume Inflation */}
-            <div className="bg-[#F9F9F9] rounded-2xl p-8 border border-gray-200/80 shadow-xs flex flex-col justify-between hover:border-gray-300 transition-all">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mb-6">
-                  <FileText size={24} />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 tracking-tight">
-                  Inflasi Resume & Generatif AI
-                </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  Kandidat kini mudah mempercantik CV menggunakan LLM. Kata kunci dipoles sempurna, tetapi gagap saat dihadapkan pada skenario pemecahan masalah teknis di dunia nyata.
-                </p>
-              </div>
-              <div className="mt-8 pt-4 border-t border-gray-200/60 flex items-center gap-2 text-xs font-medium text-red-600">
-                <AlertTriangle size={14} />
-                <span>Resiko: Wrong Hire Cost yang Tinggi</span>
-              </div>
-            </div>
-
-            {/* CARD 2: Multiple Choice Obsolescence */}
-            <div className="bg-[#F9F9F9] rounded-2xl p-8 border border-gray-200/80 shadow-xs flex flex-col justify-between hover:border-gray-300 transition-all">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-6">
-                  <Target size={24} />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 tracking-tight">
-                  Ujian Teori Pilihan Ganda Usang
-                </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  Tes hafalan teori mudah dikerjakan otomatis oleh AI atau dihafal dari internet. Nilai tinggi pada tes kuis konvensional tidak mencerminkan daya tanggap kandidat di lapangan.
-                </p>
-              </div>
-              <div className="mt-8 pt-4 border-t border-gray-200/60 flex items-center gap-2 text-xs font-medium text-amber-600">
-                <AlertTriangle size={14} />
-                <span>Resiko: Skor Tinggi, Eksekusi Rendah</span>
-              </div>
-            </div>
-
-            {/* CARD 3: Naive Anti-Cheat Bypass */}
-            <div className="bg-[#F9F9F9] rounded-2xl p-8 border border-gray-200/80 shadow-xs flex flex-col justify-between hover:border-gray-300 transition-all">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-[#F26522]/10 text-[#F26522] flex items-center justify-center mb-6">
-                  <Cpu size={24} />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 tracking-tight">
-                  Pengawasan Kaku yang Mudah Di-bypass
-                </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  Sistem anti-cheat lama sekadar memblokir klik kanan atau copy-paste—yang menyulitkan kandidat jujur tetapi mudah diakali extension browser. Perlu arsitektur telemetri yang cerdas.
-                </p>
-              </div>
-              <div className="mt-8 pt-4 border-t border-gray-200/60 flex items-center gap-2 text-xs font-medium text-[#F26522]">
-                <AlertTriangle size={14} />
-                <span>Resiko: False Sense of Security</span>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
+      <MarqueeSection />
 
       {/* ========================================================================= */}
-      {/* SECTION 3: THE SKILLENS PARADIGM SHIFT (Solusi & Pendekatan Kita) */}
+      {/* SECTION 3: ABOUT / MISSION (3D Corner Assets & Scroll Animated Text) */}
       {/* ========================================================================= */}
-      <section id="solutions" className="bg-[#F5F5F5] pt-20 sm:pt-28 lg:pt-32 pb-20 sm:pb-24">
-        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
-          
-          {/* SECTION HEADER */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-7 h-7 rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">
-              2
-            </div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 border border-gray-300 rounded-full px-4 py-1.5">
-              Pendekatan Skillens
-            </span>
-          </div>
-
-          <h2 className="text-[clamp(1.75rem,4vw,3.2rem)] font-medium leading-[1.12] tracking-[-0.02em] text-gray-900 max-w-4xl mb-16">
-            Beralih dari prasangka resume ke bukti otentik melalui 3 pilar teknologi evaluasi cerdas.
-          </h2>
-
-          {/* 3 PILLARS ARCHITECTURE */}
-          <div className="space-y-8">
-            
-            {/* PILAR 1: Interactive Scenario Simulation */}
-            <div className="bg-white rounded-3xl p-8 lg:p-12 border border-gray-200/80 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-7 space-y-4">
-                <span className="text-xs font-bold text-[#F26522] uppercase tracking-widest">Pilar 01 — Simulasi Studi Kasus</span>
-                <h3 className="text-2xl sm:text-3xl font-semibold text-gray-900 tracking-tight">
-                  Simulasi Studi Kasus Interaktif Berbasis Skenario
-                </h3>
-                <p className="text-gray-600 text-base leading-relaxed font-normal">
-                  Kandidat ditempatkan dalam ruang kerja simulasi nyata. AI Evaluator bertindak sebagai mitra atau klien yang mengajukan problem bisnis kontekstual, mengukur daya analisis, pengambilan keputusan, dan adaptabilitas candidates secara instan.
-                </p>
-                <div className="pt-2 flex flex-wrap gap-2">
-                  <span className="text-xs bg-gray-100 text-gray-800 font-medium px-3 py-1 rounded-full">Real-world Problem Solving</span>
-                  <span className="text-xs bg-gray-100 text-gray-800 font-medium px-3 py-1 rounded-full">Scenario-based Branching</span>
-                </div>
-              </div>
-              <div className="lg:col-span-5">
-                <img 
-                  src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260516_090123_74be96d4-9c1b-40cf-932a-96f4f4babed3.png&w=1280&q=85" 
-                  alt="Skillens Interactive Scenario Simulation" 
-                  className="rounded-2xl object-cover w-full h-[240px] border border-gray-100 shadow-xs"
-                />
-              </div>
-            </div>
-
-            {/* PILAR 2: Behavioral Telemetry & Defense in Depth */}
-            <div className="bg-white rounded-3xl p-8 lg:p-12 border border-gray-200/80 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-5 order-2 lg:order-1">
-                <img 
-                  src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260516_090133_c157d30b-a99a-4477-bec1-a446149ec3f2.png&w=1280&q=85" 
-                  alt="Skillens Telemetry & Defense in Depth" 
-                  className="rounded-2xl object-cover w-full h-[240px] border border-gray-100 shadow-xs"
-                />
-              </div>
-              <div className="lg:col-span-7 space-y-4 order-1 lg:order-2">
-                <span className="text-xs font-bold text-[#F26522] uppercase tracking-widest">Pilar 02 — Telemetri Perilaku & Integrity Score</span>
-                <h3 className="text-2xl sm:text-3xl font-semibold text-gray-900 tracking-tight">
-                  Arsitektur Keamanan Berlapis (Defense in Depth)
-                </h3>
-                <p className="text-gray-600 text-base leading-relaxed font-normal">
-                  Sistem memasang proteksi awal (Barrier) sekaligus **Telemetry Trap** di latar belakang. Kecepatan ketikan, rasio backspace, pemicu tab-switch, dan event copy-paste dipantau secara ilmiah tanpa mengganggu UX kandidat jujur.
-                </p>
-                <div className="pt-2 flex flex-wrap gap-2">
-                  <span className="text-xs bg-gray-100 text-gray-800 font-medium px-3 py-1 rounded-full">Keystroke Dynamics</span>
-                  <span className="text-xs bg-gray-100 text-gray-800 font-medium px-3 py-1 rounded-full">Time-to-Response Matrix</span>
-                  <span className="text-xs bg-gray-100 text-gray-800 font-medium px-3 py-1 rounded-full">Adaptive Probing</span>
-                </div>
-              </div>
-            </div>
-
-            {/* PILAR 3: Post-Test HRD Prompt Recommendation */}
-            <div className="bg-white rounded-3xl p-8 lg:p-12 border border-gray-200/80 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-7 space-y-4">
-                <span className="text-xs font-bold text-[#F26522] uppercase tracking-widest">Pilar 03 — Panduan Wawancara HRD</span>
-                <h3 className="text-2xl sm:text-3xl font-semibold text-gray-900 tracking-tight">
-                  Rekomendasi Pertanyaan Wawancara Otomatis
-                </h3>
-                <p className="text-gray-600 text-base leading-relaxed font-normal">
-                  Berdasarkan audit trail dan telemetri simulasi kandidat, Skillens secara otomatis menghasilkan *custom interview questions* untuk interviewer. HRD bisa memverifikasi langsung bagian-bagian penting saat sesi wawancara tatap muka.
-                </p>
-                <div className="pt-2 flex flex-wrap gap-2">
-                  <span className="text-xs bg-gray-100 text-gray-800 font-medium px-3 py-1 rounded-full">Tailored Interview Prompts</span>
-                  <span className="text-xs bg-gray-100 text-gray-800 font-medium px-3 py-1 rounded-full">Empirical Audit Log</span>
-                </div>
-              </div>
-              <div className="lg:col-span-5">
-                <div className="bg-[#0F172A] rounded-2xl p-6 text-white border border-gray-800 space-y-3 font-mono text-xs shadow-md">
-                  <div className="flex items-center justify-between text-gray-400 pb-2 border-b border-gray-800">
-                    <span>INTERVIEWER PROMPT GENERATOR</span>
-                    <CheckCircle2 size={14} className="text-emerald-400" />
-                  </div>
-                  <p className="text-[#FF6B2B] font-semibold">Q1: "Jelaskan alasan arsitektur di Turn 3 saat menghadapi penderasan trafik."</p>
-                  <p className="text-gray-400 leading-relaxed font-sans text-xs">
-                    Rekomendasi diverifikasi karena kandidat menunjukkan jeda respons 12 detik pada penanganan studi kasus skala besar.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
+      <div id="about">
+        <AboutSection />
+      </div>
 
       {/* ========================================================================= */}
-      {/* SECTION 4: CASE STUDIES & PROVEN RESULTS */}
+      {/* SECTION 4: SERVICES / CAPABILITIES (White BG, 01..05 Large Numbers) */}
       {/* ========================================================================= */}
-      <section id="cases" className="bg-white pt-20 sm:pt-28 lg:pt-32 pb-20 sm:pb-28">
-        <div className="max-w-[1440px] mx-auto">
-          
-          {/* BADGE ROW */}
-          <div className="px-5 sm:px-8 lg:px-12 flex items-center gap-3 mb-6">
-            <div className="w-7 h-7 rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">
-              3
-            </div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 border border-gray-200 rounded-full px-4 py-1.5">
-              Demo Skenario Platform
-            </span>
-          </div>
-
-          {/* HEADING H2 */}
-          <div className="px-5 sm:px-8 lg:px-12">
-            <h2 className="text-[clamp(1.75rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.2rem)] font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 mb-14">
-              Seperti Apa Platform Ini Bekerja
-            </h2>
-          </div>
-
-          {/* CARDS GRID */}
-          <div className="px-5 sm:px-8 lg:px-12 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-            
-            {/* CARD 1 (Narrativ) */}
-            <div className="flex flex-col">
-              <div className="relative aspect-[329/246] rounded-2xl overflow-hidden bg-[#1a1d2e] group cursor-pointer">
-                <video
-                  src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260516_122702_390f5305-8719-41d5-ae80-d23ab3796c28.mp4"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-
-                <div className="absolute bottom-4 left-4 h-9 w-9 group-hover:w-[148px] bg-white rounded-full flex items-center justify-between px-2.5 transition-all duration-300 ease-in-out overflow-hidden shadow-md">
-                  <span className="text-[13px] font-medium text-gray-900 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 pl-1">
-                    Lihat Demo
-                  </span>
-                  <div className="w-5 h-5 flex items-center justify-center text-gray-900 transform group-hover:rotate-0 -rotate-45 transition-transform duration-300">
-                    <ArrowRight size={14} />
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-[14px] text-gray-600 mt-4 leading-relaxed font-normal">
-                Demonstrasi alur rekruiter — mulai dari buat lowongan, buat soal studi kasus, hingga baca laporan telemetri kandidat.
-              </p>
-              <h3 className="text-[16px] font-semibold text-gray-900 mt-1">
-                Demo: Sisi Rekruiter
-              </h3>
-            </div>
-
-            {/* CARD 2 (Luminar) */}
-            <div className="flex flex-col">
-              <div className="relative aspect-square rounded-2xl overflow-hidden bg-[#6b6b6b] group cursor-pointer">
-                <video
-                  src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260516_123323_f909c2b8-ff6c-4edf-882b-8ebcdbe389b5.mp4"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-
-                <div className="absolute bottom-4 left-4 h-9 w-9 group-hover:w-[148px] bg-gray-900 rounded-full flex items-center justify-between px-2.5 transition-all duration-300 ease-in-out overflow-hidden shadow-md">
-                  <span className="text-[13px] font-medium text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 pl-1">
-                    Lihat Demo
-                  </span>
-                  <div className="w-5 h-5 flex items-center justify-center text-white transform group-hover:rotate-0 -rotate-45 transition-transform duration-300">
-                    <ArrowRight size={14} />
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-[14px] text-gray-600 mt-4 leading-relaxed font-normal">
-                Demonstrasi alur kandidat — menerima undangan tes, membaca instruksi, mengerjakan studi kasus, lalu mengirim jawaban.
-              </p>
-              <h3 className="text-[16px] font-semibold text-gray-900 mt-1">
-                Demo: Sisi Kandidat
-              </h3>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
+      <div id="capabilities">
+        <ServicesSection />
+      </div>
 
       {/* ========================================================================= */}
-      {/* SECTION 5: FOOTER (Clean Anti-Slop Design) */}
+      {/* SECTION 5: PROJECTS / SCENARIOS (Sticky Stacking Cards Effect) */}
       {/* ========================================================================= */}
-      <footer className="bg-gray-900 text-white pt-16 sm:pt-20 pb-12 px-6 sm:px-12 font-sans border-t border-gray-800">
+      <div id="scenarios">
+        <ProjectsSection />
+      </div>
+
+      {/* ========================================================================= */}
+      {/* SECTION 6: FOOTER */}
+      {/* ========================================================================= */}
+      <footer className="bg-gray-900 text-white pt-16 sm:pt-20 pb-12 px-6 sm:px-12 font-sans border-t border-gray-800 relative z-40">
         <div className="max-w-[1440px] mx-auto space-y-12">
           
           {/* TOP STATEMENT ROW */}
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-gray-800/60">
             <div className="max-w-2xl space-y-3">
               <p className="text-xs font-semibold text-[#F26522] uppercase tracking-widest">
-                Skillens Studio
+                Skillens Platform
               </p>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight text-white leading-[1.12]">
                 Merekrut bakat tepat,<br />
@@ -496,17 +244,17 @@ export default function LandingPage() {
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Solusi</p>
               <ul className="space-y-2 text-sm font-normal text-gray-300">
                 <li>
-                  <a href="#solutions" className="hover:text-[#F26522] transition-colors inline-block">
+                  <a href="#about" className="hover:text-[#F26522] transition-colors inline-block">
                     Simulasi Studi Kasus
                   </a>
                 </li>
                 <li>
-                  <a href="#solutions" className="hover:text-[#F26522] transition-colors inline-block">
+                  <a href="#capabilities" className="hover:text-[#F26522] transition-colors inline-block">
                     Telemetri Perilaku AI
                   </a>
                 </li>
                 <li>
-                  <a href="#problems" className="hover:text-[#F26522] transition-colors inline-block">
+                  <a href="#scenarios" className="hover:text-[#F26522] transition-colors inline-block">
                     Deteksi Kecurangan
                   </a>
                 </li>
