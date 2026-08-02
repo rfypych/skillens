@@ -43,33 +43,36 @@ const CAPABILITIES: CapabilityItem[] = [
 
 export function ServicesSection() {
   return (
-    <section className="bg-white text-[#0C0C0C] rounded-t-[40px] sm:rounded-t-[50px] md:rounded-t-[60px] px-5 sm:px-8 md:px-10 py-20 sm:py-24 md:py-32 relative z-20 shadow-[0_-20px_50px_rgba(0,0,0,0.3)]">
+    <section className="bg-white text-gray-900 rounded-t-[40px] sm:rounded-t-[50px] md:rounded-t-[60px] px-5 sm:px-8 md:px-12 py-20 sm:py-24 md:py-32 relative z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.04)] border-t border-gray-200/80">
       <div className="max-w-5xl mx-auto">
         
         {/* HEADING */}
-        <FadeIn delay={0} y={40} className="text-center mb-16 sm:mb-20 md:mb-28">
-          <h2 className="font-black uppercase text-[#0C0C0C] leading-none tracking-tight text-[clamp(2.5rem,10vw,140px)]">
-            Kapabilitas
+        <FadeIn delay={0} y={40} className="text-center mb-16 sm:mb-20 md:mb-24">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#F26522] border border-orange-200 bg-orange-50 rounded-full px-4 py-1.5 inline-block mb-4">
+            Kapabilitas Utama Platform
+          </span>
+          <h2 className="text-[clamp(2.2rem,6vw,4rem)] font-bold text-gray-900 leading-[1.08] tracking-tight">
+            Fitur Evaluasi Berstandar Industri
           </h2>
         </FadeIn>
 
         {/* LIST OF CAPABILITIES */}
-        <div className="flex flex-col border-t border-[rgba(12,12,12,0.15)]">
+        <div className="flex flex-col border-t border-gray-200/80">
           {CAPABILITIES.map((item, index) => (
             <FadeIn key={item.number} delay={index * 0.1} y={30}>
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-12 py-8 sm:py-10 md:py-12 border-b border-[rgba(12,12,12,0.15)] group hover:bg-[#F9F9F9] transition-colors px-4 rounded-2xl">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-12 py-8 sm:py-10 md:py-12 border-b border-gray-200/80 group hover:bg-[#F9FAFB] transition-colors px-4 sm:px-6 rounded-2xl">
                 
                 {/* NUMBER LEFT */}
-                <div className="font-black text-[#0C0C0C] text-[clamp(2.5rem,8vw,120px)] leading-none select-none group-hover:text-[#F26522] transition-colors">
+                <div className="font-bold text-[#F26522] text-[clamp(2.5rem,6vw,5rem)] leading-none select-none group-hover:scale-105 transition-transform">
                   {item.number}
                 </div>
 
                 {/* CONTENT RIGHT */}
                 <div className="flex flex-col gap-2 max-w-2xl">
-                  <h3 className="font-semibold uppercase tracking-tight text-[#0C0C0C] text-[clamp(1.1rem,2.2vw,2rem)]">
+                  <h3 className="font-semibold text-gray-900 text-[clamp(1.1rem,2vw,1.75rem)] tracking-tight">
                     {item.title}
                   </h3>
-                  <p className="font-light leading-relaxed text-[#0C0C0C]/70 text-[clamp(0.875rem,1.5vw,1.2rem)]">
+                  <p className="font-normal text-gray-600 leading-relaxed text-[clamp(0.9rem,1.4vw,1.15rem)]">
                     {item.description}
                   </p>
                 </div>

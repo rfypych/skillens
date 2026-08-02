@@ -8,7 +8,6 @@ interface MarqueeCard {
   title: string;
   category: string;
   tag: string;
-  bgGradient: string;
   icon: any;
   metric: string;
 }
@@ -16,46 +15,41 @@ interface MarqueeCard {
 const ROW_1_CARDS: MarqueeCard[] = [
   {
     id: 'r1-1',
-    title: 'Interactive Case Study Sandbox',
+    title: 'Ruang Kerja Studi Kasus Interaktif',
     category: 'Assessment Engine',
     tag: 'Live Environment',
-    bgGradient: 'from-orange-900/40 via-gray-900 to-black',
     icon: Terminal,
     metric: 'Real-time Execution',
   },
   {
     id: 'r1-2',
-    title: 'Behavioral Anti-Cheat Telemetry',
+    title: 'Telemetri Perilaku Anti-Cheat',
     category: 'Security Shield',
-    tag: 'Layer 2 Protection',
-    bgGradient: 'from-slate-900 via-gray-900 to-orange-950/40',
+    tag: 'Layer 2 Defense',
     icon: ShieldCheck,
     metric: 'Keystroke & Focus Track',
   },
   {
-    id: 'r1-3',
-    title: 'Dynamic Probing Follow-Up AI',
+    id: 'r1-[#F26522]',
+    title: 'Probing AI Dinamis & Adaptif',
     category: 'AI Evaluator',
-    tag: 'Adaptive Questions',
-    bgGradient: 'from-orange-950/50 via-zinc-900 to-black',
+    tag: 'Dynamic Follow-Up',
     icon: BrainCircuit,
-    metric: 'Architecture Verification',
+    metric: 'Architecture Probe',
   },
   {
     id: 'r1-4',
-    title: 'Tailored HRD Interview Briefing',
+    title: 'Panduan Wawancara Otomatis HRD',
     category: 'Recruiter Tools',
-    tag: 'Automated Questions',
-    bgGradient: 'from-zinc-900 via-stone-900 to-orange-900/30',
+    tag: 'Smart Briefing',
     icon: Sparkles,
     metric: 'Verified Insights',
   },
   {
     id: 'r1-5',
-    title: 'High-Traffic Scale Incident Demo',
-    category: 'DevOps Scenario',
-    tag: 'Kubernetes & Redis',
-    bgGradient: 'from-slate-900 via-orange-950/30 to-black',
+    title: 'Simulasi Backend Incident & Scale',
+    category: 'DevOps Assessment',
+    tag: 'High Traffic Scenario',
     icon: Cpu,
     metric: '5,000 req/sec Spike',
   },
@@ -64,46 +58,41 @@ const ROW_1_CARDS: MarqueeCard[] = [
 const ROW_2_CARDS: MarqueeCard[] = [
   {
     id: 'r2-1',
-    title: 'Candidate Keystroke Dynamics Log',
-    category: 'Telemetry Analysis',
-    tag: 'No-Spy Privacy',
-    bgGradient: 'from-orange-950/40 via-zinc-900 to-black',
+    title: 'Analisis Kecepatan & Jeda Ketikan',
+    category: 'Behavioral Metrics',
+    tag: 'Telemetry Log',
     icon: Activity,
     metric: 'Backtrack Ratio 4.2%',
   },
   {
     id: 'r2-2',
-    title: 'ISO 27001 Defense-in-Depth Shield',
+    title: 'Perlindungan Multi-Lapis ISO 27001',
     category: 'Enterprise Protection',
-    tag: 'Layer 1 & 2',
-    bgGradient: 'from-stone-900 via-orange-900/30 to-black',
+    tag: 'Layer 1 & 2 Shield',
     icon: Lock,
     metric: 'Zero-Bypass Architecture',
   },
   {
     id: 'r2-3',
-    title: 'Comprehensive Recruiter Scorecard',
+    title: 'Dasbor Analitik Rekruiter Siap Pakai',
     category: 'Analytics Dashboard',
     tag: 'Instant Export',
-    bgGradient: 'from-slate-900 via-gray-900 to-orange-950/40',
     icon: BarChart3,
-    metric: 'Multi-Axis Score',
+    metric: 'Multi-Axis Scorecard',
   },
   {
     id: 'r2-4',
-    title: 'Senior Frontend State Machine Crisis',
-    category: 'Web Scenario',
-    tag: 'React & Turbopack',
-    bgGradient: 'from-zinc-900 via-orange-950/40 to-black',
+    title: 'Studi Kasus Frontend & Web Performance',
+    category: 'Web Assessment',
+    tag: 'State Machine Crisis',
     icon: Terminal,
-    metric: '60 FPS Performance',
+    metric: '60 FPS Target',
   },
   {
     id: 'r2-5',
-    title: 'Product Growth Experiment Sandbox',
+    title: 'Simulasi Product Strategy & Funnel',
     category: 'Strategy Assessment',
-    tag: 'A/B Test Design',
-    bgGradient: 'from-orange-900/40 via-slate-900 to-black',
+    tag: 'Experiment Design',
     icon: Cpu,
     metric: 'Funnel Optimization',
   },
@@ -126,16 +115,15 @@ export function MarqueeSection() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Triple items for seamless loop width
   const row1Items = [...ROW_1_CARDS, ...ROW_1_CARDS, ...ROW_1_CARDS];
   const row2Items = [...ROW_2_CARDS, ...ROW_2_CARDS, ...ROW_2_CARDS];
 
   return (
     <section
       ref={sectionRef}
-      className="bg-[#0C0C0C] pt-24 sm:pt-32 md:pt-40 pb-16 overflow-hidden relative z-10"
+      className="bg-[#FFFFFF] pt-20 sm:pt-28 pb-16 overflow-hidden relative z-10 border-b border-gray-100"
     >
-      <div className="flex flex-col gap-4 sm:gap-6">
+      <div className="flex flex-col gap-5 sm:gap-6">
         
         {/* ROW 1: Moves RIGHT on scroll */}
         <div className="w-full overflow-hidden">
@@ -151,33 +139,31 @@ export function MarqueeSection() {
               return (
                 <div
                   key={`${card.id}-${idx}`}
-                  className={`w-[320px] sm:w-[420px] h-[210px] sm:h-[270px] shrink-0 rounded-2xl bg-gradient-to-br ${card.bgGradient} border border-gray-800/80 p-6 flex flex-col justify-between group hover:border-[#F26522]/50 transition-colors shadow-2xl relative overflow-hidden`}
+                  className="w-[320px] sm:w-[400px] h-[200px] sm:h-[240px] shrink-0 rounded-2xl bg-[#F9FAFB] border border-gray-200/80 p-6 flex flex-col justify-between group hover:border-[#F26522] hover:shadow-md hover:bg-white transition-all shadow-xs relative overflow-hidden"
                 >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#F26522]/10 rounded-full blur-2xl group-hover:bg-[#F26522]/20 transition-all" />
-                  
                   <div className="flex items-center justify-between relative z-10">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#F26522] bg-[#F26522]/10 border border-[#F26522]/30 px-3 py-1 rounded-full">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#F26522] bg-[#F26522]/10 border border-[#F26522]/20 px-3 py-1 rounded-full">
                       {card.category}
                     </span>
-                    <span className="text-xs text-gray-400 font-medium">
+                    <span className="text-xs text-gray-500 font-medium">
                       {card.tag}
                     </span>
                   </div>
 
                   <div className="relative z-10 my-auto">
-                    <div className="w-10 h-10 rounded-xl bg-gray-900/90 border border-gray-700/60 flex items-center justify-center text-[#F26522] mb-3 group-hover:scale-110 transition-transform">
-                      <Icon size={20} />
+                    <div className="w-9 h-9 rounded-xl bg-white border border-gray-200 text-[#F26522] flex items-center justify-center mb-3 shadow-xs group-hover:scale-105 transition-transform">
+                      <Icon size={18} />
                     </div>
-                    <h3 className="text-lg sm:text-xl font-medium text-white tracking-tight leading-snug">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 tracking-tight leading-snug">
                       {card.title}
                     </h3>
                   </div>
 
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-800/60 relative z-10">
-                    <span className="text-xs font-mono text-gray-400">
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-200/80 relative z-10">
+                    <span className="text-xs font-mono text-gray-600 font-medium">
                       {card.metric}
                     </span>
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                       SKILLENS CORE
                     </span>
                   </div>
@@ -201,33 +187,31 @@ export function MarqueeSection() {
               return (
                 <div
                   key={`${card.id}-${idx}`}
-                  className={`w-[320px] sm:w-[420px] h-[210px] sm:h-[270px] shrink-0 rounded-2xl bg-gradient-to-br ${card.bgGradient} border border-gray-800/80 p-6 flex flex-col justify-between group hover:border-[#F26522]/50 transition-colors shadow-2xl relative overflow-hidden`}
+                  className="w-[320px] sm:w-[400px] h-[200px] sm:h-[240px] shrink-0 rounded-2xl bg-[#F9FAFB] border border-gray-200/80 p-6 flex flex-col justify-between group hover:border-[#F26522] hover:shadow-md hover:bg-white transition-all shadow-xs relative overflow-hidden"
                 >
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#FF6B2B]/10 rounded-full blur-2xl group-hover:bg-[#FF6B2B]/20 transition-all" />
-
                   <div className="flex items-center justify-between relative z-10">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#FF6B2B] bg-[#FF6B2B]/10 border border-[#FF6B2B]/30 px-3 py-1 rounded-full">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-800 bg-gray-200/80 border border-gray-300 px-3 py-1 rounded-full">
                       {card.category}
                     </span>
-                    <span className="text-xs text-gray-400 font-medium">
+                    <span className="text-xs text-gray-500 font-medium">
                       {card.tag}
                     </span>
                   </div>
 
                   <div className="relative z-10 my-auto">
-                    <div className="w-10 h-10 rounded-xl bg-gray-900/90 border border-gray-700/60 flex items-center justify-center text-[#FF6B2B] mb-3 group-hover:scale-110 transition-transform">
-                      <Icon size={20} />
+                    <div className="w-9 h-9 rounded-xl bg-white border border-gray-200 text-gray-900 flex items-center justify-center mb-3 shadow-xs group-hover:scale-105 group-hover:text-[#F26522] transition-all">
+                      <Icon size={18} />
                     </div>
-                    <h3 className="text-lg sm:text-xl font-medium text-white tracking-tight leading-snug">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 tracking-tight leading-snug">
                       {card.title}
                     </h3>
                   </div>
 
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-800/60 relative z-10">
-                    <span className="text-xs font-mono text-gray-400">
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-200/80 relative z-10">
+                    <span className="text-xs font-mono text-gray-600 font-medium">
                       {card.metric}
                     </span>
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                       LIVE PLATFORM
                     </span>
                   </div>

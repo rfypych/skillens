@@ -33,7 +33,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0C0C0C] text-gray-900 font-sans selection:bg-[#F26522] selection:text-white overflow-x-clip">
+    <div className="min-h-screen bg-[#EFEFEF] text-gray-900 font-sans selection:bg-[#F26522] selection:text-white overflow-x-clip">
       
       {/* ========================================================================= */}
       {/* SECTION 1: HERO (Full viewport height - Light Gray #EFEFEF) */}
