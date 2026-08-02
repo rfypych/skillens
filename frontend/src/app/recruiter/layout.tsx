@@ -85,10 +85,7 @@ function RecruiterLayoutContent({ children }: { children: React.ReactNode }) {
       )}>
         <div className="p-6 flex items-center justify-between border-b border-gray-100">
           <Link href="/recruiter" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-            <div className="w-9 h-9 bg-gray-900 rounded-full flex items-center justify-center text-white text-[11px] font-bold tracking-tight">
-              SK
-            </div>
-            <span className="text-xl font-bold text-gray-900 tracking-tight">Skillens</span>
+            <img src="/skillens-logo-text.png" alt="Skillens" className="h-8 w-auto object-contain" />
           </Link>
           <button 
             onClick={() => setIsMobileMenuOpen(false)}

@@ -85,12 +85,9 @@ export default function Signup() {
             </div>
 
           </div>
-          <div className="relative z-20 w-full text-center my-auto pb-4">
+          <div className="relative z-20 w-full text-center my-auto pb-4 flex justify-center">
             <Link href="/" className="inline-flex items-center gap-3">
-              <div className="w-9 h-9 bg-white text-gray-900 rounded-full flex items-center justify-center font-bold text-xs shadow-md">
-                SK
-              </div>
-              <span className="text-2xl font-extrabold text-white tracking-tight">Skillens</span>
+              <img src="/skillens-logo-text.png" alt="Skillens" className="h-9 w-auto brightness-0 invert object-contain" />
             </Link>
           </div>
         </div>
@@ -407,10 +404,7 @@ export default function Signup() {
             {/* Clean Brand Header */}
             <div className="relative z-20">
               <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-                <div className="w-9 h-9 bg-white text-gray-900 rounded-full flex items-center justify-center font-bold text-[11px]">
-                  SK
-                </div>
-                <span className="text-xl font-bold text-white tracking-tight">Skillens</span>
+                <img src="/skillens-logo-text.png" alt="Skillens" className="h-9 w-auto brightness-0 invert object-contain" />
               </Link>
             </div>
 

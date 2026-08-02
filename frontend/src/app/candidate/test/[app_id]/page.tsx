@@ -221,10 +221,8 @@ export default function CandidateAssessment() {
       {/* Header Bar */}
       <header className="bg-white border-b border-gray-200/80 px-6 py-4 flex items-center justify-between z-10 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center text-[10px] font-bold">
-            SK
-          </div>
-          <div>
+          <img src="/skillens-logo-text.png" alt="Skillens" className="h-7 w-auto object-contain" />
+          <div className="pl-2 border-l border-gray-200">
             <h1 className="font-semibold text-sm text-gray-900">Ruang Evaluator AI</h1>
             <p className="text-[11px] text-gray-500">Sesi Simulasi Studi Kasus Real-Time</p>
           </div>

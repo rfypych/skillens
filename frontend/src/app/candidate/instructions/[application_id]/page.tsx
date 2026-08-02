@@ -1,4 +1,5 @@
 'use client';
+
 import { ArrowRight, Close, Information, Locked, MachineLearningModel, Security, Time, Warning } from '@carbon/icons-react';
 import { motion } from 'framer-motion';
 import { useRouter, useParams } from 'next/navigation';
@@ -23,7 +24,7 @@ function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClos
     {
       title: 'Tahap 2: Aturan & Anti-Kecurangan',
       icon: Warning,
-      color: 'text-red-500',
+      color: 'text-red-600',
       bullets: [
         'Waktu total adalah **15 menit** dan tidak dapat di-pause.',
         'Dilarang **pindah tab** atau **copy-paste** teks. Sistem anti-cheat akan otomatis menandai aktivitas mencurigakan.',
@@ -33,7 +34,7 @@ function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClos
     {
       title: 'Tahap 3: Tips Skor Maksimal',
       icon: Security,
-      color: 'text-brand-accent',
+      color: 'text-brand-primary',
       bullets: [
         'Gunakan metode terstruktur saat menjawab (masalah -> solusi -> dampak).',
         'Jelaskan **mengapa** Anda mengambil keputusan tersebut, bukan hanya apa yang Anda lakukan.',
@@ -43,16 +44,16 @@ function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClos
   ];
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden border-t-4 border-t-[#183B2B] transition-all animate-in fade-in slide-in-from-bottom-5 duration-300 font-sans">
+    <div className="fixed bottom-6 right-6 z-50 w-full max-w-md bg-brand-white border border-brand-secondary shadow-none border-t-4 border-t-brand-secondary transition-all font-sans rounded-none">
       {/* Header Window */}
-      <div className="bg-[#183B2B] p-4 text-white flex items-center justify-between">
+      <div className="bg-brand-secondary p-4 text-brand-white flex items-center justify-between border-b border-brand-gray-light/20">
         <div className="flex items-center gap-2.5">
-          <Information className="w-5 h-5 text-emerald-300" />
-          <span className="font-bold text-sm tracking-wide">Panduan Ujian AI Kandidat</span>
+          <Information className="w-5 h-5 text-brand-accent" />
+          <span className="font-bold text-sm tracking-wide uppercase font-display">Panduan Ujian AI Kandidat</span>
         </div>
         <button
           onClick={onClose}
-          className="p-1 text-white/80 hover:text-white hover:bg-red-500/20 transition-colors rounded-lg"
+          className="p-1 text-brand-white/80 hover:text-brand-white hover:bg-red-600/30 transition-colors rounded-none"
           title="Tutup"
         >
           <Close className="w-4 h-4" />
@@ -60,12 +61,12 @@ function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClos
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-brand-gray-light/30 bg-[#F7F9F9]">
+      <div className="flex border-b border-brand-gray-light/30 bg-brand-white">
         {guides.map((g, idx) => (
           <button
             key={idx}
             onClick={() => setCurrentTab(idx)}
-            className={`flex-1 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-colors border-b-2 ${
+            className={`flex-1 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-colors border-b-2 rounded-none ${
               currentTab === idx
                 ? 'border-brand-primary text-brand-primary bg-brand-white'
                 : 'border-transparent text-brand-gray-dark hover:text-brand-secondary'
@@ -77,13 +78,13 @@ function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClos
       </div>
 
       {/* Body Content */}
-      <div className="p-5 space-y-4">
+      <div className="p-5 space-y-4 bg-brand-white">
         {(() => {
           const current = guides[currentTab];
           const Icon = current.icon;
           return (
             <div>
-              <h4 className="font-bold text-brand-secondary text-sm flex items-center gap-2 mb-3">
+              <h4 className="font-bold text-brand-secondary text-sm flex items-center gap-2 mb-3 font-display">
                 <Icon className={`w-5 h-5 ${current.color}`} />
                 {current.title}
               </h4>
@@ -105,24 +106,24 @@ function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClos
         <button
           disabled={currentTab === 0}
           onClick={() => setCurrentTab(t => t - 1)}
-          className="px-3 py-1.5 text-xs font-bold text-brand-gray-dark hover:text-brand-secondary disabled:opacity-30"
+          className="px-3 py-1.5 text-xs font-bold text-brand-gray-dark hover:text-brand-secondary disabled:opacity-30 rounded-none uppercase tracking-wider"
         >
           Sebelumnya
         </button>
-        <div className="text-[10px] font-bold text-brand-gray-dark">
+        <div className="text-[10px] font-bold text-brand-gray-dark font-mono">
           {currentTab + 1} / {guides.length}
         </div>
         {currentTab < guides.length - 1 ? (
           <button
             onClick={() => setCurrentTab(t => t + 1)}
-            className="px-3 py-1.5 text-xs font-bold bg-brand-secondary text-brand-white hover:bg-brand-dark-teal"
+            className="px-4 py-1.5 text-xs font-bold bg-brand-secondary text-brand-white hover:bg-brand-dark-teal rounded-none uppercase tracking-wider"
           >
             Lanjut
           </button>
         ) : (
           <button
             onClick={onClose}
-            className="px-3 py-1.5 text-xs font-bold bg-brand-primary text-brand-white hover:bg-brand-dark-teal"
+            className="px-4 py-1.5 text-xs font-bold bg-brand-primary text-brand-white hover:bg-brand-dark-teal rounded-none uppercase tracking-wider"
           >
             Paham, Tutup
           </button>
@@ -159,46 +160,41 @@ export default function AssessmentInstructions() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F9F9] py-12 px-4 sm:px-6 lg:px-8 font-sans flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-brand-white py-12 px-4 sm:px-6 lg:px-8 font-sans flex items-center justify-center relative overflow-hidden">
       <CandidateOnboardingModal isOpen={showGuide} onClose={handleCloseGuide} />
 
       {/* Help Button */}
       <button
         onClick={() => setShowGuide(true)}
-        className="fixed top-6 right-6 p-2 text-brand-white bg-brand-secondary border border-brand-primary/40 hover:bg-brand-dark-teal transition-colors z-40 flex items-center gap-2 shadow-xl"
+        className="fixed top-6 right-6 p-2 text-brand-white bg-brand-secondary border border-brand-gray-light hover:bg-brand-dark-teal transition-colors z-40 flex items-center gap-2 shadow-none rounded-none"
         title="Buka Panduan Ujian"
       >
         <Information className="w-5 h-5 text-brand-accent" />
         <span className="text-xs font-bold uppercase tracking-wider hidden md:block">Panduan Ujian</span>
       </button>
 
-      {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-[40vh] bg-brand-secondary skew-y-3 origin-top-left -z-10" />
-      <div className="absolute -top-40 -right-40 w-96 h-96 bg-brand-dark-teal rounded-none  opacity-50  -z-10" />
-      
       <div className="max-w-4xl w-full">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2.5 mb-4">
-            <img src="/logo.svg" alt="Skillens Logo" className="h-10 w-auto brightness-0 invert" />
-            <span className="text-2xl font-display font-bold text-brand-white tracking-tight">Skillens</span>
+            <img src="/skillens-logo-text.png" alt="Skillens" className="h-10 w-auto object-contain mx-auto" />
           </div>
         </div>
 
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="bg-brand-white rounded-none shadow-none border border-brand-gray-light/30 overflow-hidden"
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="bg-brand-white rounded-none shadow-none border border-brand-gray-light overflow-hidden"
         >
           {/* Header */}
           <div className="px-8 md:px-12 py-10 relative overflow-hidden bg-brand-secondary text-brand-white border-b border-brand-gray-light/20">
             <div className="relative z-10 text-center">
-              <div className="w-16 h-16 bg-brand-white/10 rounded-none flex items-center justify-center mx-auto mb-6 backdrop- border border-brand-white/20 shadow-none">
+              <div className="w-16 h-16 bg-brand-white/10 rounded-none flex items-center justify-center mx-auto mb-6 border border-brand-white/20 shadow-none">
                 <Security className="w-8 h-8 text-brand-accent" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight mb-4">Assessment Briefing</h1>
+              <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight mb-4 uppercase">Assessment Briefing</h1>
               <p className="text-brand-gray-light text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-                You are about to begin an AI-proctored technical micro-simulation. Please review the environment rules carefully before proceeding.
+                Anda akan memulai simulasi teknis berbasis AI. Harap baca dan pahami seluruh aturan lingkungan tes sebelum melanjutkan.
               </p>
             </div>
           </div>
@@ -208,13 +204,13 @@ export default function AssessmentInstructions() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
               {/* Rule 1 */}
               <div className="flex gap-5">
-                <div className="flex-shrink-0 w-12 h-12 rounded-none bg-brand-gray-light/10 flex items-center justify-center text-brand-secondary border border-brand-gray-light/20 shadow-none">
+                <div className="flex-shrink-0 w-12 h-12 rounded-none bg-brand-gray-light/10 flex items-center justify-center text-brand-secondary border border-brand-gray-light/30 shadow-none">
                   <Time className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-brand-secondary mb-1.5 uppercase tracking-wider">15-Minute Timer</h3>
+                  <h3 className="text-xs font-bold text-brand-secondary mb-1.5 uppercase tracking-wider font-display">Batasan Waktu 15 Menit</h3>
                   <p className="text-sm text-brand-gray-dark leading-relaxed">
-                    Once you start, a strict 15-minute timer will begin. The assessment cannot be paused or restarted under any circumstances.
+                    Setelah tombol dimulai, penghitung waktu 15 menit akan berjalan secara otomatis dan tidak dapat dihentikan.
                   </p>
                 </div>
               </div>
@@ -225,22 +221,22 @@ export default function AssessmentInstructions() {
                   <MachineLearningModel className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-brand-secondary mb-1.5 uppercase tracking-wider">Scenario-Based</h3>
+                  <h3 className="text-xs font-bold text-brand-secondary mb-1.5 uppercase tracking-wider font-display">Studi Kasus Skenario Industri</h3>
                   <p className="text-sm text-brand-gray-dark leading-relaxed">
-                    You will be presented with a technical scenario. We are evaluating your empirical approach and real-world problem-solving framework.
+                    Anda akan diberikan tantangan teknis nyata. Penilaian difokuskan pada logika pemecahan masalah dan kualitas eksekusi Anda.
                   </p>
                 </div>
               </div>
 
               {/* Rule 3 */}
               <div className="flex gap-5">
-                <div className="flex-shrink-0 w-12 h-12 rounded-none bg-red-50 flex items-center justify-center text-red-600 border border-red-100 shadow-none">
+                <div className="flex-shrink-0 w-12 h-12 rounded-none bg-red-50 flex items-center justify-center text-red-600 border border-red-200 shadow-none">
                   <Warning className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-brand-secondary mb-1.5 uppercase tracking-wider">Anti-Cheat Monitoring</h3>
+                  <h3 className="text-xs font-bold text-brand-secondary mb-1.5 uppercase tracking-wider font-display">Sistem Anti-Cheat Proctored</h3>
                   <p className="text-sm text-brand-gray-dark leading-relaxed">
-                    This platform tracks tab switching and copy-pasting. Navigating away from the assessment page will be flagged in your final report.
+                    Sistem mendeteksi aktivitas pindah tab dan copy-paste. Pelanggaran akan dicatat secara otomatis dalam laporan rekruter.
                   </p>
                 </div>
               </div>
@@ -251,40 +247,40 @@ export default function AssessmentInstructions() {
                   <Locked className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-brand-secondary mb-1.5 uppercase tracking-wider">AI Evaluation</h3>
+                  <h3 className="text-xs font-bold text-brand-secondary mb-1.5 uppercase tracking-wider font-display">Evaluasi Forensik AI</h3>
                   <p className="text-sm text-brand-gray-dark leading-relaxed">
-                    Your answers will be forensically evaluated by an AI model to verify claims made in your resume against your actual response depth.
+                    Jawaban Anda dianalisis oleh AI model untuk mencocokkan antara klaim CV/Pengalaman dengan kedalaman logika praktis Anda.
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="pt-8 border-t border-brand-gray-light/30">
-              <label className="flex items-start gap-4 cursor-pointer group bg-[#F7F9F9] p-5 rounded-none border border-brand-gray-light/40 hover:border-brand-primary/50 transition-colors">
+              <label className="flex items-start gap-4 cursor-pointer group bg-brand-white p-5 rounded-none border border-brand-gray-light hover:border-brand-primary transition-colors">
                 <div className="relative flex items-center mt-0.5">
                   <input 
                     type="checkbox" 
-                    className="w-5 h-5 rounded-none border-brand-gray-light text-brand-primary focus:ring-brand-primary cursor-pointer transition-colors"
+                    className="w-5 h-5 rounded-none border-brand-gray-light text-brand-primary focus:ring-0 cursor-pointer transition-colors"
                     checked={agreed}
                     onChange={(e) => setAgreed(e.target.checked)}
                   />
                 </div>
                 <span className="text-sm font-medium text-brand-gray-dark group-hover:text-brand-secondary transition-colors leading-relaxed">
-                  I understand the rules and confirm that I will not switch tabs or use external unauthorized tools during this 15-minute assessment.
+                  Saya memahami aturan tes, dan bersedia pengerjaan saya dipantau oleh sistem anti-cheat tanpa berpindah tab selama 15 menit.
                 </span>
               </label>
             </div>
 
             <div className="flex flex-col sm:flex-row justify-between items-center pt-4 gap-4">
-              <div className="flex items-center gap-2 text-brand-gray-medium text-xs font-bold uppercase tracking-widest">
-                <Information className="w-4 h-4" /> Ensure a stable connection
+              <div className="flex items-center gap-2 text-brand-gray-dark text-xs font-bold uppercase tracking-widest">
+                <Information className="w-4 h-4 text-brand-primary" /> Pastikan koneksi internet stabil
               </div>
               <button
                 onClick={handleStart}
                 disabled={!agreed}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-brand-primary text-brand-white font-bold rounded-none hover:bg-brand-dark-teal transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-none hover:shadow-none-brand-primary/20 text-sm uppercase tracking-wider"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-brand-primary text-brand-white font-bold rounded-none hover:bg-brand-dark-teal transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-none text-xs uppercase tracking-wider"
               >
-                Start Assessment
+                Mulai Tes Simulasi AI
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
