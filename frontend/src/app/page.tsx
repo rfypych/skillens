@@ -23,7 +23,7 @@ export default function LandingPage() {
       <CTASection />
 
       {/* 5. Footer */}
-      <footer className="w-full max-w-[1536px] mx-auto px-5 md:px-10 py-12 md:py-16 border-t border-gray-200/60 mt-5">
+      <footer className="w-full max-w-[1760px] mx-auto px-5 md:px-10 py-12 md:py-16 border-t border-gray-200/60 mt-5">
         <div className="flex flex-col md:flex-row items-start justify-between gap-12">
 
           {/* Left: Logo + tagline */}

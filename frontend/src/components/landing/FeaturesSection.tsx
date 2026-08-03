@@ -139,7 +139,7 @@ function CardCrossRole() {
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="w-full max-w-[1536px] mx-auto px-3 md:px-5 py-6 md:py-12">
+    <section id="features" className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-6 md:py-10">
       {/* Header row */}
       <div className="flex items-start justify-between mb-6 gap-4">
         <motion.h2

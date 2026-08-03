@@ -7,9 +7,9 @@ import { IconArrowUpRight } from '@/components/icons/CustomIcons';
 
 export function CTASection() {
   return (
-    <div className="w-full flex items-center justify-center p-3 md:p-5 pb-0 bg-[#f0f0f0]">
+    <div className="w-full flex items-center justify-center p-3 sm:p-4 md:p-6 lg:p-7 pb-0 bg-[#f0f0f0]">
       <section
-        className="relative w-full max-w-[1536px] rounded-[1.5rem] md:rounded-[3rem] overflow-hidden flex flex-col items-center justify-center min-h-[480px] md:min-h-[560px]"
+        className="relative w-full max-w-[1760px] rounded-[1.5rem] md:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden flex flex-col items-center justify-center min-h-[480px] md:min-h-[560px]"
       >
         {/* Background — dark shader / solid */}
         <div className="absolute inset-0 bg-[#0B0F19]">

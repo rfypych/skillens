@@ -37,7 +37,7 @@ function Navbar() {
   }, []);
 
   return (
-    <nav className="relative z-20 w-full flex items-center justify-between px-6 py-5">
+    <nav className="relative z-20 w-full flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5">
       {/* Logo */}
       <Link href="/">
         <img src="/skillens-logo-text.png" alt="Skillens" className="h-8 w-auto object-contain" />
@@ -134,7 +134,7 @@ function BottomLeftCard() {
 ──────────────────────────────────────── */
 function BottomRightCorner() {
   return (
-    <div className="absolute bottom-0 right-0 z-20">
+    <div className="hidden sm:block absolute bottom-0 right-0 z-20">
       <div
         className="relative bg-[#f0f0f0] p-6 pt-8 pl-14 rounded-tl-[3.5rem]"
         style={{ minWidth: '14rem' }}
@@ -180,8 +180,8 @@ function BottomRightCorner() {
 ──────────────────────────────────────── */
 export function HeroSection() {
   return (
-    <div className="w-full h-screen flex items-center justify-center p-3 md:p-5 bg-[#f0f0f0]">
-      <section className="relative w-full max-w-[1536px] h-full rounded-[1.5rem] md:rounded-[3rem] overflow-hidden flex flex-col items-center group">
+    <div className="w-full h-screen flex items-center justify-center p-3 sm:p-4 md:p-6 lg:p-7 bg-[#f0f0f0]">
+      <section className="relative w-full max-w-[1760px] h-full rounded-[1.5rem] md:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden flex flex-col items-center group">
 
         {/* Background — Shader replaces video */}
         <div className="absolute inset-0 w-full h-full">
@@ -199,7 +199,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.25 }}
-            className="text-gray-900 text-4xl sm:text-5xl md:text-6xl font-semibold leading-tight max-w-2xl"
+            className="text-gray-900 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight max-w-3xl"
             style={{ letterSpacing: '-0.04em' }}
           >
             Merekrut tanpa<br />tebakan.

@@ -24,9 +24,9 @@ const item: Variants = {
 
 export function MetricsSection() {
   return (
-    <section id="metrics" className="w-full max-w-[1536px] mx-auto px-3 md:px-5 py-6 md:py-12">
+    <section id="metrics" className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-6 md:py-10">
       <div
-        className="border rounded-[1.5rem] md:rounded-[3rem] p-8 md:p-16"
+        className="border rounded-[1.5rem] md:rounded-[2.5rem] lg:rounded-[3rem] p-8 md:p-16"
         style={{
           backgroundColor: 'rgba(30,50,90,0.02)',
           borderColor: 'rgba(30,50,90,0.05)',
@@ -59,7 +59,7 @@ export function MetricsSection() {
               className="flex flex-col gap-1 p-6 md:p-8"
             >
               <span
-                className="text-3xl md:text-4xl font-semibold text-gray-900 tabular-nums leading-none"
+                className="text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 tabular-nums leading-none"
                 style={{ letterSpacing: '-0.04em' }}
               >
                 {m.value}
