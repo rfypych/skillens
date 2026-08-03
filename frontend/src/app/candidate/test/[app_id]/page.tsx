@@ -19,8 +19,6 @@ export default function CandidateAssessment() {
   const [submitted, setSubmitted] = useState(false);
   const [promptData, setPromptData] = useState<{ scenario_prompt: string; hidden_prompt: string } | null>(null);
 
-  const MAX_TURNS = 8;
-
   // Chat State
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
   const [currentInput, setCurrentInput] = useState('');
@@ -39,6 +37,10 @@ export default function CandidateAssessment() {
   const [showTabWarning, setShowTabWarning] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const [isTabHidden, setIsTabHidden] = useState(false);
+
+  // Max Turns Calculation (4 user answers max)
+  const userTurnsCount = messages.filter(m => m.role === 'user').length;
+  const isMaxTurnsReached = userTurnsCount >= 4;
 
   useEffect(() => {
     api.get(`/assessment/${appId}/prompt`)
@@ -100,6 +102,7 @@ export default function CandidateAssessment() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (isMaxTurnsReached) return;
     if (e.key === 'Backspace') {
       setKeystrokeMetrics(prev => ({ ...prev, backspace_count: prev.backspace_count + 1 }));
     } else if (e.key.length === 1) {
@@ -109,16 +112,11 @@ export default function CandidateAssessment() {
   };
 
   const handleSend = async () => {
-    if (!currentInput.trim() || isAiTyping) return;
+    if (!currentInput.trim() || isAiTyping || isMaxTurnsReached) return;
     const newMessages = [...messages, { role: 'user', content: currentInput }];
     setMessages(newMessages);
     setCurrentInput('');
     setIsAiTyping(true);
-    
-    if (newMessages.length >= MAX_TURNS) {
-      setIsAiTyping(false);
-      return;
-    }
 
     try {
       const res = await api.post(`/assessment/${appId}/chat`, { messages: newMessages });
@@ -194,7 +192,7 @@ export default function CandidateAssessment() {
     );
   }
 
-  const progressPercentage = Math.min((messages.length / MAX_TURNS) * 100, 100);
+  const progressPercentage = Math.min((userTurnsCount / 4) * 100, 100);
   const isCriticalTime = timeLeft <= 60;
 
   return (
@@ -235,8 +233,8 @@ export default function CandidateAssessment() {
             <span>{formatTime(timeLeft)}</span>
           </div>
 
-          <button onClick={() => setShowSubmitConfirm(true)}>
-            <TextRollButton text="Kirim Jawaban" variant="orange" size="sm" />
+          <button onClick={() => setShowSubmitConfirm(true)} className={isMaxTurnsReached ? 'animate-bounce' : ''}>
+            <TextRollButton text={isMaxTurnsReached ? "✓ Kirim Jawaban Sekarang" : "Kirim Jawaban"} variant="orange" size="sm" />
           </button>
         </div>
       </header>
@@ -270,27 +268,47 @@ export default function CandidateAssessment() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Box */}
-          <div className="p-4 border-t border-gray-100 bg-white">
-            <div className="relative">
-              <textarea
-                value={currentInput}
-                onChange={e => setCurrentInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onPaste={handlePaste}
-                placeholder="Ketik jawaban Anda di sini (Tekan Enter untuk mengirim)..."
-                rows={3}
-                className="w-full p-4 pr-12 bg-gray-50 border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] resize-none"
-              />
-              <button
-                onClick={handleSend}
-                disabled={!currentInput.trim() || isAiTyping}
-                className="absolute right-4 bottom-4 p-2 bg-gray-900 text-white rounded-full hover:bg-gray-800 disabled:opacity-30"
-              >
-                <SendAlt className="w-4 h-4" />
+          {/* Input Box / Completion Banner */}
+          {isMaxTurnsReached ? (
+            <div className="p-5 border-t border-gray-200 bg-[#F26522]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#F26522] text-white flex items-center justify-center font-bold text-base shadow-sm">
+                  ✓
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 text-sm">Sesi Wawancara Evaluasi Selesai</h4>
+                  <p className="text-xs text-gray-600">
+                    Seluruh pertanyaan evaluasi telah dijawab. Silakan klik <strong className="text-gray-900 font-semibold">Kirim Jawaban</strong> untuk menyelesaikan ujian.
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setShowSubmitConfirm(true)}>
+                <TextRollButton text="Kirim Jawaban Sekarang" variant="orange" size="md" />
               </button>
             </div>
-          </div>
+          ) : (
+            <div className="p-4 border-t border-gray-100 bg-white">
+              <div className="relative">
+                <textarea
+                  value={currentInput}
+                  onChange={e => setCurrentInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  onPaste={handlePaste}
+                  placeholder="Ketik jawaban Anda di sini (Tekan Enter untuk mengirim)..."
+                  rows={3}
+                  disabled={isAiTyping}
+                  className="w-full p-4 pr-12 bg-gray-50 border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] resize-none disabled:opacity-50"
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={!currentInput.trim() || isAiTyping}
+                  className="absolute right-4 bottom-4 p-2 bg-gray-900 text-white rounded-full hover:bg-gray-800 disabled:opacity-30"
+                >
+                  <SendAlt className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
