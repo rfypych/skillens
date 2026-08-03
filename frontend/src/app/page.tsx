@@ -23,8 +23,8 @@ export default function LandingPage() {
       <CTASection />
 
       {/* 5. Footer */}
-      <footer className="w-full px-3 md:px-5 py-10 md:py-16 border-t border-gray-200/60 mt-4 sm:mt-6">
-        <div className="flex flex-col md:flex-row items-start justify-between gap-10 md:gap-12">
+      <footer className="w-full max-w-[1536px] mx-auto px-5 md:px-10 py-12 md:py-16 border-t border-gray-200/60 mt-5">
+        <div className="flex flex-col md:flex-row items-start justify-between gap-12">
 
           {/* Left: Logo + tagline */}
           <div className="max-w-xs">
@@ -37,9 +37,9 @@ export default function LandingPage() {
           </div>
 
           {/* Right: 3-col link grid */}
-          <div className="grid grid-cols-3 gap-6 sm:gap-8 text-sm w-full md:w-auto">
+          <div className="grid grid-cols-3 gap-8 text-sm">
             <div>
-              <p className="text-[11px] uppercase tracking-widest text-gray-400 font-medium mb-4">Platform</p>
+              <p className="text-[11px] uppercase tracking-widest text-gray-400 font-medium mb-4">Protocol</p>
               <ul className="space-y-3">
                 {['Solusi', 'Skenario', 'Kapabilitas', 'Harga'].map((l) => (
                   <li key={l}>
@@ -49,7 +49,7 @@ export default function LandingPage() {
               </ul>
             </div>
             <div>
-              <p className="text-[11px] uppercase tracking-widest text-gray-400 font-medium mb-4">Pengembang</p>
+              <p className="text-[11px] uppercase tracking-widest text-gray-400 font-medium mb-4">Developers</p>
               <ul className="space-y-3">
                 {['Dokumentasi', 'API', 'SDK', 'Status'].map((l) => (
                   <li key={l}>
@@ -59,7 +59,7 @@ export default function LandingPage() {
               </ul>
             </div>
             <div>
-              <p className="text-[11px] uppercase tracking-widest text-gray-400 font-medium mb-4">Komunitas</p>
+              <p className="text-[11px] uppercase tracking-widest text-gray-400 font-medium mb-4">Community</p>
               <ul className="space-y-3">
                 {['Discord', 'GitHub', 'Blog', 'Tentang'].map((l) => (
                   <li key={l}>
@@ -71,7 +71,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="mt-10 sm:mt-12 pt-6 border-t border-gray-200/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-gray-400">
+        <div className="mt-12 pt-6 border-t border-gray-200/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-gray-400">
           <span>© {new Date().getFullYear()} Skillens. All rights reserved.</span>
           <div className="flex items-center gap-5">
             <a href="#" className="hover:text-gray-700 transition-colors">Kebijakan Privasi</a>

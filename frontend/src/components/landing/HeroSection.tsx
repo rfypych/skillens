@@ -37,10 +37,10 @@ function Navbar() {
   }, []);
 
   return (
-    <nav className="relative z-20 w-full flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5">
+    <nav className="relative z-20 w-full flex items-center justify-between px-6 py-5">
       {/* Logo */}
       <Link href="/">
-        <img src="/skillens-logo-text.png" alt="Skillens" className="h-7 sm:h-8 w-auto object-contain" />
+        <img src="/skillens-logo-text.png" alt="Skillens" className="h-8 w-auto object-contain" />
       </Link>
 
       {/* Desktop center links */}
@@ -113,15 +113,15 @@ function BottomLeftCard() {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, delay: 0.8 }}
-      className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-20 bg-white/30 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-lg"
+      className="absolute bottom-6 left-6 z-20 bg-white/30 backdrop-blur-xl border border-white/30 rounded-2xl p-4 shadow-lg"
     >
-      <div className="flex items-center gap-2 mb-2 sm:mb-3">
+      <div className="flex items-center gap-2 mb-3">
         <IconTelemetrySignal size={14} className="text-[#F26522]" />
-        <span className="text-xs sm:text-sm font-semibold text-gray-900">1,200+ Evaluasi Selesai</span>
+        <span className="text-sm font-semibold text-gray-900">1,200+ Evaluasi Selesai</span>
       </div>
       <Link
         href="/signup"
-        className="inline-flex items-center gap-2 bg-white text-gray-900 text-xs font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-[#F26522] hover:text-white transition-colors duration-200"
+        className="inline-flex items-center gap-2 bg-white text-gray-900 text-xs font-semibold px-4 py-2 rounded-full hover:bg-[#F26522] hover:text-white transition-colors duration-200"
       >
         Coba Gratis
       </Link>
@@ -134,14 +134,14 @@ function BottomLeftCard() {
 ──────────────────────────────────────── */
 function BottomRightCorner() {
   return (
-    <div className="hidden sm:block absolute bottom-0 right-0 z-20">
+    <div className="absolute bottom-0 right-0 z-20">
       <div
-        className="relative bg-[#f0f0f0] p-5 sm:p-6 pt-7 sm:pt-8 pl-12 sm:pl-14 rounded-tl-[3rem] sm:rounded-tl-[3.5rem]"
-        style={{ minWidth: '13rem' }}
+        className="relative bg-[#f0f0f0] p-6 pt-8 pl-14 rounded-tl-[3.5rem]"
+        style={{ minWidth: '14rem' }}
       >
         {/* SVG inverted corner — top edge */}
         <svg
-          className="absolute top-0 right-0 h-12 sm:h-14"
+          className="absolute top-0 right-0 h-14"
           style={{ top: 0, left: 'calc(3.5rem - 0.5px)', width: '3.5rem', transform: 'translateX(-100%)' }}
           viewBox="0 0 56 56"
           fill="none"
@@ -180,8 +180,8 @@ function BottomRightCorner() {
 ──────────────────────────────────────── */
 export function HeroSection() {
   return (
-    <div className="w-full h-screen flex items-center justify-center p-3 sm:p-4 md:p-5 bg-[#f0f0f0]">
-      <section className="relative w-full h-full rounded-[1.5rem] md:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden flex flex-col items-center group">
+    <div className="w-full h-screen flex items-center justify-center p-3 md:p-5 bg-[#f0f0f0]">
+      <section className="relative w-full max-w-[1536px] h-full rounded-[1.5rem] md:rounded-[3rem] overflow-hidden flex flex-col items-center group">
 
         {/* Background — Shader replaces video */}
         <div className="absolute inset-0 w-full h-full">
@@ -192,14 +192,14 @@ export function HeroSection() {
         <Navbar />
 
         {/* Main hero content */}
-        <div className="relative z-10 flex flex-col items-center justify-center flex-1 text-center px-4 sm:px-6 md:px-8 gap-4 sm:gap-6 pb-20 sm:pb-28 md:pb-32">
+        <div className="relative z-10 flex flex-col items-center justify-center flex-1 text-center px-6 gap-6 pb-32">
           <HeroBadge />
 
           <motion.h1
             initial={{ opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.25 }}
-            className="text-gray-900 text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight max-w-3xl"
+            className="text-gray-900 text-4xl sm:text-5xl md:text-6xl font-semibold leading-tight max-w-2xl"
             style={{ letterSpacing: '-0.04em' }}
           >
             Merekrut tanpa<br />tebakan.
@@ -209,7 +209,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-gray-700 text-sm sm:text-base md:text-lg max-w-md leading-relaxed px-2"
+            className="text-gray-700 text-base md:text-lg max-w-md leading-relaxed"
           >
             Evaluasi keahlian nyata kandidat lewat simulasi studi kasus interaktif yang tidak bisa diakali AI.
           </motion.p>
@@ -218,7 +218,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.55 }}
-            className="flex flex-col sm:flex-row items-center gap-3"
+            className="flex items-center gap-3"
           >
             <Link
               href="/signup"
