@@ -1,6 +1,17 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@font-face {
+  font-family: "Helvetica Regular";
+  src: url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.eot");
+  src: url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.eot?#iefix") format("embedded-opentype"),
+       url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.woff2") format("woff2"),
+       url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.woff") format("woff"),
+       url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.ttf") format("truetype"),
+       url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.svg#Helvetica Regular") format("svg");
+  font-display: swap;
+}
+
 @theme {
   --color-brand-primary: #4B7B51;
   --color-brand-secondary: #012631;
@@ -12,14 +23,22 @@
   --color-brand-gray-dark: #586D73;
   --color-brand-white: #FEFEFE;
 
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-space-grotesk);
+  --font-helvetica: "Helvetica Regular", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-helvetica);
+  --font-display: var(--font-helvetica);
   --font-mono: var(--font-jetbrains-mono);
 }
 
 :root {
-  background-color: #F4F5F0;
+  font-family: var(--font-helvetica);
+  background-color: #f0f0f0;
   color: #070707;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background-color: #f0f0f0;
 }
 
 /* Global Scrollbar */
@@ -28,7 +47,7 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F4F5F0;
+  background: #f0f0f0;
   border-left: 1px solid #AFBCBE;
 }
 ::-webkit-scrollbar-thumb {
@@ -56,4 +75,3 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-

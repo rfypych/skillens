@@ -17,7 +17,6 @@ import { useState, useEffect } from 'react';
 
 /* ────────────────────────────────────────
    NAVBAR (centered links, right CTA)
-   Hidden mobile / desktop different layout
 ──────────────────────────────────────── */
 function Navbar() {
   const [open, setOpen] = useState(false);
@@ -39,10 +38,10 @@ function Navbar() {
   }, []);
 
   return (
-    <nav className="relative z-20 w-full flex items-center justify-between px-4 sm:px-6 py-4">
+    <nav className="relative z-20 w-full flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5">
       {/* Logo */}
       <Link href="/">
-        <img src="/skillens-logo-text.png" alt="Skillens" className="h-8 w-auto object-contain" />
+        <img src="/skillens-logo-text.png" alt="Skillens" className="h-7 sm:h-8 w-auto object-contain" />
       </Link>
 
       {/* Desktop center links */}
@@ -75,7 +74,7 @@ function Navbar() {
 
       {/* Mobile drawer */}
       {open && (
-        <div className="absolute top-full left-0 right-0 bg-white/90 backdrop-blur-md rounded-2xl mx-2 mt-1 p-5 shadow-lg z-50 flex flex-col gap-3">
+        <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md rounded-2xl mx-3 mt-2 p-5 shadow-xl z-50 flex flex-col gap-3">
           <a href="#about" onClick={() => setOpen(false)} className="text-base font-medium text-gray-900 py-1">Solusi</a>
           <a href="#metrics" onClick={() => setOpen(false)} className="text-base font-medium text-gray-900 py-1">Kapabilitas</a>
           <a href="#features" onClick={() => setOpen(false)} className="text-base font-medium text-gray-900 py-1">Skenario</a>
@@ -133,24 +132,23 @@ function BottomLeftCard() {
 
 /* ────────────────────────────────────────
    BOTTOM-RIGHT CUT-OUT CORNER (SVG trick)
-   Hidden on mobile — complex on small screens
 ──────────────────────────────────────── */
 function BottomRightCorner() {
   return (
     <div className="hidden sm:block absolute bottom-0 right-0 z-20">
       <div
-        className="relative bg-[#EFEFEF] p-6 pt-8 pl-14 rounded-tl-[3.5rem]"
-        style={{ minWidth: '14rem' }}
+        className="relative bg-[#f0f0f0] p-5 sm:p-6 pt-7 sm:pt-8 pl-12 sm:pl-14 rounded-tl-[3rem] sm:rounded-tl-[3.5rem]"
+        style={{ minWidth: '13rem' }}
       >
         {/* SVG inverted corner — top edge */}
         <svg
-          className="absolute top-0 right-0 h-14"
+          className="absolute top-0 right-0 h-12 sm:h-14"
           style={{ top: 0, left: 'calc(3.5rem - 0.5px)', width: '3.5rem', transform: 'translateX(-100%)' }}
           viewBox="0 0 56 56"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path d="M56 56V0C56 30.9279 30.9279 56 0 56H56Z" fill="#EFEFEF" />
+          <path d="M56 56V0C56 30.9279 30.9279 56 0 56H56Z" fill="#f0f0f0" />
         </svg>
         {/* SVG inverted corner — left edge */}
         <svg
@@ -160,7 +158,7 @@ function BottomRightCorner() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path d="M56 56V0C56 30.9279 30.9279 56 0 56H56Z" fill="#EFEFEF" />
+          <path d="M56 56V0C56 30.9279 30.9279 56 0 56H56Z" fill="#f0f0f0" />
         </svg>
 
         {/* Content */}
@@ -183,8 +181,8 @@ function BottomRightCorner() {
 ──────────────────────────────────────── */
 export function HeroSection() {
   return (
-    <div className="w-full h-screen flex items-center justify-center p-2 sm:p-3 md:p-4 bg-[#EFEFEF]">
-      <section className="relative w-full max-w-[1536px] h-full rounded-[1.5rem] md:rounded-[3rem] overflow-hidden flex flex-col items-center group">
+    <div className="w-full h-screen flex items-center justify-center p-3 sm:p-4 md:p-5 lg:p-6 bg-[#f0f0f0]">
+      <section className="relative w-full max-w-[1680px] h-full rounded-[1.5rem] md:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden flex flex-col items-center group">
 
         {/* Background — Shader replaces video */}
         <div className="absolute inset-0 w-full h-full">
@@ -195,14 +193,14 @@ export function HeroSection() {
         <Navbar />
 
         {/* Main hero content */}
-        <div className="relative z-10 flex flex-col items-center justify-center flex-1 text-center px-4 sm:px-6 gap-4 sm:gap-6 pb-20 sm:pb-28 md:pb-32">
+        <div className="relative z-10 flex flex-col items-center justify-center flex-1 text-center px-4 sm:px-6 md:px-8 gap-4 sm:gap-6 pb-20 sm:pb-28 md:pb-32">
           <HeroBadge />
 
           <motion.h1
             initial={{ opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.25 }}
-            className="text-gray-900 text-3xl sm:text-5xl md:text-6xl font-semibold leading-tight max-w-2xl"
+            className="text-gray-900 text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight max-w-3xl"
             style={{ letterSpacing: '-0.04em' }}
           >
             Merekrut tanpa<br />tebakan.
