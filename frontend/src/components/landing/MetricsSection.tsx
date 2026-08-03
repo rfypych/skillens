@@ -24,9 +24,9 @@ const item: Variants = {
 
 export function MetricsSection() {
   return (
-    <section id="metrics" className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-12">
+    <section id="metrics" className="w-full px-3 md:px-5 py-6 md:py-10">
       <div
-        className="border rounded-[1.5rem] md:rounded-[2.5rem] p-6 sm:p-10 md:p-14 lg:p-16"
+        className="w-full border rounded-[1.5rem] md:rounded-[2.5rem] lg:rounded-[3rem] p-6 sm:p-10 md:p-14 lg:p-16"
         style={{
           backgroundColor: 'rgba(30,50,90,0.02)',
           borderColor: 'rgba(30,50,90,0.06)',
