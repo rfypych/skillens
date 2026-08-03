@@ -12,7 +12,7 @@ export default function ShaderBackground({ variant = 'light', className = '' }: 
   const [webglSupported, setWebglSupported] = useState(true);
 
   useEffect(() => {
-    // Detect WebGL hardware acceleration support
+    // Detect WebGL support safely
     try {
       const canvas = document.createElement('canvas');
       const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -37,72 +37,49 @@ export default function ShaderBackground({ variant = 'light', className = '' }: 
   const isDark = variant === 'dark';
 
   return (
-    <div className={`absolute inset-0 w-full h-full pointer-events-none z-10 overflow-hidden ${isDark ? 'bg-[#0F172A]' : 'bg-[#EFEFEF]'} ${className}`}>
+    <div className={`absolute inset-0 w-full h-full pointer-events-none z-10 overflow-hidden transform-gpu ${isDark ? 'bg-[#0B0F19]' : 'bg-[#EFEFEF]'} ${className}`}>
       
-      {/* 1. Universal High-Definition Mesh & Radial Glow (100% Guaranteed on Redmi Note 9 & All Android/iOS GPUs) */}
-      <div className="absolute inset-0 w-full h-full pointer-events-none z-10">
-        {/* Primary Animated Radial Orange Glow */}
-        <div 
-          className={`absolute -top-24 -left-20 w-[350px] sm:w-[650px] h-[350px] sm:h-[650px] rounded-full filter blur-2xl sm:blur-3xl opacity-80 animate-pulse transition-all duration-1000 ${
-            isDark 
-              ? 'bg-[#F26522]/30' 
-              : 'bg-[#FF6B2B]/20'
-          }`} 
-        />
-        
-        {/* Secondary Warm Ambient Glow */}
-        <div 
-          className={`absolute top-1/3 -right-24 w-[300px] sm:w-[550px] h-[300px] sm:h-[550px] rounded-full filter blur-2xl sm:blur-3xl opacity-70 transition-all duration-1000 ${
-            isDark 
-              ? 'bg-[#1E293B]' 
-              : 'bg-[#FFE8DC]'
-          }`} 
-        />
+      {/* 1. Pure CSS Hardware-Accelerated Radial Gradient Glow (Zero-lag, 0% CPU blur penalty) */}
+      <div 
+        className="absolute inset-0 w-full h-full pointer-events-none z-10 opacity-70"
+        style={{
+          background: isDark
+            ? 'radial-gradient(ellipse 70% 60% at 20% 20%, rgba(242, 101, 34, 0.25) 0%, rgba(15, 23, 42, 0.8) 50%, rgba(11, 15, 25, 1) 100%)'
+            : 'radial-gradient(ellipse 70% 60% at 20% 20%, rgba(242, 101, 34, 0.15) 0%, rgba(255, 212, 194, 0.25) 45%, rgba(239, 239, 239, 1) 100%)',
+        }}
+      />
 
-        {/* SVG Radial Mesh Gradient for Native Mobile GPU Rendering */}
-        <svg className="absolute inset-0 w-full h-full opacity-60" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id={`glow-${variant}`} cx="30%" cy="30%" r="75%">
-              <stop offset="0%" stopColor="#F26522" stopOpacity={isDark ? "0.35" : "0.22"} />
-              <stop offset="50%" stopColor={isDark ? "#1E293B" : "#FFD4C2"} stopOpacity={isDark ? "0.15" : "0.12"} />
-              <stop offset="100%" stopColor={isDark ? "#0F172A" : "#EFEFEF"} stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <rect width="100%" height="100%" fill={`url(#glow-${variant})`} />
-        </svg>
-      </div>
-
-      {/* 2. WebGL Shader Overlay Layer (When WebGL hardware acceleration is active) */}
+      {/* 2. Optimized WebGL Shader Overlay Layer */}
       {webglSupported && ShaderComponents && (
-        <div className="absolute inset-0 w-full h-full pointer-events-none z-20">
+        <div className="absolute inset-0 w-full h-full pointer-events-none z-20 opacity-90">
           <ShaderComponents.Shader className="w-full h-full">
             <ShaderComponents.Swirl
-              colorA={isDark ? '#0F172A' : '#ffffff'}
+              colorA={isDark ? '#0B0F19' : '#ffffff'}
               colorB={isDark ? '#1E293B' : '#f0f0f0'}
-              detail={1.7}
+              detail={1.2}
             />
             <ShaderComponents.ChromaFlow
-              baseColor={isDark ? '#0F172A' : '#ffffff'}
+              baseColor={isDark ? '#0B0F19' : '#ffffff'}
               downColor="#F26522"
               leftColor="#F26522"
               rightColor="#F26522"
               upColor="#F26522"
-              momentum={12}
-              radius={3.2}
+              momentum={8}
+              radius={2.4}
             />
             <ShaderComponents.FlutedGlass
-              aberration={0.55}
+              aberration={0.2}
               angle={31}
-              frequency={8}
-              highlight={isDark ? 0.25 : 0.12}
+              frequency={5}
+              highlight={isDark ? 0.2 : 0.08}
               highlightSoftness={0}
               lightAngle={-90}
-              refraction={4}
+              refraction={2}
               shape="rounded"
-              softness={1}
-              speed={0.15}
+              softness={0.5}
+              speed={0.12}
             />
-            <ShaderComponents.FilmGrain strength={0.06} />
+            <ShaderComponents.FilmGrain strength={0.04} />
           </ShaderComponents.Shader>
         </div>
       )}
