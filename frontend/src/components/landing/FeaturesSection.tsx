@@ -2,7 +2,13 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Layers, Activity, ShieldCheck, ArrowUpRight, Network } from 'lucide-react';
+import {
+  WatermarkArchitecture,
+  WatermarkTelemetryPulse,
+  IconAuditShield,
+  IconNodeMesh,
+  IconArrowUpRight,
+} from '@/components/icons/CustomIcons';
 
 /* Card 1 — Tall left (row-span-2) */
 function CardUnlock() {
@@ -16,9 +22,9 @@ function CardUnlock() {
     >
       {/* Watermark icon */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <Layers
+        <WatermarkArchitecture
           size={320}
-          className="text-gray-900 opacity-[0.02] group-hover:scale-110 transition-transform duration-700"
+          className="text-gray-900 opacity-[0.03] group-hover:scale-110 transition-transform duration-700"
         />
       </div>
 
@@ -51,9 +57,9 @@ function CardRealtime() {
     >
       {/* Watermark */}
       <div className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 pointer-events-none">
-        <Activity
+        <WatermarkTelemetryPulse
           size={280}
-          className="text-gray-900 opacity-[0.025] group-hover:scale-105 transition-transform duration-700"
+          className="text-gray-900 opacity-[0.035] group-hover:scale-105 transition-transform duration-700"
         />
       </div>
 
@@ -100,7 +106,7 @@ function CardAudit() {
         href="/signup"
         className="mt-4 inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-600 border border-gray-200 px-4 py-2 rounded-full hover:border-gray-400 hover:text-gray-900 transition-all duration-200 w-fit"
       >
-        <ShieldCheck size={14} />
+        <IconAuditShield size={14} className="text-[#F26522]" />
         Lihat Kebijakan
       </Link>
     </motion.div>
@@ -125,7 +131,7 @@ function CardCrossRole() {
         Engineering,<br />Product & Analytics.
       </h3>
       <button className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-gray-900 transition-colors duration-300 group-hover:scale-110 transform">
-        <Network size={18} className="text-gray-500 group-hover:text-white transition-colors duration-300" />
+        <IconNodeMesh size={18} className="text-gray-600 group-hover:text-white transition-colors duration-300" />
       </button>
     </motion.div>
   );
@@ -157,7 +163,7 @@ export function FeaturesSection() {
             className="hidden md:inline-flex items-center gap-2 text-sm font-medium text-gray-600 border border-gray-300 px-5 py-2.5 rounded-full hover:border-gray-900 hover:text-gray-900 transition-all duration-200 whitespace-nowrap"
           >
             Mulai Evaluasi
-            <ArrowUpRight size={14} />
+            <IconArrowUpRight size={14} />
           </Link>
         </motion.div>
       </div>

@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
 import ShaderBackground from '@/components/ShaderBackground';
+import { IconArrowUpRight } from '@/components/icons/CustomIcons';
 
 export function CTASection() {
   return (
@@ -61,7 +61,7 @@ export function CTASection() {
             >
               Mulai Gratis
               <span className="bg-gray-900 rounded-full p-2 group-hover:bg-white transition-colors">
-                <ArrowUpRight className="w-4 h-4 text-white" />
+                <IconArrowUpRight size={14} className="text-white group-hover:text-gray-900" />
               </span>
             </Link>
 

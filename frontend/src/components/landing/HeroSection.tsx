@@ -2,18 +2,17 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import {
-  Sparkles,
-  ArrowUpRight,
-  Users,
-  ChevronRight,
-  Menu,
-  X,
-  Clock,
-} from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import ShaderBackground from '@/components/ShaderBackground';
 import TextRollButton from '@/components/TextRollButton';
 import { useState, useEffect } from 'react';
+import {
+  IconSparkle,
+  IconArrowUpRight,
+  IconTelemetrySignal,
+  IconChevronRight,
+  IconClock,
+} from '@/components/icons/CustomIcons';
 
 /* ────────────────────────────────────────
    NAVBAR (centered links, right CTA)
@@ -48,7 +47,7 @@ function Navbar() {
       <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
         <a href="#about" className="text-gray-800 text-sm font-medium hover:text-gray-900 transition-colors">Solusi</a>
         <a href="#metrics" className="text-gray-800 text-sm font-medium hover:text-gray-900 transition-colors flex items-center gap-1">
-          Kapabilitas <ChevronRight size={14} className="opacity-50" />
+          Kapabilitas <IconChevronRight size={14} className="opacity-50" />
         </a>
         <a href="#features" className="text-gray-800 text-sm font-medium hover:text-gray-900 transition-colors">Skenario</a>
         <Link href="/recruiter" className="text-gray-800 text-sm font-medium hover:text-gray-900 transition-colors">Rekruiter</Link>
@@ -57,7 +56,7 @@ function Navbar() {
       {/* Desktop right: clock + CTA */}
       <div className="hidden md:flex items-center gap-4">
         <span className="flex items-center gap-1.5 text-[13px] text-gray-500 font-medium">
-          <Clock size={13} />{timeString || '08:00'} WIB
+          <IconClock size={13} />{timeString || '08:00'} WIB
         </span>
         <Link href="/signup">
           <TextRollButton text="Mulai Gratis" variant="dark" size="sm" />
@@ -99,7 +98,7 @@ function HeroBadge() {
       transition={{ duration: 0.5, delay: 0.1 }}
       className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white/20 shadow-sm"
     >
-      <Sparkles size={14} className="text-[#F26522]" />
+      <IconSparkle size={14} className="text-[#F26522]" />
       <span className="text-[13px] font-medium text-gray-800">Evaluasi Presisi</span>
     </motion.div>
   );
@@ -117,7 +116,7 @@ function BottomLeftCard() {
       className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-20 bg-white/30 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-lg"
     >
       <div className="flex items-center gap-2 mb-2 sm:mb-3">
-        <Users size={13} className="text-gray-700" />
+        <IconTelemetrySignal size={14} className="text-[#F26522]" />
         <span className="text-xs sm:text-sm font-semibold text-gray-900">1,200+ Evaluasi Selesai</span>
       </div>
       <Link
@@ -164,7 +163,7 @@ function BottomRightCorner() {
         {/* Content */}
         <div className="flex items-start gap-3">
           <div className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <ArrowUpRight size={14} className="text-gray-400" />
+            <IconArrowUpRight size={14} className="text-gray-500" />
           </div>
           <div>
             <p className="text-[11px] text-gray-400 uppercase tracking-widest leading-snug">Dokumentasi</p>
@@ -227,7 +226,7 @@ export function HeroSection() {
             >
               Coba Simulasi
               <span className="bg-white rounded-full p-2">
-                <ArrowUpRight className="w-4 h-4 text-gray-900" />
+                <IconArrowUpRight size={14} className="text-gray-900" />
               </span>
             </Link>
             <Link
