@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { HeroSection } from '@/components/landing/HeroSection';
+import { InfoSection } from '@/components/landing/InfoSection';
 import { MetricsSection } from '@/components/landing/MetricsSection';
+import { UseCasesSection } from '@/components/landing/UseCasesSection';
 import { FeaturesSection } from '@/components/landing/FeaturesSection';
 import { CTASection } from '@/components/landing/CTASection';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
@@ -12,19 +14,25 @@ export default function LandingPage() {
     <SmoothScrollProvider>
       <main className="min-h-screen bg-[#f0f0f0]">
 
-        {/* 1. Hero — full-screen centered rounded card with shader + bottom elements */}
+        {/* 1. HERO — Full-screen rounded card with ShaderBackground */}
         <HeroSection />
 
-        {/* 2. Metrics — 2×4 grid with Skillens platform numbers */}
+        {/* 2. SOLUSI (#about) — Kenali Solusi Skillens & Candidate Scorecard */}
+        <InfoSection />
+
+        {/* 3. KAPABILITAS (#metrics) — Platform dalam angka */}
         <MetricsSection />
 
-        {/* 3. Features — 3-col × 2-row white card grid */}
+        {/* 4. SKENARIO (#scenarios) — Skenario Evaluasi Otentik & Telemetri Engine */}
+        <UseCasesSection />
+
+        {/* 5. FITUR (#features) — Dirancang untuk evaluasi berkinerja tinggi */}
         <FeaturesSection />
 
-        {/* 4. CTA — dark centered rounded card */}
+        {/* 6. CTA — Rekrut berdasarkan bukti, bukan asumsi */}
         <CTASection />
 
-        {/* 5. Footer */}
+        {/* 7. FOOTER */}
         <footer className="w-full max-w-[1760px] mx-auto px-5 md:px-10 py-12 md:py-16 border-t border-gray-200/60 mt-5">
           <div className="flex flex-col md:flex-row items-start justify-between gap-12">
 
