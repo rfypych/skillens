@@ -24,9 +24,9 @@ const item: Variants = {
 
 export function MetricsSection() {
   return (
-    <section id="metrics" className="w-full max-w-[1720px] mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 md:py-10">
+    <section id="metrics" className="w-full max-w-[1536px] mx-auto px-2 sm:px-3 md:px-4 py-4 md:py-8">
       <div
-        className="border rounded-2xl sm:rounded-[2.5rem] lg:rounded-[3rem] p-5 sm:p-8 md:p-14"
+        className="border rounded-[1.5rem] md:rounded-[3rem] p-5 sm:p-8 md:p-12"
         style={{
           backgroundColor: 'rgba(30,50,90,0.02)',
           borderColor: 'rgba(30,50,90,0.06)',
@@ -38,32 +38,33 @@ export function MetricsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-xs sm:text-[13px] uppercase tracking-widest text-gray-400 font-medium mb-6 sm:mb-10"
+          className="text-[11px] sm:text-[13px] uppercase tracking-widest text-gray-400 font-medium mb-6 sm:mb-10"
         >
           Platform dalam angka
         </motion.p>
 
-        {/* 2-col on mobile, 4-col on desktop */}
+        {/* 4-col × 2-row grid */}
         <motion.div
           variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-60px' }}
-          className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+          className="grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-y"
+          style={{ '--tw-divide-opacity': 1, borderColor: 'rgba(30,50,90,0.08)' } as React.CSSProperties}
         >
           {METRICS.map((m, i) => (
             <motion.div
               key={i}
               variants={item}
-              className="flex flex-col gap-1 p-4 sm:p-6 md:p-8 bg-white/50 backdrop-blur-xs rounded-xl sm:rounded-2xl border border-gray-200/40 shadow-2xs"
+              className="flex flex-col gap-1 p-4 sm:p-6 md:p-7"
             >
               <span
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 tabular-nums leading-none"
+                className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 tabular-nums leading-none"
                 style={{ letterSpacing: '-0.04em' }}
               >
                 {m.value}
               </span>
-              <span className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 font-medium">{m.label}</span>
+              <span className="text-sm text-gray-500 mt-1">{m.label}</span>
             </motion.div>
           ))}
         </motion.div>
