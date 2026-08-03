@@ -49,7 +49,6 @@ function Navbar() {
         <a href="#metrics" className="text-gray-800 text-sm font-medium hover:text-gray-900 transition-colors flex items-center gap-1">
           Kapabilitas <IconChevronRight size={14} className="opacity-50" />
         </a>
-        <a href="#features" className="text-gray-800 text-sm font-medium hover:text-gray-900 transition-colors">Skenario</a>
         <Link href="/recruiter" className="text-gray-800 text-sm font-medium hover:text-gray-900 transition-colors">Rekruiter</Link>
       </div>
 
@@ -76,7 +75,6 @@ function Navbar() {
         <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md rounded-2xl mx-3 mt-2 p-5 shadow-xl z-50 flex flex-col gap-3">
           <a href="#about" onClick={() => setOpen(false)} className="text-base font-medium text-gray-900 py-1">Solusi</a>
           <a href="#metrics" onClick={() => setOpen(false)} className="text-base font-medium text-gray-900 py-1">Kapabilitas</a>
-          <a href="#features" onClick={() => setOpen(false)} className="text-base font-medium text-gray-900 py-1">Skenario</a>
           <Link href="/recruiter" onClick={() => setOpen(false)} className="text-base font-medium text-gray-900 py-1">Rekruiter</Link>
           <Link href="/signup" className="mt-2 block">
             <TextRollButton text="Mulai Gratis" variant="orange" size="md" className="w-full justify-between" />

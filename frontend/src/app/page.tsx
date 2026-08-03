@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { HeroSection } from '@/components/landing/HeroSection';
 import { SolusiSection } from '@/components/landing/SolusiSection';
-import { SkenarioSection } from '@/components/landing/SkenarioSection';
 import { MetricsSection } from '@/components/landing/MetricsSection';
 import { FeaturesSection } from '@/components/landing/FeaturesSection';
 import { CTASection } from '@/components/landing/CTASection';
@@ -17,22 +16,19 @@ export default function LandingPage() {
         {/* 1. Hero */}
         <HeroSection />
 
-        {/* 2. Solusi Section (RIVR aesthetic) */}
+        {/* 2. Solusi Section */}
         <SolusiSection />
 
-        {/* 3. Skenario Section (RIVR aesthetic) */}
-        <SkenarioSection />
-
-        {/* 4. Metrics Section */}
+        {/* 3. Metrics Section */}
         <MetricsSection />
 
-        {/* 5. Features Section */}
+        {/* 4. Features Section */}
         <FeaturesSection />
 
-        {/* 6. CTA Section */}
+        {/* 5. CTA Section */}
         <CTASection />
 
-        {/* 7. Footer */}
+        {/* 6. Footer */}
         <footer className="w-full max-w-[1760px] mx-auto px-5 md:px-10 py-12 md:py-16 border-t border-gray-200/60 mt-5">
           <div className="flex flex-col md:flex-row items-start justify-between gap-12">
 
@@ -51,7 +47,7 @@ export default function LandingPage() {
               <div>
                 <p className="text-[11px] uppercase tracking-widest text-gray-400 font-medium mb-4">Protocol</p>
                 <ul className="space-y-3">
-                  {['Solusi', 'Skenario', 'Kapabilitas', 'Harga'].map((l) => (
+                  {['Solusi', 'Kapabilitas', 'Harga'].map((l) => (
                     <li key={l}>
                       <a href="#" className="text-gray-400 hover:text-gray-900 transition-colors duration-200">{l}</a>
                     </li>
