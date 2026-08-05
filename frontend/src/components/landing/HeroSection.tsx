@@ -1,3 +1,4 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S4 R5 V5 · genre: modern-minimal */
 'use client';
 
 import { motion } from 'framer-motion';
@@ -84,7 +85,7 @@ function Navbar() {
 }
 
 /* ────────────────────────────────────────
-   HERO SECTION (main export)
+   HERO SECTION (Hallmark Modern-Minimal)
 ──────────────────────────────────────── */
 export function HeroSection() {
   return (
@@ -99,33 +100,23 @@ export function HeroSection() {
         {/* Navbar */}
         <Navbar />
 
-        {/* ── Main Heading + Subtitle ── */}
-        <div className="relative z-30 flex flex-col items-center text-center px-5 mt-[4vh] sm:mt-[7vh] md:mt-[8vh]">
+        {/* ── Main Headline + Subtitle (Pure Roman Typography — Hallmark Anti-Slop) ── */}
+        <div className="relative z-30 flex flex-col items-center text-center px-5 mt-[5vh] sm:mt-[8vh] md:mt-[9vh]">
           <motion.h1
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-gray-900 leading-[0.95]"
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="text-gray-900 leading-[0.98] font-sans font-semibold tracking-[-0.04em] text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] max-w-5xl"
           >
-            <span
-              className="block font-playfair italic font-normal text-5xl sm:text-7xl md:text-8xl lg:text-[8.5rem]"
-              style={{ letterSpacing: '-0.05em' }}
-            >
-              Merekrut tanpa
-            </span>
-            <span
-              className="block font-normal text-5xl sm:text-7xl md:text-8xl lg:text-[8.5rem] -mt-1 sm:-mt-3 md:-mt-5"
-              style={{ letterSpacing: '-0.08em' }}
-            >
-              tebakan.
-            </span>
+            Merekrut berdasarkan <br className="hidden sm:inline" />
+            <span className="text-[#F26522]">bukti kemampuan.</span>
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-gray-600 text-sm sm:text-base md:text-lg max-w-xl mx-auto text-center font-normal leading-relaxed mt-6 sm:mt-8"
+            transition={{ duration: 0.7, delay: 0.35 }}
+            className="text-gray-600 text-base sm:text-lg md:text-xl max-w-2xl mx-auto text-center font-normal leading-relaxed mt-6 sm:mt-8"
           >
             Evaluasi keahlian nyata kandidat lewat simulasi studi kasus interaktif yang tidak bisa diakali AI.
           </motion.p>
@@ -133,12 +124,12 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.55 }}
-            className="flex items-center gap-3 mt-8"
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="flex items-center gap-4 mt-8 sm:mt-10"
           >
             <Link
               href="/signup"
-              className="inline-flex items-center gap-3 bg-gray-900 text-white text-base font-medium pl-7 pr-2 py-2 rounded-full hover:bg-[#F26522] transition-colors duration-200 shadow-md"
+              className="inline-flex items-center gap-3 bg-gray-900 text-white text-base font-medium pl-7 pr-2.5 py-2.5 rounded-full hover:bg-[#F26522] transition-colors duration-200 shadow-md"
             >
               Coba Simulasi
               <span className="bg-white rounded-full p-2">
@@ -147,7 +138,7 @@ export function HeroSection() {
             </Link>
             <Link
               href="/login"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors px-4 py-2"
+              className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors px-4 py-2"
             >
               Sudah punya akun →
             </Link>
@@ -158,8 +149,8 @@ export function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.65 }}
-          className="hidden sm:block absolute bottom-10 sm:bottom-14 left-8 md:left-14 max-w-[260px] z-30"
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="hidden sm:block absolute bottom-10 sm:bottom-14 left-8 md:left-14 max-w-[280px] z-30"
         >
           <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
             Setiap tahapan simulasi mencatat kapabilitas nyata kandidat, dari kedalaman pemecahan masalah hingga penalaran keputusan.
@@ -203,7 +194,6 @@ export function HeroSection() {
             </Link>
           </div>
         </div>
-
 
       </section>
     </div>
