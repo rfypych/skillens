@@ -84,43 +84,6 @@ function Navbar() {
 }
 
 /* ────────────────────────────────────────
-   HERO BADGE
-──────────────────────────────────────── */
-function HeroBadge() {
-  const [stageIdx, setStageIdx] = useState(0);
-
-  const STAGES = [
-    { text: 'analyzing...', cssClass: 'ascii-anim-rain', color: 'text-[#F26522]' },
-    { text: 'evaluating...', cssClass: 'ascii-anim-wave', color: 'text-[#F26522]' },
-    { text: 'synthesizing...', cssClass: 'ascii-anim-fill', color: 'text-[#F26522]' },
-    { text: 'verified.', cssClass: 'ascii-anim-done', color: 'text-emerald-600' },
-  ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setStageIdx((prev) => (prev + 1) % STAGES.length);
-    }, 2500);
-    return () => clearInterval(timer);
-  }, []);
-
-  const current = STAGES[stageIdx];
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.1 }}
-      className="inline-flex items-center justify-center gap-3 px-5 h-[38px] w-[240px] rounded-full bg-white/90 backdrop-blur-md border border-gray-200/90 shadow-sm font-mono text-xs select-none whitespace-nowrap overflow-hidden mb-4 sm:mb-6"
-    >
-      <span className={`${current.cssClass} ${current.color} font-bold flex-shrink-0`} />
-      <span className="text-gray-900 font-medium tracking-wide w-[110px] text-left truncate flex-shrink-0">
-        {current.text}
-      </span>
-    </motion.div>
-  );
-}
-
-/* ────────────────────────────────────────
    HERO SECTION (main export)
 ──────────────────────────────────────── */
 export function HeroSection() {
@@ -136,10 +99,8 @@ export function HeroSection() {
         {/* Navbar */}
         <Navbar />
 
-        {/* ── Heading (centered) ── */}
-        <div className="relative z-30 flex flex-col items-center text-center px-5 mt-[3vh] sm:mt-[5vh] md:mt-[6vh]">
-          <HeroBadge />
-
+        {/* ── Main Heading + Subtitle ── */}
+        <div className="relative z-30 flex flex-col items-center text-center px-5 mt-[4vh] sm:mt-[7vh] md:mt-[8vh]">
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -159,38 +120,90 @@ export function HeroSection() {
               tebakan.
             </span>
           </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-gray-600 text-sm sm:text-base md:text-lg max-w-xl mx-auto text-center font-normal leading-relaxed mt-6 sm:mt-8"
+          >
+            Evaluasi keahlian nyata kandidat lewat simulasi studi kasus interaktif yang tidak bisa diakali AI.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.55 }}
+            className="flex items-center gap-3 mt-8"
+          >
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-3 bg-gray-900 text-white text-base font-medium pl-7 pr-2 py-2 rounded-full hover:bg-[#F26522] transition-colors duration-200 shadow-md"
+            >
+              Coba Simulasi
+              <span className="bg-white rounded-full p-2">
+                <IconArrowUpRight size={14} className="text-gray-900" />
+              </span>
+            </Link>
+            <Link
+              href="/login"
+              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors px-4 py-2"
+            >
+              Sudah punya akun →
+            </Link>
+          </motion.div>
         </div>
 
         {/* ── Bottom-Left Paragraph Block ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 0.65 }}
           className="hidden sm:block absolute bottom-10 sm:bottom-14 left-8 md:left-14 max-w-[260px] z-30"
         >
           <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
-            Every layer of assessment records a candidate&apos;s true capability, from problem-solving depth to decision reasoning.
+            Setiap tahapan simulasi mencatat kapabilitas nyata kandidat, dari kedalaman pemecahan masalah hingga penalaran keputusan.
           </p>
         </motion.div>
 
-        {/* ── Bottom-Right Action Block ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.75 }}
-          className="absolute bottom-8 sm:bottom-12 right-6 md:right-14 max-w-full sm:max-w-[280px] flex flex-col items-start sm:items-end gap-3 sm:gap-4 z-30"
-        >
-          <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal text-left sm:text-right">
-            Evaluasi keahlian nyata kandidat lewat simulasi studi kasus interaktif yang tidak bisa diakali AI.
-          </p>
-          <Link
-            href="/signup"
-            className="bg-[#F26522] hover:bg-[#d85415] text-white text-sm font-medium px-7 py-3 rounded-full transition-all hover:scale-[1.03] active:scale-95 shadow-lg shadow-[#F26522]/20 inline-flex items-center gap-2"
-          >
-            Mulai Simulasi
-            <IconArrowUpRight size={14} />
-          </Link>
-        </motion.div>
+        {/* ── Bottom-Right Inverted Cut-Out Corner Widget (Reference Match) ── */}
+        <div className="hidden sm:block absolute bottom-0 right-0 z-30">
+          <div className="relative bg-[#f0f0f0] p-5 pt-6 pl-10 rounded-tl-[3.5rem] min-w-[15rem]">
+            {/* SVG inverted corner top edge */}
+            <svg
+              className="absolute top-0 right-0 h-14"
+              style={{ top: 0, left: 'calc(3.5rem - 0.5px)', width: '3.5rem', transform: 'translateX(-100%)' }}
+              viewBox="0 0 56 56"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M56 56V0C56 30.9279 30.9279 56 0 56H56Z" fill="#f0f0f0" />
+            </svg>
+            {/* SVG inverted corner left edge */}
+            <svg
+              className="absolute left-0"
+              style={{ bottom: 'calc(3.5rem - 0.5px)', top: 'auto', height: '3.5rem', width: '3.5rem', transform: 'translateY(100%)' }}
+              viewBox="0 0 56 56"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M56 56V0C56 30.9279 30.9279 56 0 56H56Z" fill="#f0f0f0" />
+            </svg>
+
+            {/* Corner Content matching uploaded reference image */}
+            <Link href="/signup" className="flex items-center gap-3.5 group/corner">
+              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center flex-shrink-0 group-hover/corner:bg-[#F26522] group-hover/corner:border-[#F26522] transition-colors duration-200">
+                <IconArrowUpRight size={16} className="text-gray-800 group-hover/corner:text-white transition-colors" />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-xs font-semibold text-gray-900 leading-tight">Dokumentasi</span>
+                <span className="text-[11px] font-medium text-gray-500 flex items-center gap-0.5 group-hover/corner:text-[#F26522] transition-colors">
+                  Panduan &gt;
+                </span>
+              </div>
+            </Link>
+          </div>
+        </div>
 
       </section>
     </div>
