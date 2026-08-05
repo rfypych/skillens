@@ -17,16 +17,21 @@ export default function JobDetail() {
   const [applying, setApplying] = useState(false);
   const [error, setError] = useState('');
   const [alreadyApplied, setAlreadyApplied] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
     Promise.all([
       api.get(`/jobs/${jobId}`),
       api.get('/applications').catch(() => []),
+      api.get('/auth/me').catch(() => null),
     ])
-      .then(([jobData, appsData]) => {
+      .then(([jobData, appsData, meData]) => {
         setJob(jobData);
         if (Array.isArray(appsData)) {
           setAlreadyApplied(appsData.some((a: any) => String(a.job_id) === String(jobId)));
+        }
+        if (meData) {
+          setUserProfile(meData);
         }
         setLoading(false);
       })
@@ -34,6 +39,7 @@ export default function JobDetail() {
         setLoading(false);
       });
   }, [jobId, router]);
+
 
   const handleApply = async () => {
     setApplying(true);
@@ -220,6 +226,35 @@ export default function JobDetail() {
           {/* ── RIGHT: Sticky CTA card ────────────────────── */}
           <div className="hidden lg:block">
             <div className="sticky top-20 border border-gray-200 p-6 space-y-6">
+
+              {/* Attached CV Banner */}
+              {userProfile?.profile?.resume_url ? (
+                <div className="p-3.5 bg-emerald-50 border border-emerald-200/80 rounded-2xl flex items-center justify-between">
+                  <div className="flex items-center gap-2.5 text-xs text-emerald-900 font-medium">
+                    <span className="text-emerald-600 font-bold text-sm">✓</span>
+                    <div className="flex flex-col text-left">
+                      <span className="font-semibold text-emerald-950">CV Otomatis Terpasang</span>
+                      <span className="text-[11px] text-emerald-700 truncate max-w-[140px]">
+                        {userProfile.profile.resume_url.split('/').pop()}
+                      </span>
+                    </div>
+                  </div>
+                  <Link href="/candidate/profile" className="text-[11px] font-semibold text-gray-600 hover:text-black underline">
+                    Ubah di Pengaturan
+                  </Link>
+                </div>
+              ) : (
+                <div className="p-3.5 bg-amber-50 border border-amber-200/80 rounded-2xl flex items-center justify-between">
+                  <div className="flex items-center gap-2.5 text-xs text-amber-900 font-medium">
+                    <span className="text-amber-600 font-bold">!</span>
+                    <span>Belum ada CV di profil</span>
+                  </div>
+                  <Link href="/candidate/profile" className="text-[11px] font-semibold text-[#F26522] underline">
+                    Upload di Pengaturan
+                  </Link>
+                </div>
+              )}
+
               {/* Main CTA */}
               <button
                 onClick={!alreadyApplied ? handleApply : undefined}
@@ -241,6 +276,7 @@ export default function JobDetail() {
               {error && (
                 <p className="text-sm text-red-600">{error}</p>
               )}
+
 
               {/* Quick facts */}
               <div className="space-y-3 border-t border-gray-100 pt-5 text-sm text-gray-500">

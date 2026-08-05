@@ -9,6 +9,7 @@ import { api } from '@/lib/api';
 import clsx from 'clsx';
 import SponsorLogos from '@/components/SponsorLogos';
 import { LanguageProvider, useLanguage } from '@/i18n/LanguageContext';
+import OnboardingWizardModal from '@/components/OnboardingWizardModal';
 
 const sidebarLinks = [
   { nameKey: 'sidebar.command_center', href: '/recruiter', icon: Dashboard },
@@ -24,6 +25,8 @@ function RecruiterLayoutContent({ children }: { children: React.ReactNode }) {
   const [userName, setUserName] = useState('Recruiter');
   const [userInitials, setUserInitials] = useState('RC');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -33,10 +36,16 @@ function RecruiterLayoutContent({ children }: { children: React.ReactNode }) {
           router.push('/login');
           return;
         }
+        setUserData(data);
         if (data?.full_name) {
           setUserName(data.full_name);
           const parts = data.full_name.split(' ');
           setUserInitials(parts.map((p: string) => p[0]).join('').toUpperCase().slice(0, 2));
+        }
+
+        // Auto open recruiter setup wizard if full_name is missing or placeholder
+        if (!data?.full_name || data?.full_name === 'Recruiter') {
+          setShowWizard(true);
         }
       }).catch(() => {
         router.push('/login');
@@ -47,6 +56,7 @@ function RecruiterLayoutContent({ children }: { children: React.ReactNode }) {
     window.addEventListener('user-profile-updated', fetchUser);
     return () => window.removeEventListener('user-profile-updated', fetchUser);
   }, [router]);
+
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -175,9 +185,17 @@ function RecruiterLayoutContent({ children }: { children: React.ReactNode }) {
           <SponsorLogos />
         </div>
       </main>
+
+      <OnboardingWizardModal
+        isOpen={showWizard}
+        userRole="recruiter"
+        initialData={userData}
+        onComplete={() => setShowWizard(false)}
+      />
     </div>
   );
 }
+
 
 export default function RecruiterLayout({ children }: { children: React.ReactNode }) {
   return (

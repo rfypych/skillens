@@ -9,6 +9,8 @@ import { api } from '@/lib/api';
 import clsx from 'clsx';
 import SponsorLogos from '@/components/SponsorLogos';
 import { LanguageProvider, useLanguage } from '@/i18n/LanguageContext';
+import OnboardingWizardModal from '@/components/OnboardingWizardModal';
+
 
 const sidebarLinks = [
   { nameKey: 'sidebar.dashboard', href: '/candidate/dashboard', icon: Dashboard },
@@ -22,6 +24,8 @@ function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
   const [userName, setUserName] = useState('Candidate');
   const [userInitials, setUserInitials] = useState('CA');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
   const { t } = useLanguage();
 
   const isPublicAssessmentPage = pathname.includes('/candidate/test/') || 
@@ -37,10 +41,16 @@ function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
           router.push('/login');
           return;
         }
+        setUserData(data);
         if (data?.full_name) {
           setUserName(data.full_name);
           const parts = data.full_name.split(' ');
           setUserInitials(parts.map((p: string) => p[0]).join('').toUpperCase().slice(0, 2));
+        }
+
+        // Auto open wizard if profile data (name or CV) is missing
+        if (!data?.full_name || !data?.profile?.resume_url) {
+          setShowWizard(true);
         }
       }).catch(() => {
         router.push('/login');
@@ -51,6 +61,7 @@ function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
     window.addEventListener('user-profile-updated', fetchUser);
     return () => window.removeEventListener('user-profile-updated', fetchUser);
   }, [router, isPublicAssessmentPage]);
+
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -181,9 +192,17 @@ function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
           <SponsorLogos />
         </div>
       </main>
+
+      <OnboardingWizardModal
+        isOpen={showWizard}
+        userRole="candidate"
+        initialData={userData}
+        onComplete={() => setShowWizard(false)}
+      />
     </div>
   );
 }
+
 
 export default function CandidateLayout({ children }: { children: React.ReactNode }) {
   return (
