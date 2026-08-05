@@ -89,34 +89,34 @@ function Navbar() {
    HERO BADGE
 ──────────────────────────────────────── */
 function HeroBadge() {
-  const [verbIdx, setVerbIdx] = useState(0);
+  const [stageIdx, setStageIdx] = useState(0);
 
-  const VERBS = [
-    'evaluating...',
-    'architecting...',
-    'synthesizing...',
-    'distilling...',
-    'calibrating...',
-    'orchestrating...',
+  const STAGES = [
+    { text: 'analyzing...', cssClass: 'ascii-anim-rain', color: 'text-[#F26522]' },
+    { text: 'evaluating...', cssClass: 'ascii-anim-wave', color: 'text-[#F26522]' },
+    { text: 'synthesizing...', cssClass: 'ascii-anim-fill', color: 'text-[#F26522]' },
+    { text: 'verified.', cssClass: 'ascii-anim-done', color: 'text-emerald-600' },
   ];
 
   useEffect(() => {
-    const verbTimer = setInterval(() => {
-      setVerbIdx((prev) => (prev + 1) % VERBS.length);
-    }, 3000);
-    return () => clearInterval(verbTimer);
+    const timer = setInterval(() => {
+      setStageIdx((prev) => (prev + 1) % STAGES.length);
+    }, 2500);
+    return () => clearInterval(timer);
   }, []);
+
+  const current = STAGES[stageIdx];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="inline-flex items-center justify-center gap-3 px-5 py-2 rounded-full bg-white/90 backdrop-blur-md border border-gray-200/90 shadow-sm font-mono text-xs select-none whitespace-nowrap"
+      className="inline-flex items-center justify-center gap-3 px-5 h-[38px] w-[240px] rounded-full bg-white/90 backdrop-blur-md border border-gray-200/90 shadow-sm font-mono text-xs select-none whitespace-nowrap overflow-hidden"
     >
-      <span className="braille-rain text-[#F26522] font-bold flex-shrink-0" />
-      <span className="text-gray-900 font-medium tracking-wide">
-        {VERBS[verbIdx]}
+      <span className={`${current.cssClass} ${current.color} font-bold flex-shrink-0`} />
+      <span className="text-gray-900 font-medium tracking-wide w-[110px] text-left truncate flex-shrink-0">
+        {current.text}
       </span>
     </motion.div>
   );
