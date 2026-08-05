@@ -48,14 +48,16 @@ function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
           setUserInitials(parts.map((p: string) => p[0]).join('').toUpperCase().slice(0, 2));
         }
 
-        // Auto open wizard if profile data (name or CV) is missing
-        if (!data?.full_name || !data?.profile?.resume_url) {
+        // Only open wizard if not dismissed in current session AND profile data is incomplete
+        const isDismissed = typeof window !== 'undefined' && sessionStorage.getItem('onboarding_wizard_dismissed') === 'true';
+        if (!isDismissed && (!data?.full_name || !data?.profile?.resume_url)) {
           setShowWizard(true);
         }
       }).catch(() => {
         router.push('/login');
       });
     };
+
 
     fetchUser();
     window.addEventListener('user-profile-updated', fetchUser);
@@ -197,8 +199,14 @@ function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
         isOpen={showWizard}
         userRole="candidate"
         initialData={userData}
-        onComplete={() => setShowWizard(false)}
+        onComplete={() => {
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('onboarding_wizard_dismissed', 'true');
+          }
+          setShowWizard(false);
+        }}
       />
+
     </div>
   );
 }

@@ -43,14 +43,16 @@ function RecruiterLayoutContent({ children }: { children: React.ReactNode }) {
           setUserInitials(parts.map((p: string) => p[0]).join('').toUpperCase().slice(0, 2));
         }
 
-        // Auto open recruiter setup wizard if full_name is missing or placeholder
-        if (!data?.full_name || data?.full_name === 'Recruiter') {
+        // Auto open recruiter setup wizard if full_name is missing or placeholder (and not dismissed in current session)
+        const isDismissed = typeof window !== 'undefined' && sessionStorage.getItem('onboarding_wizard_dismissed') === 'true';
+        if (!isDismissed && (!data?.full_name || data?.full_name === 'Recruiter')) {
           setShowWizard(true);
         }
       }).catch(() => {
         router.push('/login');
       });
     };
+
     
     fetchUser();
     window.addEventListener('user-profile-updated', fetchUser);
@@ -190,8 +192,14 @@ function RecruiterLayoutContent({ children }: { children: React.ReactNode }) {
         isOpen={showWizard}
         userRole="recruiter"
         initialData={userData}
-        onComplete={() => setShowWizard(false)}
+        onComplete={() => {
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('onboarding_wizard_dismissed', 'true');
+          }
+          setShowWizard(false);
+        }}
       />
+
     </div>
   );
 }
