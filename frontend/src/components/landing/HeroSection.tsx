@@ -89,19 +89,51 @@ function Navbar() {
    HERO BADGE
 ──────────────────────────────────────── */
 function HeroBadge() {
+  const [frame, setFrame] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    let raf: number;
+    let effect: any = null;
+
+    import('@zane-chen/agents-are-thinking').then((mod) => {
+      if (!active) return;
+      const EffectClass = mod.BarWave || mod.BrailleWave || mod.BrailleRain;
+      effect = new EffectClass();
+
+      let last = 0;
+      const tick = (t: number) => {
+        if (!active) return;
+        if (t - last >= 80) {
+          setFrame(effect.step());
+          last = t;
+        }
+        raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    }).catch(() => {
+      if (active) setFrame('⠋⠙⠹⠸');
+    });
+
+    return () => {
+      active = false;
+      if (raf) cancelAnimationFrame(raf);
+      if (effect && typeof effect.free === 'function') effect.free();
+    };
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-gray-200/80 shadow-sm hover:border-gray-300 transition-colors"
+      className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-gray-900/90 backdrop-blur-md border border-gray-800 text-white shadow-md font-mono text-[11px] select-none"
     >
-      <span className="relative flex h-2 w-2">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F26522] opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F26522]"></span>
+      <span className="text-[#F26522] font-bold tracking-tighter min-w-[7ch]">
+        {frame || '⠋⠙⠹⠸'}
       </span>
-      <span className="text-xs font-medium text-gray-800 tracking-tight">
-        Simulasi Evaluasi Teknikal Real-Time
+      <span className="text-gray-200 tracking-wider">
+        EVALUATION ENGINE // ACTIVE
       </span>
     </motion.div>
   );
