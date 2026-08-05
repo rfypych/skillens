@@ -94,10 +94,13 @@ function HeroBadge() {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white/20 shadow-sm"
+      className="inline-flex items-center gap-3 px-4.5 py-1.5 rounded-full bg-gray-900/90 backdrop-blur-md border border-gray-700/60 shadow-md font-mono text-[11px]"
     >
-      <IconSparkle size={14} className="text-[#F26522]" />
-      <span className="text-[13px] font-medium text-gray-800">Evaluasi Presisi</span>
+      <span className="text-[#F26522]">◢◤</span>
+      <span className="text-gray-100 tracking-wider font-medium">
+        [ ◈ SKILLENS // EVAL_ENGINE ]
+      </span>
+      <span className="text-[#F26522]">◥◣</span>
     </motion.div>
   );
 }
