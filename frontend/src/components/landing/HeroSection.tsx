@@ -94,13 +94,15 @@ function HeroBadge() {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="inline-flex items-center gap-3 px-4.5 py-1.5 rounded-full bg-gray-900/90 backdrop-blur-md border border-gray-700/60 shadow-md font-mono text-[11px]"
+      className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-gray-200/80 shadow-sm hover:border-gray-300 transition-colors"
     >
-      <span className="text-[#F26522]">◢◤</span>
-      <span className="text-gray-100 tracking-wider font-medium">
-        [ ◈ SKILLENS // EVAL_ENGINE ]
+      <span className="relative flex h-2 w-2">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F26522] opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F26522]"></span>
       </span>
-      <span className="text-[#F26522]">◥◣</span>
+      <span className="text-xs font-medium text-gray-800 tracking-tight">
+        Simulasi Evaluasi Teknikal Real-Time
+      </span>
     </motion.div>
   );
 }
