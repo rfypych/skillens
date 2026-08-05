@@ -90,6 +90,16 @@ function Navbar() {
 ──────────────────────────────────────── */
 function HeroBadge() {
   const [frame, setFrame] = useState('');
+  const [verbIdx, setVerbIdx] = useState(0);
+
+  const VERBS = [
+    'evaluating...',
+    'architecting...',
+    'synthesizing...',
+    'distilling...',
+    'calibrating...',
+    'orchestrating...',
+  ];
 
   useEffect(() => {
     let active = true;
@@ -98,7 +108,7 @@ function HeroBadge() {
 
     import('@zane-chen/agents-are-thinking').then((mod) => {
       if (!active) return;
-      const EffectClass = mod.BarWave || mod.BrailleWave || mod.BrailleRain;
+      const EffectClass = mod.BrailleRain || mod.BrailleWave;
       effect = new EffectClass();
 
       let last = 0;
@@ -112,13 +122,18 @@ function HeroBadge() {
       };
       raf = requestAnimationFrame(tick);
     }).catch(() => {
-      if (active) setFrame('⠋⠙⠹⠸');
+      if (active) setFrame('⠋⠙⠹');
     });
+
+    const verbTimer = setInterval(() => {
+      setVerbIdx((prev) => (prev + 1) % VERBS.length);
+    }, 3000);
 
     return () => {
       active = false;
       if (raf) cancelAnimationFrame(raf);
       if (effect && typeof effect.free === 'function') effect.free();
+      clearInterval(verbTimer);
     };
   }, []);
 
@@ -127,13 +142,13 @@ function HeroBadge() {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-gray-900/90 backdrop-blur-md border border-gray-800 text-white shadow-md font-mono text-[11px] select-none"
+      className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#0F172A] text-[#FACC15] border border-slate-800 shadow-md font-mono text-xs select-none"
     >
-      <span className="text-[#F26522] font-bold tracking-tighter min-w-[7ch]">
-        {frame || '⠋⠙⠹⠸'}
+      <span className="font-bold tracking-tighter min-w-[5ch] text-[#FACC15]">
+        {frame || '⠋⠙⠹'}
       </span>
-      <span className="text-gray-200 tracking-wider">
-        EVALUATION ENGINE // ACTIVE
+      <span className="text-[#FACC15] tracking-wide font-medium">
+        {VERBS[verbIdx]}
       </span>
     </motion.div>
   );
