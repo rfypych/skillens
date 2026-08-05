@@ -42,6 +42,30 @@ body {
   background-color: #f0f0f0;
 }
 
+/* Agents Are Thinking Braille Rain CSS Animation */
+@keyframes braille-rain {
+  0.00% { content: "⠀⠀⡀⢄⡢⠕⠊⠁⠀"; }
+  14.29% { content: "⠊⠊⠁⠀⡀⢄⡢⠕⠊"; }
+  28.57% { content: "⡢⡢⠕⠊⠁⠀⡀⢄⡢"; }
+  42.86% { content: "⡀⡀⢄⡢⠕⠊⠁⠀⡀"; }
+  57.14% { content: "⠁⠁⠀⡀⢄⡢⠕⠊⠁"; }
+  71.43% { content: "⠕⠕⠊⠁⠀⡀⢄⡢⠕"; }
+  85.71% { content: "⢄⢄⡢⠕⠊⠁⠀⡀⢄"; }
+  100% { content: "⠀⠀⡀⢄⡢⠕⠊⠁⠀"; }
+}
+
+.braille-rain::before {
+  content: "⠀⠀⡀⢄⡢⠕⠊⠁⠀";
+  display: inline-block;
+  min-width: 9ch;
+  max-width: 9ch;
+  white-space: pre;
+  line-height: 1;
+  letter-spacing: 0px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  animation: braille-rain 700ms steps(1) infinite;
+}
+
 /* Lenis Smooth Scroll CSS Rules */
 html.lenis, html.lenis body {
   height: auto;
