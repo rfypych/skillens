@@ -14,7 +14,6 @@ import {
 } from '@carbon/icons-react';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
-import TextRollButton from '@/components/TextRollButton';
 
 interface OnboardingWizardProps {
   isOpen: boolean;
@@ -44,6 +43,7 @@ export default function OnboardingWizardModal({
 
   const [fullName, setFullName] = useState(initialData?.full_name || '');
   const [bio, setBio] = useState(initialData?.profile?.bio || '');
+  const [experience, setExperience] = useState(initialData?.profile?.experience || '');
   const [companyName, setCompanyName] = useState(initialData?.profile?.company_name || '');
   const [resumeUrl, setResumeUrl] = useState(initialData?.profile?.resume_url || '');
   const [resumeFileName, setResumeFileName] = useState(
@@ -97,6 +97,7 @@ export default function OnboardingWizardModal({
         full_name: fullName.trim(),
         profile: {
           bio: bio.trim(),
+          experience: experience.trim(),
           resume_url: resumeUrl,
           company_name: companyName.trim(),
         },
@@ -134,7 +135,7 @@ export default function OnboardingWizardModal({
             </button>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
             {/* ── STEP 1 ACCORDION ITEM ── */}
             <div className="border border-gray-200/80 rounded-2xl overflow-hidden transition-all">
               <button
@@ -155,7 +156,7 @@ export default function OnboardingWizardModal({
                       isStep1Complete ? 'text-gray-900' : 'text-gray-700'
                     }`}
                   >
-                    Informasi Dasar
+                    Informasi Dasar & Pengalaman
                   </span>
                 </div>
                 {activeStep === 1 ? (
@@ -188,17 +189,31 @@ export default function OnboardingWizardModal({
                     </div>
 
                     {userRole === 'candidate' ? (
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
-                          Bio Singkat / Ringkasan Pengalaman
-                        </label>
-                        <textarea
-                          value={bio}
-                          onChange={(e) => setBio(e.target.value)}
-                          placeholder="Ringkasan latar belakang keahlian Anda..."
-                          className="w-full h-24 px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 resize-none font-normal"
-                        />
-                      </div>
+                      <>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                            Bio Singkat
+                          </label>
+                          <textarea
+                            value={bio}
+                            onChange={(e) => setBio(e.target.value)}
+                            placeholder="Ringkasan singkat latar belakang dan minat profesional Anda..."
+                            className="w-full h-20 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 resize-none font-normal"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                            Ringkasan Pengalaman Kerja
+                          </label>
+                          <textarea
+                            value={experience}
+                            onChange={(e) => setExperience(e.target.value)}
+                            placeholder="Contoh: 3 tahun di TechCorp (Backend), 2 tahun di Startup Inc (Fullstack)..."
+                            className="w-full h-24 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 resize-y font-normal"
+                          />
+                        </div>
+                      </>
                     ) : (
                       <div>
                         <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
@@ -226,7 +241,7 @@ export default function OnboardingWizardModal({
                         }}
                         className="px-5 py-2 bg-[#F26522] hover:bg-[#d85415] text-white text-xs font-semibold rounded-full transition-colors flex items-center gap-1.5 shadow-xs"
                       >
-                        Lanjut →
+                        Lanjut ke Upload CV →
                       </button>
                     </div>
                   </motion.div>

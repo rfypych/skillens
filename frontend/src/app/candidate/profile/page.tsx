@@ -27,7 +27,7 @@ export default function CandidateProfile() {
     }
   });
 
-  useEffect(() => {
+  const fetchProfile = () => {
     api.get('/auth/me')
       .then(data => {
         setFormData({
@@ -44,7 +44,14 @@ export default function CandidateProfile() {
       .catch(() => {
         router.push('/login');
       });
+  };
+
+  useEffect(() => {
+    fetchProfile();
+    window.addEventListener('user-profile-updated', fetchProfile);
+    return () => window.removeEventListener('user-profile-updated', fetchProfile);
   }, [router]);
+
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
