@@ -2,7 +2,16 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Document, User, CheckmarkOutline, Upload, Building } from '@carbon/icons-react';
+import {
+  CheckmarkFilled,
+  ChevronDown,
+  ChevronUp,
+  Close,
+  Document,
+  Upload,
+  User,
+  Building,
+} from '@carbon/icons-react';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 import TextRollButton from '@/components/TextRollButton';
@@ -29,7 +38,7 @@ export default function OnboardingWizardModal({
   initialData,
   onComplete,
 }: OnboardingWizardProps) {
-  const [step, setStep] = useState(1);
+  const [activeStep, setActiveStep] = useState<number>(1);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -42,6 +51,9 @@ export default function OnboardingWizardModal({
   );
 
   if (!isOpen) return null;
+
+  const isStep1Complete = !!fullName.trim();
+  const isStep2Complete = userRole === 'candidate' ? !!resumeUrl : !!companyName.trim();
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -64,16 +76,18 @@ export default function OnboardingWizardModal({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
 
     if (!fullName.trim()) {
       toast.error('Silakan isi Nama Lengkap Anda');
+      setActiveStep(1);
       return;
     }
 
     if (userRole === 'candidate' && !resumeUrl) {
       toast.error('Silakan unggah CV / Resume Anda terlebih dahulu');
+      setActiveStep(2);
       return;
     }
 
@@ -100,168 +114,234 @@ export default function OnboardingWizardModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs font-sans">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          initial={{ opacity: 0, scale: 0.96, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="bg-white rounded-3xl border border-gray-200 shadow-2xl max-w-lg w-full overflow-hidden font-sans"
+          exit={{ opacity: 0, scale: 0.96, y: 12 }}
+          className="bg-white rounded-[2rem] border border-gray-200/90 shadow-2xl max-w-lg w-full overflow-hidden text-gray-900"
         >
-          {/* Header Banner */}
-          <div className="bg-[#0F172A] p-6 text-white text-center relative overflow-hidden">
-            <div className="relative z-10">
-              <span className="text-[11px] font-mono tracking-widest text-[#F26522] uppercase font-bold">
-                SETUP PROFIL PERTAMA KALI
-              </span>
-              <h2 className="text-2xl font-semibold tracking-tight mt-1 text-white">
-                {userRole === 'candidate' ? 'Lengkapi Data Diri & CV' : 'Lengkapi Profil Rekruiter'}
-              </h2>
-              <p className="text-gray-400 text-xs mt-1">
-                {userRole === 'candidate'
-                  ? 'CV Anda akan otomatis terpasang saat melamar tanpa perlu upload berulang kali.'
-                  : 'Lengkapi informasi Anda untuk memulai pengelolaan pekerjaan dan evaluasi kandidat.'}
-              </p>
-            </div>
+          {/* Header Bar */}
+          <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-gray-900 tracking-tight">
+              {userRole === 'candidate' ? 'Setup Data Profil & CV' : 'Setup Profil Rekruiter'}
+            </h2>
+            <button
+              onClick={onComplete}
+              className="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <Close className="w-5 h-5" />
+            </button>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            {userRole === 'candidate' ? (
-              <>
-                {step === 1 ? (
-                  <div className="space-y-4">
+          <div className="p-6 space-y-4">
+            {/* ── STEP 1 ACCORDION ITEM ── */}
+            <div className="border border-gray-200/80 rounded-2xl overflow-hidden transition-all">
+              <button
+                type="button"
+                onClick={() => setActiveStep(1)}
+                className="w-full px-5 py-4 flex items-center justify-between bg-gray-50/50 hover:bg-gray-50 transition-colors text-left"
+              >
+                <div className="flex items-center gap-3">
+                  {isStep1Complete ? (
+                    <CheckmarkFilled className="w-5 h-5 text-[#F26522] flex-shrink-0" />
+                  ) : (
+                    <span className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs font-bold text-gray-500 flex-shrink-0">
+                      1
+                    </span>
+                  )}
+                  <span
+                    className={`text-sm font-semibold ${
+                      isStep1Complete ? 'text-gray-900' : 'text-gray-700'
+                    }`}
+                  >
+                    Informasi Dasar
+                  </span>
+                </div>
+                {activeStep === 1 ? (
+                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                )}
+              </button>
+
+              <AnimatePresence>
+                {activeStep === 1 && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="p-5 border-t border-gray-100 bg-white space-y-4"
+                  >
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <User className="w-4 h-4 text-[#F26522]" /> Nama Lengkap *
+                      <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                        Nama Lengkap *
                       </label>
                       <input
                         type="text"
-                        required
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Contoh: Alex Pratama"
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900"
+                        placeholder="Masukkan nama lengkap Anda..."
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900"
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
-                        Bio / Ringkasan Singkat
-                      </label>
-                      <textarea
-                        value={bio}
-                        onChange={(e) => setBio(e.target.value)}
-                        placeholder="Frontend Engineer berpengalaman 3 tahun di React & TypeScript..."
-                        className="w-full h-24 px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 resize-none"
-                      />
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!fullName.trim()) {
-                          toast.error('Silakan isi Nama Lengkap terlebih dahulu');
-                          return;
-                        }
-                        setStep(2);
-                      }}
-                      className="w-full mt-2"
-                    >
-                      <TextRollButton text="Lanjut ke Upload CV →" variant="dark" size="md" className="w-full justify-center" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <Document className="w-4 h-4 text-[#F26522]" /> Unggah CV / Resume (PDF / DOCX) *
-                      </label>
-                      <div className="border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center hover:border-[#F26522] transition-colors bg-gray-50/50">
-                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm font-medium text-gray-700">
-                          {uploading ? 'Mengunggah CV...' : 'Pilih file CV / Resume'}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">Format: PDF, DOC, DOCX (Maks 5MB)</p>
-                        <input
-                          type="file"
-                          accept=".pdf,.doc,.docx"
-                          onChange={handleFileUpload}
-                          disabled={uploading}
-                          className="mt-3 block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#F26522] file:text-white hover:file:bg-[#d85415] cursor-pointer"
+                    {userRole === 'candidate' ? (
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                          Bio Singkat / Ringkasan Pengalaman
+                        </label>
+                        <textarea
+                          value={bio}
+                          onChange={(e) => setBio(e.target.value)}
+                          placeholder="Ringkasan latar belakang keahlian Anda..."
+                          className="w-full h-24 px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 resize-none font-normal"
                         />
                       </div>
+                    ) : (
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                          Nama Perusahaan / Organisasi
+                        </label>
+                        <input
+                          type="text"
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          placeholder="Masukkan nama perusahaan Anda..."
+                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900"
+                        />
+                      </div>
+                    )}
 
-                      {resumeUrl && (
-                        <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs text-emerald-800 font-medium">
-                          <span className="flex items-center gap-2 truncate">
-                            <CheckmarkOutline className="w-4 h-4 text-emerald-600" />
-                            {resumeFileName || 'CV Terpasang'}
-                          </span>
-                          <span className="text-[11px] text-emerald-600 font-bold">TERPASANG</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between gap-3 pt-4 border-t border-gray-100">
+                    <div className="flex justify-end pt-2">
                       <button
                         type="button"
-                        onClick={() => setStep(1)}
-                        className="text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors px-4 py-2"
+                        onClick={() => {
+                          if (!fullName.trim()) {
+                            toast.error('Silakan isi Nama Lengkap terlebih dahulu');
+                            return;
+                          }
+                          setActiveStep(2);
+                        }}
+                        className="px-5 py-2 bg-[#F26522] hover:bg-[#d85415] text-white text-xs font-semibold rounded-full transition-colors flex items-center gap-1.5 shadow-xs"
                       >
-                        ← Kembali
-                      </button>
-                      <button type="submit" disabled={saving || uploading}>
-                        <TextRollButton
-                          text={saving ? 'Menyimpan...' : 'Selesaikan Setup & Masuk'}
-                          variant="orange"
-                          size="md"
-                        />
+                        Lanjut →
                       </button>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
-              </>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <User className="w-4 h-4 text-[#F26522]" /> Nama Lengkap Rekruiter *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Contoh: Sarah Wijaya"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900"
-                  />
-                </div>
+              </AnimatePresence>
+            </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <Building className="w-4 h-4 text-[#F26522]" /> Nama Perusahaan / Perusahaan
-                  </label>
-                  <input
-                    type="text"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="Contoh: TechCorp Indonesia"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900"
-                  />
+            {/* ── STEP 2 ACCORDION ITEM ── */}
+            <div className="border border-gray-200/80 rounded-2xl overflow-hidden transition-all">
+              <button
+                type="button"
+                onClick={() => setActiveStep(2)}
+                className="w-full px-5 py-4 flex items-center justify-between bg-gray-50/50 hover:bg-gray-50 transition-colors text-left"
+              >
+                <div className="flex items-center gap-3">
+                  {isStep2Complete ? (
+                    <CheckmarkFilled className="w-5 h-5 text-[#F26522] flex-shrink-0" />
+                  ) : (
+                    <span className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs font-bold text-gray-500 flex-shrink-0">
+                      2
+                    </span>
+                  )}
+                  <span
+                    className={`text-sm font-semibold ${
+                      isStep2Complete ? 'text-gray-900' : 'text-gray-700'
+                    }`}
+                  >
+                    {userRole === 'candidate' ? 'Unggah CV / Resume' : 'Detail Tambahan'}
+                  </span>
                 </div>
+                {activeStep === 2 ? (
+                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                )}
+              </button>
 
-                <div className="pt-4 border-t border-gray-100 flex justify-end">
-                  <button type="submit" disabled={saving}>
-                    <TextRollButton
-                      text={saving ? 'Menyimpan...' : 'Simpan Profil Rekruiter'}
-                      variant="orange"
-                      size="md"
-                    />
-                  </button>
-                </div>
-              </div>
-            )}
-          </form>
+              <AnimatePresence>
+                {activeStep === 2 && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="p-5 border-t border-gray-100 bg-white space-y-4"
+                  >
+                    {userRole === 'candidate' ? (
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                          File CV / Resume (PDF / DOCX) *
+                        </label>
+                        <div className="border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center hover:border-[#F26522] transition-colors bg-gray-50/50">
+                          <Upload className="w-7 h-7 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm font-medium text-gray-700">
+                            {uploading ? 'Mengunggah file...' : 'Pilih File Resume'}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX (Maks 5MB)</p>
+                          <input
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            onChange={handleFileUpload}
+                            disabled={uploading}
+                            className="mt-3 block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#F26522] file:text-white hover:file:bg-[#d85415] cursor-pointer"
+                          />
+                        </div>
+
+                        {resumeUrl && (
+                          <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs text-emerald-900 font-medium">
+                            <span className="truncate max-w-[200px]">
+                              ✓ {resumeFileName || 'CV Terpasang'}
+                            </span>
+                            <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">
+                              TERPASANG
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-500 leading-relaxed">
+                        Data profil rekruiter akan digunakan untuk menyesuaikan peran pekerjaan yang Anda publikasikan di Skillens Platform.
+                      </p>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Footer Action Buttons */}
+          <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={onComplete}
+              className="text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors px-3 py-1.5"
+            >
+              Nanti Saja
+            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onComplete}
+                className="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-xs font-semibold rounded-full hover:bg-gray-100 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSubmit()}
+                disabled={saving || uploading}
+                className="px-5 py-2 bg-[#F26522] hover:bg-[#d85415] text-white text-xs font-semibold rounded-full transition-colors disabled:opacity-50 shadow-xs"
+              >
+                {saving ? 'Menyimpan...' : 'Simpan & Masuk'}
+              </button>
+            </div>
+          </div>
         </motion.div>
       </div>
     </AnimatePresence>
