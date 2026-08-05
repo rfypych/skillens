@@ -142,12 +142,12 @@ function HeroBadge() {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#0F172A] text-[#FACC15] border border-slate-800 shadow-md font-mono text-xs select-none"
+      className="inline-flex items-center justify-center gap-2.5 px-4 h-9 w-[220px] rounded-full bg-white/90 backdrop-blur-md border border-gray-200/90 shadow-sm font-mono text-xs select-none"
     >
-      <span className="font-bold tracking-tighter min-w-[5ch] text-[#FACC15]">
+      <span className="font-bold tracking-tighter w-[6ch] text-center text-[#F26522] flex-shrink-0">
         {frame || '⠋⠙⠹'}
       </span>
-      <span className="text-[#FACC15] tracking-wide font-medium">
+      <span className="text-gray-900 font-medium tracking-wide text-left truncate flex-1">
         {VERBS[verbIdx]}
       </span>
     </motion.div>
