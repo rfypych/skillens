@@ -167,43 +167,43 @@ export function HeroSection() {
         </motion.div>
 
         {/* ── Bottom-Right Inverted Cut-Out Corner Widget (Reference Match) ── */}
-        <div className="hidden sm:block absolute bottom-0 right-0 z-30">
-          <div className="relative bg-[#f0f0f0] p-5 pt-6 pl-10 rounded-tl-[3.5rem] min-w-[15rem]">
-            {/* SVG inverted corner top edge */}
+        <div className="hidden sm:block absolute bottom-0 right-0 z-30 pointer-events-auto">
+          <div className="relative bg-[#f0f0f0] px-7 py-5 rounded-tl-[2.5rem] flex items-center gap-3.5">
+            {/* Inverted curve - Top edge junction */}
             <svg
-              className="absolute top-0 right-0 h-14"
-              style={{ top: 0, left: 'calc(3.5rem - 0.5px)', width: '3.5rem', transform: 'translateX(-100%)' }}
-              viewBox="0 0 56 56"
+              className="absolute -top-[2.5rem] right-0 w-[2.5rem] h-[2.5rem] text-[#f0f0f0] pointer-events-none"
+              viewBox="0 0 40 40"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path d="M56 56V0C56 30.9279 30.9279 56 0 56H56Z" fill="#f0f0f0" />
-            </svg>
-            {/* SVG inverted corner left edge */}
-            <svg
-              className="absolute left-0"
-              style={{ bottom: 'calc(3.5rem - 0.5px)', top: 'auto', height: '3.5rem', width: '3.5rem', transform: 'translateY(100%)' }}
-              viewBox="0 0 56 56"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M56 56V0C56 30.9279 30.9279 56 0 56H56Z" fill="#f0f0f0" />
+              <path d="M40 40V0C40 22.0914 22.0914 40 0 40H40Z" fill="currentColor" />
             </svg>
 
-            {/* Corner Content matching uploaded reference image */}
+            {/* Inverted curve - Left edge junction */}
+            <svg
+              className="absolute bottom-0 -left-[2.5rem] w-[2.5rem] h-[2.5rem] text-[#f0f0f0] pointer-events-none"
+              viewBox="0 0 40 40"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M40 40V0C40 22.0914 22.0914 40 0 40H40Z" fill="currentColor" />
+            </svg>
+
+            {/* Content inside corner */}
             <Link href="/signup" className="flex items-center gap-3.5 group/corner">
-              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center flex-shrink-0 group-hover/corner:bg-[#F26522] group-hover/corner:border-[#F26522] transition-colors duration-200">
-                <IconArrowUpRight size={16} className="text-gray-800 group-hover/corner:text-white transition-colors" />
+              <div className="w-10 h-10 rounded-full bg-[#F26522] flex items-center justify-center flex-shrink-0 shadow-sm group-hover/corner:scale-105 transition-transform duration-200">
+                <IconArrowUpRight size={18} className="text-white" />
               </div>
               <div className="flex flex-col text-left">
                 <span className="text-xs font-semibold text-gray-900 leading-tight">Dokumentasi</span>
-                <span className="text-[11px] font-medium text-gray-500 flex items-center gap-0.5 group-hover/corner:text-[#F26522] transition-colors">
+                <span className="text-[11px] font-medium text-[#F26522] flex items-center gap-0.5">
                   Panduan &gt;
                 </span>
               </div>
             </Link>
           </div>
         </div>
+
 
       </section>
     </div>
