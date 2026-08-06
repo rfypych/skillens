@@ -90,6 +90,25 @@ def apply_for_job(
                 os.remove(file_path)
             raise HTTPException(status_code=500, detail=f"Failed to process PDF resume: {str(e)}")
 
+    # ── Auto-use stored profile CV if no new file was uploaded ──────────────────
+    if not resume_url and current_user and hasattr(current_user, 'profile') and current_user.profile:
+        profile_resume = current_user.profile.resume_url
+        if profile_resume:
+            resume_url = profile_resume
+            # Try to re-extract text from locally stored PDF
+            local_path = profile_resume.lstrip('/')  # strip leading slash for relative path
+            if os.path.exists(local_path):
+                try:
+                    reader = PdfReader(local_path)
+                    extracted_pages = []
+                    for page in reader.pages:
+                        text_content = page.extract_text()
+                        if text_content:
+                            extracted_pages.append(text_content)
+                    resume_text = "\n".join(extracted_pages)
+                except Exception:
+                    resume_text = None  # non-fatal; AI will still get the resume URL
+
     new_app = models.Application(
         user_id=user.id,
         job_id=job.id,
@@ -205,7 +224,8 @@ Instructions:
 3. If their last answer was vague, ask them to explain a specific concept they mentioned in detail.
 4. If their answer was comprehensive, introduce a new constraint (e.g., "What if the database goes down?" or "How would you scale this to 10x traffic?").
 5. Keep your response brief (max 2-3 sentences). Do NOT provide the answer. ONLY ask the question.
-6. Speak in {job.language}.
+6. CRITICAL: If the candidate has provided 4 answers (this is turn 4), DO NOT ask another question. Instead, thank the candidate for their time, state that the evaluation session is complete, and instruct them to click the 'Kirim Jawaban' button to finish.
+7. Speak in {job.language}.
 """
     
     messages = [{"role": "system", "content": system_prompt}]

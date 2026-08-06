@@ -67,15 +67,30 @@ def update_current_user(db: Session, current_user: models.User, user_update: sch
     if "full_name" in update_data:
         current_user.full_name = update_data["full_name"]
         
-    if "company_name" in update_data and current_user.company_id:
-        company = db.query(models.Company).filter(models.Company.id == current_user.company_id).first()
-        if company:
-            company.name = update_data["company_name"]
+    if "company_name" in update_data:
+        if current_user.company_id:
+            company = db.query(models.Company).filter(models.Company.id == current_user.company_id).first()
+            if company:
+                company.name = update_data["company_name"]
+        elif update_data["company_name"]:
+            # Create a new company for this recruiter if they don't have one yet
+            new_company = models.Company(name=update_data["company_name"])
+            db.add(new_company)
+            db.flush()
+            current_user.company_id = new_company.id
             
-    if user_update.profile and current_user.profile:
-        profile_data = user_update.profile.dict(exclude_unset=True)
-        for key, value in profile_data.items():
-            setattr(current_user.profile, key, value)
+    if user_update.profile:
+        # Auto-create profile row if candidate has none yet (e.g. legacy users)
+        if not current_user.profile and current_user.role == "candidate":
+            new_profile = models.CandidateProfile(user_id=current_user.id)
+            db.add(new_profile)
+            db.flush()
+            db.refresh(current_user)
+
+        if current_user.profile:
+            profile_data = user_update.profile.dict(exclude_unset=True)
+            for key, value in profile_data.items():
+                setattr(current_user.profile, key, value)
             
     db.commit()
     db.refresh(current_user)
