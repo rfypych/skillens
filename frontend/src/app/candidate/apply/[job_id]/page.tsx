@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, CheckmarkOutline, ChevronLeft, CloudUpload, Document, Email, Location, Portfolio, Time, User, Warning } from '@carbon/icons-react';
+import { ArrowRight, CheckmarkOutline, ChevronLeft, CloudUpload, Document, Email, Location, Portfolio, Settings, Time, User, Warning } from '@carbon/icons-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, useParams } from 'next/navigation';
@@ -21,12 +21,17 @@ export default function ApplyForJob() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    resume_url: ''
   });
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Stored CV from candidate profile
+  const storedResumeUrl = user?.profile?.resume_url || null;
+  const storedResumeFileName = storedResumeUrl ? storedResumeUrl.split('/').pop() : null;
+  // User can choose to use a new file OR fallback to stored CV
+  const hasValidCV = !!file || !!storedResumeUrl;
 
   useEffect(() => {
     const init = async () => {
@@ -44,7 +49,7 @@ export default function ApplyForJob() {
         
         if (userData) {
           setUser(userData);
-          setFormData({ name: userData.full_name || '', email: userData.email || '', resume_url: '' });
+          setFormData({ name: userData.full_name || '', email: userData.email || '' });
         }
       } catch (err) {
         setError('Gagal memuat detail pekerjaan. Tautan ini mungkin tidak valid.');
@@ -64,8 +69,14 @@ export default function ApplyForJob() {
       const dataPayload = new FormData();
       if (formData.name) dataPayload.append('name', formData.name);
       if (formData.email) dataPayload.append('email', formData.email);
-      if (!file) throw new Error("Harap unggah resume PDF yang valid.");
-      dataPayload.append('file', file);
+
+      // Only append file if user chose a new one. Backend will fallback to profile CV.
+      if (file) {
+        dataPayload.append('file', file);
+      } else if (!storedResumeUrl) {
+        // Guest user with no CV at all — must upload
+        throw new Error("Harap unggah resume PDF yang valid untuk melanjutkan.");
+      }
 
       const data = await api.post(`/assessment/${job_id}/apply`, dataPayload, { requireAuth: false });
       router.push(`/candidate/instructions/${data.id}`);
@@ -154,8 +165,14 @@ export default function ApplyForJob() {
 
           {/* Right Column: Application Form */}
           <div className="w-full lg:w-[420px] bg-white rounded-2xl border border-gray-200/80 shadow-xs p-6 md:p-8 shrink-0 lg:sticky lg:top-24">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2 tracking-tight">Lengkapi Data</h2>
-            <p className="text-xs text-gray-500 mb-6 font-normal">Unggah resume PDF untuk memulai tes simulasi AI.</p>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2 tracking-tight">
+              {user ? 'Siap untuk Mulai?' : 'Lengkapi Data'}
+            </h2>
+            <p className="text-xs text-gray-500 mb-6 font-normal">
+              {user
+                ? 'Tinjau data Anda lalu mulai tes evaluasi.'
+                : 'Unggah resume PDF untuk memulai tes simulasi AI.'}
+            </p>
             
             <form className="space-y-5" onSubmit={handleApply}>
               <AnimatePresence>
@@ -171,6 +188,7 @@ export default function ApplyForJob() {
                 )}
               </AnimatePresence>
               
+              {/* ── Logged-in User Card ── */}
               {user ? (
                 <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200/80 flex items-center justify-between">
                   <div>
@@ -179,7 +197,7 @@ export default function ApplyForJob() {
                     <p className="text-xs text-gray-500 font-mono">{user.email}</p>
                   </div>
                   <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                    {user.full_name.slice(0, 2).toUpperCase()}
+                    {(user.full_name || 'CA').slice(0, 2).toUpperCase()}
                   </div>
                 </div>
               ) : (
@@ -212,13 +230,31 @@ export default function ApplyForJob() {
                 </>
               )}
 
+              {/* ── CV Section ── */}
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Unggah Resume (PDF)</label>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                  {storedResumeUrl ? 'CV / Resume' : 'Unggah Resume (PDF) *'}
+                </label>
+
+                {/* Stored CV banner */}
+                {storedResumeUrl && !file && (
+                  <div className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-200 rounded-2xl mb-3">
+                    <div className="flex items-center gap-2 text-xs text-emerald-800">
+                      <CheckmarkOutline className="w-4 h-4 flex-shrink-0" />
+                      <span className="font-semibold truncate max-w-[180px]">{storedResumeFileName || 'CV Tersimpan'}</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider bg-emerald-100 px-2 py-0.5 rounded-full">
+                      Otomatis
+                    </span>
+                  </div>
+                )}
+
+                {/* Optional re-upload */}
                 <div className="relative group">
                   <input
                     type="file"
                     accept=".pdf"
-                    required
+                    required={!storedResumeUrl && !user}
                     onChange={(e) => setFile(e.target.files?.[0] || null)}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
@@ -228,16 +264,27 @@ export default function ApplyForJob() {
                     </div>
                     <div className="flex-1 truncate">
                       <p className={`text-xs font-semibold truncate ${file ? 'text-[#F26522]' : 'text-gray-700'}`}>
-                        {file ? file.name : "Klik atau seret PDF ke sini"}
+                        {file ? file.name : storedResumeUrl ? 'Unggah CV Baru (Opsional)' : 'Klik atau seret PDF ke sini'}
                       </p>
-                      {!file && <p className="text-[10px] text-gray-400 mt-0.5">Maksimum ukuran berkas 5MB</p>}
+                      {!file && <p className="text-[10px] text-gray-400 mt-0.5">{storedResumeUrl ? 'Ganti CV yang tersimpan' : 'Maksimum ukuran berkas 5MB'}</p>}
                     </div>
                   </div>
                 </div>
+
+                {/* Hint: change CV via settings */}
+                {storedResumeUrl && (
+                  <p className="text-[10px] text-gray-400 mt-2 flex items-center gap-1">
+                    <Settings className="w-3 h-3" />
+                    Ubah CV permanen melalui{' '}
+                    <Link href="/candidate/profile" className="text-[#F26522] hover:underline font-semibold">
+                      Pengaturan Profil
+                    </Link>
+                  </p>
+                )}
               </div>
 
               <div className="pt-4">
-                <button type="submit" disabled={loading || !job} className="w-full">
+                <button type="submit" disabled={loading || !job || (!hasValidCV && !user)} className="w-full">
                   <TextRollButton
                     text={loading ? 'Memproses...' : 'Lanjut Ke Petunjuk Ujian'}
                     variant="orange"

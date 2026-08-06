@@ -45,8 +45,10 @@ export default function JobDetail() {
     setApplying(true);
     setError('');
     try {
-      const app = await api.post(`/assessment/${jobId}/apply`);
-      router.push(`/candidate/test/${app.id}`);
+      // Send empty FormData — backend auto-uses profile CV
+      const formData = new FormData();
+      const app = await api.post(`/assessment/${jobId}/apply`, formData);
+      router.push(`/candidate/instructions/${app.id}`);
     } catch (e: any) {
       setError(e.message || 'Something went wrong. Try again.');
       setApplying(false);

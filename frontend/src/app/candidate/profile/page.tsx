@@ -155,38 +155,68 @@ export default function CandidateProfile() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Unggah CV / Resume (PDF / Doc)</label>
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={async (e) => {
-                    if (!e.target.files || e.target.files.length === 0) return;
-                    const file = e.target.files[0];
-                    const formDataObj = new FormData();
-                    formDataObj.append('file', file);
-                    formDataObj.append('document_type', 'resume');
-                    
-                    try {
-                      const res = await api.post('/candidates/upload', formDataObj);
-                      setFormData(prev => ({
-                        ...prev,
-                        profile: { ...prev.profile, resume_url: res.file_url }
-                      }));
-                      toast.success('Resume berhasil diunggah');
-                    } catch (err: any) {
-                      toast.error(err.message || 'Gagal mengunggah resume');
-                    }
-                  }}
-                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900"
-                />
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">CV / Resume</label>
+                
+                {/* Current stored CV indicator */}
                 {formData.profile.resume_url && (
-                  <p className="mt-2 text-sm text-[#F26522] font-medium">
-                    <a href={`${process.env.NEXT_PUBLIC_API_URL || '/api'}${formData.profile.resume_url}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                      Lihat Resume Terunggah
+                  <div className="flex items-center justify-between p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl mb-3">
+                    <div className="flex items-center gap-2.5 text-xs text-emerald-900">
+                      <CheckmarkOutline className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <div>
+                        <p className="font-semibold">CV Tersimpan</p>
+                        <p className="text-emerald-700 font-mono text-[11px] truncate max-w-[200px]">
+                          {formData.profile.resume_url.split('/').pop()}
+                        </p>
+                      </div>
+                    </div>
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_API_URL || '/api'}${formData.profile.resume_url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 underline"
+                    >
+                      Lihat
                     </a>
-                  </p>
+                  </div>
                 )}
+
+                {/* Upload new CV */}
+                <div className="relative group">
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={async (e) => {
+                      if (!e.target.files || e.target.files.length === 0) return;
+                      const file = e.target.files[0];
+                      const formDataObj = new FormData();
+                      formDataObj.append('file', file);
+                      formDataObj.append('document_type', 'resume');
+                      
+                      try {
+                        const res = await api.post('/candidates/upload', formDataObj);
+                        setFormData(prev => ({
+                          ...prev,
+                          profile: { ...prev.profile, resume_url: res.file_url }
+                        }));
+                        toast.success('Resume berhasil diunggah');
+                      } catch (err: any) {
+                        toast.error(err.message || 'Gagal mengunggah resume');
+                      }
+                    }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className="flex items-center gap-3 w-full px-4 py-3 bg-white border-2 border-dashed border-gray-200 rounded-2xl group-hover:border-[#F26522]/50 group-hover:bg-gray-50 transition-all">
+                    <Portfolio className="w-4 h-4 text-gray-400" />
+                    <div>
+                      <p className="text-xs font-semibold text-gray-700">
+                        {formData.profile.resume_url ? 'Ganti CV (Opsional)' : 'Unggah CV / Resume'}
+                      </p>
+                      <p className="text-[10px] text-gray-400">PDF, DOC, DOCX — Maks 5MB</p>
+                    </div>
+                  </div>
+                </div>
               </div>
+
             </div>
           </div>
 
