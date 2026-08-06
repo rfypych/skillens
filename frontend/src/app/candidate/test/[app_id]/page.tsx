@@ -1,6 +1,16 @@
 'use client';
 
-import { Aperture, CheckmarkOutline, Renew, Security, SendAlt, Time, Warning, WarningHex } from '@carbon/icons-react';
+import {
+  CheckmarkOutline,
+  Document,
+  Information,
+  Security,
+  SendAlt,
+  Time,
+  WarningAlt,
+  WarningHex,
+} from '@carbon/icons-react';
+
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
@@ -39,12 +49,13 @@ export default function CandidateAssessment() {
   const [isTabHidden, setIsTabHidden] = useState(false);
 
   // Max Turns Calculation (4 user answers max)
-  const userTurnsCount = messages.filter(m => m.role === 'user').length;
+  const userTurnsCount = messages.filter((m) => m.role === 'user').length;
   const isMaxTurnsReached = userTurnsCount >= 4;
 
   useEffect(() => {
-    api.get(`/assessment/${appId}/prompt`)
-      .then(data => {
+    api
+      .get(`/assessment/${appId}/prompt`)
+      .then((data) => {
         setPromptData(data);
         setMessages([{ role: 'assistant', content: data.scenario_prompt }]);
       })
@@ -54,13 +65,16 @@ export default function CandidateAssessment() {
   useEffect(() => {
     if (timeLeft <= 0 || submitted || !promptData) return;
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) { handleSubmit(); return 0; }
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          handleSubmit();
+          return 0;
+        }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft, submitted, promptData]);
 
   useEffect(() => {
@@ -68,12 +82,13 @@ export default function CandidateAssessment() {
       if (document.hidden) {
         setIsTabHidden(true);
         if (!submitted) {
-          setTabSwitches(prev => prev + 1);
+          setTabSwitches((prev) => prev + 1);
         }
       } else {
         setIsTabHidden(false);
         if (!submitted) {
           setShowTabWarning(true);
+          setTimeout(() => setShowTabWarning(false), 4000);
         }
       }
     };
@@ -85,7 +100,7 @@ export default function CandidateAssessment() {
     if (submitted) return;
     const stateStr = JSON.stringify({ chat: messages, input: currentInput });
     if (stateStr !== lastSnapshotRef.current) {
-      setReplayHistory(prev => [...prev, { time: Date.now(), chat: messages, input: currentInput }]);
+      setReplayHistory((prev) => [...prev, { time: Date.now(), chat: messages, input: currentInput }]);
       lastSnapshotRef.current = stateStr;
     }
   }, [messages, currentInput, submitted]);
@@ -95,8 +110,8 @@ export default function CandidateAssessment() {
   }, [messages, isAiTyping]);
 
   const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault(); 
-    setPasteCount(prev => prev + 1);
+    e.preventDefault();
+    setPasteCount((prev) => prev + 1);
     setShowPasteWarning(true);
     setTimeout(() => setShowPasteWarning(false), 4000);
   };
@@ -104,11 +119,14 @@ export default function CandidateAssessment() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (isMaxTurnsReached) return;
     if (e.key === 'Backspace') {
-      setKeystrokeMetrics(prev => ({ ...prev, backspace_count: prev.backspace_count + 1 }));
+      setKeystrokeMetrics((prev) => ({ ...prev, backspace_count: prev.backspace_count + 1 }));
     } else if (e.key.length === 1) {
-      setKeystrokeMetrics(prev => ({ ...prev, total_chars: prev.total_chars + 1 }));
+      setKeystrokeMetrics((prev) => ({ ...prev, total_chars: prev.total_chars + 1 }));
     }
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
 
   const handleSend = async () => {
@@ -139,11 +157,12 @@ export default function CandidateAssessment() {
     setIsSubmitting(true);
     setShowSubmitConfirm(false);
     try {
-      const timeTaken = (15 * 60) - timeLeft;
+      const timeTaken = 15 * 60 - timeLeft;
       const finalAnswer = JSON.stringify(messages);
-      const backspace_ratio = keystrokeMetrics.total_chars > 0
-        ? keystrokeMetrics.backspace_count / keystrokeMetrics.total_chars
-        : 100;
+      const backspace_ratio =
+        keystrokeMetrics.total_chars > 0
+          ? keystrokeMetrics.backspace_count / keystrokeMetrics.total_chars
+          : 100;
 
       await api.post(`/assessment/${appId}/submit`, {
         answer: finalAnswer,
@@ -151,7 +170,7 @@ export default function CandidateAssessment() {
         copy_paste_attempts: pasteCount,
         time_taken_seconds: timeTaken,
         keystroke_metrics: JSON.stringify({ ...keystrokeMetrics, backspace_ratio }),
-        replay_history: JSON.stringify(replayHistory)
+        replay_history: JSON.stringify(replayHistory),
       });
       setSubmitted(true);
     } catch (err: any) {
@@ -167,7 +186,7 @@ export default function CandidateAssessment() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white border border-gray-200/80 max-w-lg w-full rounded-2xl p-10 text-center shadow-xs relative overflow-hidden"
+          className="bg-white border border-gray-200/80 max-w-lg w-full rounded-3xl p-10 text-center shadow-xl relative overflow-hidden"
         >
           <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-200">
             <CheckmarkOutline className="w-8 h-8" />
@@ -193,76 +212,193 @@ export default function CandidateAssessment() {
   }
 
   const progressPercentage = Math.min((userTurnsCount / 4) * 100, 100);
-  const isCriticalTime = timeLeft <= 60;
+  const isCriticalTime = timeLeft <= 120;
 
   return (
-    <div className={`min-h-screen text-gray-900 flex flex-col h-screen font-sans transition-colors duration-500 ${isCriticalTime ? 'bg-red-50' : 'bg-[#EFEFEF]'}`}>
-      
-      {/* Tab Switch Overlay */}
+    <div className={`min-h-screen text-gray-900 flex flex-col h-screen font-sans transition-colors duration-500 ${isCriticalTime ? 'bg-red-50/40' : 'bg-[#f4f4f5]'}`}>
+      {/* ── SECURITY TAB OVERLAY ── */}
       <AnimatePresence>
         {isTabHidden && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-white/95 z-[100] flex flex-col items-center justify-center p-6 text-center"
+            className="fixed inset-0 bg-white/95 z-[100] flex flex-col items-center justify-center p-6 text-center backdrop-blur-md"
           >
             <WarningHex className="w-20 h-20 text-red-600 mb-4 animate-pulse" />
-            <h2 className="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">Peringatan Integritas</h2>
+            <h2 className="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">Peringatan Pengawasan Telemetry</h2>
             <p className="text-sm text-gray-600 max-w-md leading-relaxed">
-              Anda telah meninggalkan jendela ujian. Peristiwa ini dicatat oleh sistem pengawasan telemetry.
+              Anda terdeteksi meninggalkan jendela evaluasi. Peristiwa perpindahan tab dicatat oleh AI Proctored Security.
             </p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Header Bar */}
-      <header className="bg-white border-b border-gray-200/80 px-6 py-4 flex items-center justify-between z-10 shadow-xs">
-        <div className="flex items-center gap-3">
+      {/* ── WARNING TOAST NOTIFICATIONS ── */}
+      <div className="fixed top-20 right-6 z-50 flex flex-col gap-3">
+        <AnimatePresence>
+          {showPasteWarning && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="bg-red-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-xs font-medium border border-red-700"
+            >
+              <WarningAlt className="w-5 h-5 text-amber-400 shrink-0" />
+              <span>Paste dinonaktifkan untuk menjaga otentisitas jawaban.</span>
+            </motion.div>
+          )}
+
+          {showTabWarning && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="bg-amber-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-xs font-medium border border-amber-700"
+            >
+              <WarningHex className="w-5 h-5 text-amber-300 shrink-0" />
+              <span>Peringatan: Pindah tab ({tabSwitches}x) terekam dalam telemetry.</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── TOP HEADER BAR ── */}
+      <header className="bg-white border-b border-gray-200/90 px-6 py-3.5 flex items-center justify-between z-20 shadow-xs">
+        <div className="flex items-center gap-4">
           <img src="/skillens-logo-text.png" alt="Skillens" className="h-7 w-auto object-contain" />
-          <div className="pl-2 border-l border-gray-200">
-            <h1 className="font-semibold text-sm text-gray-900">Ruang Evaluator AI</h1>
-            <p className="text-[11px] text-gray-500">Sesi Simulasi Studi Kasus Real-Time</p>
+          <div className="h-4 w-px bg-gray-200 hidden sm:block" />
+          <div className="hidden sm:flex items-center gap-2">
+            <Security className="w-4 h-4 text-emerald-600" />
+            <span className="text-xs font-semibold text-gray-700">Ruang Evaluator AI</span>
+            <span className="text-[10px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
+              PROCTORED LIVE
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          {/* Timer */}
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-bold ${isCriticalTime ? 'bg-red-100 text-red-700 animate-pulse' : 'bg-gray-100 text-gray-900'}`}>
+        {/* Center: Turn Status Pill */}
+        <div className="hidden md:flex items-center gap-3 bg-gray-100/80 px-4 py-1.5 rounded-full border border-gray-200/70">
+          <span className="text-xs text-gray-600 font-medium">Progres Evaluasi:</span>
+          <span className="text-xs font-bold font-mono text-[#F26522]">
+            {userTurnsCount} / 4 Pertanyaan
+          </span>
+        </div>
+
+        {/* Right: Timer & Submit */}
+        <div className="flex items-center gap-4">
+          <div
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold transition-all ${
+              isCriticalTime
+                ? 'bg-red-100 text-red-700 border border-red-300 animate-pulse'
+                : 'bg-gray-100 text-gray-900 border border-gray-200'
+            }`}
+          >
             <Time className="w-4 h-4 text-[#F26522]" />
             <span>{formatTime(timeLeft)}</span>
           </div>
 
           <button onClick={() => setShowSubmitConfirm(true)} className={isMaxTurnsReached ? 'animate-bounce' : ''}>
-            <TextRollButton text={isMaxTurnsReached ? "✓ Kirim Jawaban Sekarang" : "Kirim Jawaban"} variant="orange" size="sm" />
+            <TextRollButton
+              text={isMaxTurnsReached ? '✓ Kirim Jawaban' : 'Kirim Ujian'}
+              variant="orange"
+              size="sm"
+            />
           </button>
         </div>
       </header>
 
-      {/* Main Workspace */}
-      <div className="flex-1 flex overflow-hidden p-6 gap-6 max-w-7xl mx-auto w-full">
-        {/* Left: Chat & Simulation Area */}
-        <div className="flex-1 flex flex-col bg-white rounded-2xl border border-gray-200/80 shadow-xs overflow-hidden">
-          
-          {/* Progress Bar */}
-          <div className="bg-gray-100 h-1.5 w-full overflow-hidden">
-            <div className="bg-[#F26522] h-full transition-all duration-300" style={{ width: `${progressPercentage}%` }} />
+      {/* ── SPLIT WORKSPACE CONTENT ── */}
+      <div className="flex-1 flex overflow-hidden p-4 sm:p-6 gap-6 max-w-7xl mx-auto w-full">
+        {/* LEFT PANEL: Case Study & Guidelines */}
+        <div className="hidden lg:flex lg:w-1/3 flex-col bg-white rounded-3xl border border-gray-200/90 shadow-xs overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/60 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-bold text-gray-900 uppercase tracking-wider">
+              <Document className="w-4 h-4 text-[#F26522]" />
+              Studi Kasus Evaluasi
+            </div>
+            <span className="text-[11px] text-gray-400 font-mono">ID: #{String(appId || '').slice(0, 6)}</span>
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 p-6 overflow-y-auto space-y-4">
+
+          <div className="flex-1 p-5 overflow-y-auto space-y-5 text-sm text-gray-700 leading-relaxed font-normal">
+            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-xs space-y-2">
+              <div className="font-semibold text-gray-900 flex items-center gap-1.5">
+                <Information className="w-4 h-4 text-[#F26522]" /> Instruksi Ujian:
+              </div>
+              <ul className="list-disc list-inside space-y-1 text-gray-600">
+                <li>Jawab setiap pertanyaan studi kasus dengan analisis mendalam.</li>
+                <li>Maksimal 4 pertukaran instruksi dengan Evaluator AI.</li>
+                <li>Pengawasan telemetry mencatat perpindahan tab & aktivitas mengetik.</li>
+              </ul>
+            </div>
+
+            <div className="prose prose-sm max-w-none text-gray-800">
+              <div className="font-semibold text-gray-900 mb-2 text-base">Skenario Masalah:</div>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {promptData.scenario_prompt}
+              </ReactMarkdown>
+            </div>
+          </div>
+
+          {/* Left Panel Footer Telemetry Badge */}
+          <div className="p-4 bg-gray-50/80 border-t border-gray-100 text-xs flex items-center justify-between text-gray-500">
+            <span>Perpindahan Tab: <strong className="text-gray-900 font-mono">{tabSwitches}</strong></span>
+            <span>Upaya Paste: <strong className="text-gray-900 font-mono">{pasteCount}</strong></span>
+          </div>
+        </div>
+
+        {/* RIGHT PANEL: Interactive Chat Workspace */}
+        <div className="flex-1 flex flex-col bg-white rounded-3xl border border-gray-200/90 shadow-xs overflow-hidden">
+          {/* Top Progress Line */}
+          <div className="bg-gray-100 h-1.5 w-full overflow-hidden">
+            <div
+              className="bg-[#F26522] h-full transition-all duration-300"
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+
+          {/* Messages Feed */}
+          <div className="flex-1 p-5 sm:p-6 overflow-y-auto space-y-5">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${
-                  m.role === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900 border border-gray-100'
-                }`}>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                <div className="flex gap-3 max-w-[85%] sm:max-w-[78%]">
+                  {m.role === 'assistant' && (
+                    <div className="w-8 h-8 rounded-full bg-[#F26522] text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-xs">
+                      AI
+                    </div>
+                  )}
+
+                  <div
+                    className={`p-4 sm:p-5 rounded-2xl text-sm leading-relaxed ${
+                      m.role === 'user'
+                        ? 'bg-gray-900 text-white rounded-tr-none'
+                        : 'bg-gray-50 text-gray-900 border border-gray-200/70 rounded-tl-none'
+                    }`}
+                  >
+                    {m.role === 'assistant' && i === 0 && (
+                      <div className="text-[11px] font-semibold text-[#F26522] uppercase tracking-wider mb-2">
+                        SKENARIO INTERAKTIF EVALUATOR AI
+                      </div>
+                    )}
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                  </div>
+
+                  {m.role === 'user' && (
+                    <div className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-xs">
+                      Anda
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
+
             {isAiTyping && (
-              <div className="flex justify-start">
-                <ThinkingIndicator statusText="Evaluator AI sedang mengetik balasan..." />
+              <div className="flex justify-start items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-[#F26522] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                  AI
+                </div>
+                <ThinkingIndicator statusText="Evaluator AI sedang menganalisis & menyusun balasan..." />
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -283,29 +419,33 @@ export default function CandidateAssessment() {
                 </div>
               </div>
               <button onClick={() => setShowSubmitConfirm(true)}>
-                <TextRollButton text="Kirim Jawaban Sekarang" variant="orange" size="md" />
+                <TextRollButton text="Kirim Ujian Sekarang" variant="orange" size="md" />
               </button>
             </div>
           ) : (
-            <div className="p-4 border-t border-gray-100 bg-white">
+            <div className="p-4 border-t border-gray-100 bg-white space-y-2">
               <div className="relative">
                 <textarea
                   value={currentInput}
-                  onChange={e => setCurrentInput(e.target.value)}
+                  onChange={(e) => setCurrentInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   onPaste={handlePaste}
-                  placeholder="Ketik jawaban Anda di sini (Tekan Enter untuk mengirim)..."
+                  placeholder="Ketik jawaban & analisis Anda di sini..."
                   rows={3}
                   disabled={isAiTyping}
-                  className="w-full p-4 pr-12 bg-gray-50 border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] resize-none disabled:opacity-50"
+                  className="w-full p-4 pr-14 bg-gray-50 border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] resize-none disabled:opacity-50"
                 />
                 <button
                   onClick={handleSend}
                   disabled={!currentInput.trim() || isAiTyping}
-                  className="absolute right-4 bottom-4 p-2 bg-gray-900 text-white rounded-full hover:bg-gray-800 disabled:opacity-30"
+                  className="absolute right-3.5 bottom-3.5 p-2.5 bg-gray-900 hover:bg-[#F26522] text-white rounded-full transition-colors disabled:opacity-30 disabled:hover:bg-gray-900"
                 >
                   <SendAlt className="w-4 h-4" />
                 </button>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-gray-400 px-2">
+                <span>Tekan <kbd className="font-mono bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200">Enter ↵</kbd> untuk mengirim</span>
+                <span>{currentInput.length} karakter</span>
               </div>
             </div>
           )}
@@ -319,22 +459,26 @@ export default function CandidateAssessment() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 backdrop-blur-xs font-sans"
           >
-            <div className="bg-white rounded-2xl p-8 max-w-md w-full border border-gray-200 shadow-xl space-y-4">
-              <h3 className="text-xl font-semibold text-gray-900">Kirim Sesi Ujian?</h3>
+            <div className="bg-white rounded-3xl p-8 max-w-md w-full border border-gray-200 shadow-2xl space-y-5">
+              <h3 className="text-xl font-bold text-gray-900 tracking-tight">Selesaikan & Kirim Evaluasi?</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
-                Apakah Anda yakin ingin menyelesaikan dan mengirimkan sesi evaluasi ini sekarang?
+                Apakah Anda yakin ingin mengirimkan hasil jawaban dan telemetry sesi ini sekarang? Tindakan ini tidak dapat dibatalkan.
               </p>
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   onClick={() => setShowSubmitConfirm(false)}
-                  className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900"
+                  className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900 border border-gray-200 rounded-full"
                 >
-                  Batal
+                  Kembali Ke Soal
                 </button>
                 <button onClick={handleSubmit} disabled={isSubmitting}>
-                  <TextRollButton text={isSubmitting ? 'Mengirim...' : 'Ya, Kirim Sekarang'} variant="orange" size="sm" />
+                  <TextRollButton
+                    text={isSubmitting ? 'Mengirim...' : 'Ya, Kirim Sekarang'}
+                    variant="orange"
+                    size="sm"
+                  />
                 </button>
               </div>
             </div>
