@@ -1,0 +1,17 @@
+{
+  "features": [
+    "score_problem_understanding",
+    "score_solution_approach",
+    "score_logic_execution",
+    "score_communication",
+    "score_response_quality",
+    "tab_switches",
+    "copy_paste_attempts",
+    "time_taken_seconds",
+    "ai_cheating_detected",
+    "backspace_ratio",
+    "wpm",
+    "silence_ratio",
+    "total_chars"
+  ]
+}

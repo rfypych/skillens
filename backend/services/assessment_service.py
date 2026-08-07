@@ -16,9 +16,9 @@ def run_ai_eval_sync(application_id: int, result_id: int):
 import uuid
 import os
 from fastapi import UploadFile
-from pypdf import PdfReader
 from typing import Optional
 from utils.auth import create_access_token
+from services.pdf_extractor import extract_pdf_text
 
 def apply_for_job(
     db: Session, 
@@ -85,14 +85,8 @@ def apply_for_job(
             
             resume_url = f"/uploads/{unique_filename}"
             
-            # Extract text using pypdf
-            reader = PdfReader(file_path)
-            extracted_pages = []
-            for page in reader.pages:
-                text_content = page.extract_text()
-                if text_content:
-                    extracted_pages.append(text_content)
-            resume_text = "\n".join(extracted_pages)
+            # Extract text using pypdf, falling back to OCR for scanned PDFs
+            resume_text = extract_pdf_text(file_path)
             
         except Exception as e:
             if os.path.exists(file_path):
@@ -108,13 +102,7 @@ def apply_for_job(
             local_path = profile_resume.lstrip('/')  # strip leading slash for relative path
             if os.path.exists(local_path):
                 try:
-                    reader = PdfReader(local_path)
-                    extracted_pages = []
-                    for page in reader.pages:
-                        text_content = page.extract_text()
-                        if text_content:
-                            extracted_pages.append(text_content)
-                    resume_text = "\n".join(extracted_pages)
+                    resume_text = extract_pdf_text(local_path)
                 except Exception:
                     resume_text = None  # non-fatal; AI will still get the resume URL
 
@@ -229,11 +217,11 @@ def submit_assessment(db: Session, application_id: int, payload: schemas.Assessm
 
 def _schedule_inline_eval(application_id: int, result_id: int, background_tasks: BackgroundTasks = None):
     from tasks import run_ai_eval_sync
-    if background_tasks is not None:
-        background_tasks.add_task(run_ai_eval_sync, application_id, result_id)
-    else:
-        import threading
-        threading.Thread(target=run_ai_eval_sync, args=(application_id, result_id), daemon=True).start()
+    # Run evaluation on a daemon thread decoupled from the request lifecycle.
+    # This guarantees the evaluation always starts (and completes) even if the
+    # HTTP request is torn down, and lets the submit response return instantly.
+    import threading
+    threading.Thread(target=run_ai_eval_sync, args=(application_id, result_id), daemon=True).start()
 
 from openai import AsyncOpenAI
 

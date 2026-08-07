@@ -115,13 +115,6 @@ def _parse_json(raw: str) -> dict:
 
 # ── Cognitive Fingerprint Algorithm ──────────────────────────────────────────
 
-def _norm(value: float, min_v: float, max_v: float) -> float:
-    """Normalize a value to 0–100 range."""
-    if max_v == min_v:
-        return 50.0
-    return max(0.0, min(100.0, (value - min_v) / (max_v - min_v) * 100))
-
-
 def extract_cognitive_fingerprint(result: models.AssessmentResult) -> dict:
     """
     Derive 6 cognitive dimensions from raw telemetry & AI evaluation scores.
@@ -132,71 +125,13 @@ def extract_cognitive_fingerprint(result: models.AssessmentResult) -> dict:
     4. Integrity Index         — Anti-cheating behaviour signals
     5. Creative Synthesis      — Novelty & originality of approach
     6. Pressure Resilience     — Composure signals from keystroke patterns
+
+    Prediction is performed by a trained GradientBoosting ensemble
+    (see ml/train_fingerprint.py). Falls back to expert heuristics if the
+    model artifact is unavailable.
     """
-    km: Dict[str, Any] = {}
-    if result.keystroke_metrics:
-        try:
-            km = json.loads(result.keystroke_metrics)
-        except Exception:
-            km = {}
-
-    # Raw scores are 0-100 (AI evaluator scale)
-    s_prob = result.score_problem_understanding or 0
-    s_sol = result.score_solution_approach or 0
-    s_logic = result.score_logic_execution or 0
-    s_comm = result.score_communication or 0
-    s_qual = result.score_response_quality or 0
-
-    tab_sw = result.tab_switches or 0
-    copy_paste = result.copy_paste_attempts or 0
-    time_taken = max(result.time_taken_seconds or 1, 1)
-    cheat = bool(result.ai_cheating_detected)
-
-    backspace_ratio = km.get("backspace_ratio", 20.0)
-    wpm = km.get("wpm", 30.0)
-    silence_ratio = km.get("silence_ratio", 0.3)
-
-    # ── Dimension 1: Analytical Depth (0–100)
-    analytical_depth = round(s_prob * 0.45 + s_logic * 0.40 + s_sol * 0.15, 1)
-
-    # ── Dimension 2: Communication Clarity (0–100)
-    communication_clarity = round(s_comm * 0.55 + s_qual * 0.45, 1)
-
-    # ── Dimension 3: Execution Velocity (0–100)
-    wpm_score = _norm(wpm, 10, 80)
-    time_score = _norm(time_taken, 60, 1800)
-    time_score = 100 - abs(time_score - 55)  # peak around 45% of range
-    execution_velocity = round((wpm_score * 0.6 + time_score * 0.4), 1)
-    execution_velocity = max(0.0, min(100.0, execution_velocity))
-
-    # ── Dimension 4: Integrity Index (0–100)
-    integrity = 100.0
-    if cheat:
-        integrity -= 40
-    integrity -= min(tab_sw * 8, 30)
-    integrity -= min(copy_paste * 12, 25)
-    if backspace_ratio > 10:
-        integrity = min(100.0, integrity + 3)
-    integrity_index = round(max(0.0, integrity), 1)
-
-    # ── Dimension 5: Creative Synthesis (0–100)
-    creative_synthesis = round(s_sol * 0.60 + s_qual * 0.40, 1)
-
-    # ── Dimension 6: Pressure Resilience (0–100)
-    silence_score = _norm(silence_ratio, 0.05, 0.60) * 0.5
-    backspace_score = _norm(100 - backspace_ratio, 50, 100) * 0.5
-    pressure_resilience = round(max(0.0, min(100.0, silence_score + backspace_score)), 1)
-
-    values = {
-        "analytical_depth": analytical_depth,
-        "communication_clarity": communication_clarity,
-        "execution_velocity": execution_velocity,
-        "integrity_index": integrity_index,
-        "creative_synthesis": creative_synthesis,
-        "pressure_resilience": pressure_resilience,
-    }
-    values["overall"] = round(sum(values.values()) / 6, 1)
-    return values
+    from ml.fingerprint import predict_fingerprint
+    return predict_fingerprint(result)
 
 
 # ── Access Control ───────────────────────────────────────────────────────────

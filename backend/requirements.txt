@@ -8,6 +8,10 @@ python-jose==3.3.0
 bcrypt==4.2.1
 openai==1.58.1
 pypdf==5.1.0
+pymupdf==1.28.2
+rapidocr-onnxruntime==1.4.4
+scikit-learn==1.9.0
+joblib==1.5.3
 pydantic==2.10.4
 pydantic-settings==2.7.0
 python-multipart==0.0.20
