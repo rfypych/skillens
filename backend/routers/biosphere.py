@@ -191,11 +191,19 @@ Hasilkan laporan JSON dengan format TEPAT berikut (tanpa markdown code block, la
     )
 
     raw = response.choices[0].message.content.strip()
-    # Strip markdown code fences if LLM added them
-    if raw.startswith("```"):
-        raw = "\n".join(raw.split("\n")[1:])
-    if raw.endswith("```"):
-        raw = "\n".join(raw.split("\n")[:-1])
+
+    # Robustly extract JSON: strip all markdown fences then find first { ... }
+    import re
+    # Remove ```json ... ``` or ``` ... ``` fences
+    raw = re.sub(r"^```[a-z]*\n?", "", raw, flags=re.MULTILINE)
+    raw = re.sub(r"\n?```$", "", raw, flags=re.MULTILINE)
+    raw = raw.strip()
+
+    # If there's still non-JSON prefix text, extract the JSON object
+    match = re.search(r"\{[\s\S]*\}", raw)
+    if match:
+        raw = match.group(0)
+
     return raw.strip()
 
 
