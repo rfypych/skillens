@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 import logging
 import database
 import models
-from routers import jobs, auth, applications, assessment, candidates, notifications, interviews
+from routers import jobs, auth, applications, assessment, candidates, notifications, interviews, biosphere
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -116,6 +116,7 @@ app.include_router(assessment.router)
 app.include_router(candidates.router)
 app.include_router(notifications.router)
 app.include_router(interviews.router)
+app.include_router(biosphere.router)
 
 os.makedirs("uploads", exist_ok=True)
 
