@@ -64,14 +64,12 @@ export default function CandidateAssessment() {
 
   useEffect(() => {
     if (timeLeft <= 0 || submitted || !promptData) return;
+    if (timeLeft === 1) {
+      handleSubmit();
+      return;
+    }
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          handleSubmit();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps

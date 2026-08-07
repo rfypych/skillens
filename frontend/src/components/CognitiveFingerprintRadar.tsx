@@ -1,197 +1,122 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-
-export interface CognitiveDimensions {
+export interface FingerprintValues {
   analytical_depth: number;
   communication_clarity: number;
   execution_velocity: number;
   integrity_index: number;
   creative_synthesis: number;
   pressure_resilience: number;
-  overall: number;
 }
 
-const DIMENSIONS = [
-  { key: 'analytical_depth',      label: 'Analytical\nDepth',      color: '#F26522' },
-  { key: 'creative_synthesis',    label: 'Creative\nSynthesis',    color: '#8B5CF6' },
-  { key: 'communication_clarity', label: 'Communication\nClarity', color: '#06B6D4' },
-  { key: 'pressure_resilience',   label: 'Pressure\nResilience',   color: '#10B981' },
-  { key: 'execution_velocity',    label: 'Execution\nVelocity',    color: '#F59E0B' },
-  { key: 'integrity_index',       label: 'Integrity\nIndex',       color: '#EF4444' },
-] as const;
+export const FINGERPRINT_LABELS: { key: keyof FingerprintValues; label: string; short: string }[] = [
+  { key: 'analytical_depth', label: 'Kedalaman Analitik', short: 'Analitik' },
+  { key: 'communication_clarity', label: 'Kejelasan Komunikasi', short: 'Komunikasi' },
+  { key: 'execution_velocity', label: 'Kecepatan Eksekusi', short: 'Eksekusi' },
+  { key: 'integrity_index', label: 'Indeks Integritas', short: 'Integritas' },
+  { key: 'creative_synthesis', label: 'Sintesis Kreatif', short: 'Kreativitas' },
+  { key: 'pressure_resilience', label: 'Ketahanan Tekanan', short: 'Resiliensi' },
+];
 
-interface Props {
-  data: CognitiveDimensions;
+export function fingerprintValue(fp: FingerprintValues | undefined | null, key: keyof FingerprintValues): number {
+  const v = fp?.[key];
+  return typeof v === 'number' && isFinite(v) ? Math.max(0, Math.min(100, v)) : 0;
+}
+
+interface RadarProps {
+  fingerprint?: FingerprintValues | null;
+  overlay?: FingerprintValues | null;
+  overlayLabel?: string;
   size?: number;
-  animate?: boolean;
 }
 
-export default function CognitiveFingerprintRadar({ data, size = 320, animate = true }: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rafRef    = useRef<number>(0);
-  const progressRef = useRef(0);
+export default function CognitiveFingerprintRadar({ fingerprint, overlay, overlayLabel = 'Rata-rata Tim', size = 320 }: RadarProps) {
+  const center = size / 2;
+  const radius = size * 0.38;
+  const rings = 5;
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+  const point = (value: number, index: number, total: number) => {
+    const angle = (Math.PI * 2 * index) / total - Math.PI / 2;
+    const r = (value / 100) * radius;
+    return { x: center + r * Math.cos(angle), y: center + r * Math.sin(angle) };
+  };
 
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width  = size * dpr;
-    canvas.height = size * dpr;
-    canvas.style.width  = `${size}px`;
-    canvas.style.height = `${size}px`;
-    ctx.scale(dpr, dpr);
+  const polygonPoints = (values: FingerprintValues | undefined | null, color: string) => {
+    if (!values) return '';
+    return FINGERPRINT_LABELS.map((dim, i) => {
+      const p = point(fingerprintValue(values, dim.key), i, FINGERPRINT_LABELS.length);
+      return `${p.x},${p.y}`;
+    }).join(' ');
+  };
 
-    const cx = size / 2;
-    const cy = size / 2;
-    const R  = size * 0.36;         // outer radius of the chart
-    const n  = DIMENSIONS.length;
-
-    const angleStep = (Math.PI * 2) / n;
-    const startAngle = -Math.PI / 2; // start at top
-
-    const getPoint = (i: number, r: number) => ({
-      x: cx + Math.cos(startAngle + i * angleStep) * r,
-      y: cy + Math.sin(startAngle + i * angleStep) * r,
+  const gridRings = Array.from({ length: rings }, (_, ringIdx) => {
+    const level = (ringIdx + 1) / rings;
+    const points = FINGERPRINT_LABELS.map((_, i) => {
+      const angle = (Math.PI * 2 * i) / FINGERPRINT_LABELS.length - Math.PI / 2;
+      return { x: center + radius * level * Math.cos(angle), y: center + radius * level * Math.sin(angle) };
     });
-
-    const draw = (progress: number) => {
-      ctx.clearRect(0, 0, size, size);
-
-      // ── Background rings ─────────────────────────────────────────
-      const ringCount = 5;
-      for (let ring = 1; ring <= ringCount; ring++) {
-        const rr = (R * ring) / ringCount;
-        ctx.beginPath();
-        for (let i = 0; i < n; i++) {
-          const p = getPoint(i, rr);
-          if (i === 0) ctx.moveTo(p.x, p.y);
-          else ctx.lineTo(p.x, p.y);
-        }
-        ctx.closePath();
-        ctx.strokeStyle = ring === ringCount ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.06)';
-        ctx.lineWidth = ring === ringCount ? 1.5 : 0.8;
-        ctx.stroke();
-
-        // Ring labels (20, 40, 60, 80, 100)
-        if (ring > 0) {
-          ctx.fillStyle = 'rgba(0,0,0,0.25)';
-          ctx.font = `${size * 0.028}px Inter, sans-serif`;
-          ctx.textAlign = 'center';
-          ctx.fillText(`${ring * 20}`, cx, cy - rr - 3);
-        }
-      }
-
-      // ── Axis lines ───────────────────────────────────────────────
-      for (let i = 0; i < n; i++) {
-        const p = getPoint(i, R);
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(p.x, p.y);
-        ctx.strokeStyle = 'rgba(0,0,0,0.10)';
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-      }
-
-      // ── Data polygon (animated) ───────────────────────────────────
-      const values = DIMENSIONS.map(d => (data[d.key as keyof CognitiveDimensions] as number) / 100);
-
-      // Filled gradient polygon
-      ctx.beginPath();
-      for (let i = 0; i < n; i++) {
-        const v = values[i] * progress;
-        const p = getPoint(i, R * v);
-        if (i === 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-      }
-      ctx.closePath();
-
-      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
-      grad.addColorStop(0, 'rgba(242, 101, 34, 0.35)');
-      grad.addColorStop(0.6, 'rgba(242, 101, 34, 0.18)');
-      grad.addColorStop(1, 'rgba(242, 101, 34, 0.04)');
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      ctx.strokeStyle = '#F26522';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // ── Dots on each vertex ───────────────────────────────────────
-      for (let i = 0; i < n; i++) {
-        const v = values[i] * progress;
-        const p = getPoint(i, R * v);
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = DIMENSIONS[i].color;
-        ctx.fill();
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-      }
-
-      // ── Axis labels ───────────────────────────────────────────────
-      for (let i = 0; i < n; i++) {
-        const labelR = R + size * 0.09;
-        const p = getPoint(i, labelR);
-        const dim = DIMENSIONS[i];
-        const score = (data[dim.key as keyof CognitiveDimensions] as number).toFixed(0);
-        const lines = dim.label.split('\n');
-
-        ctx.font = `600 ${size * 0.033}px Inter, sans-serif`;
-        ctx.fillStyle = '#111';
-        ctx.textAlign = 'center';
-
-        const lineH = size * 0.038;
-        const totalH = lines.length * lineH;
-        lines.forEach((line, li) => {
-          ctx.fillText(line, p.x, p.y - totalH / 2 + li * lineH + 4);
-        });
-
-        // Score badge
-        ctx.font = `700 ${size * 0.036}px Inter, sans-serif`;
-        ctx.fillStyle = dim.color;
-        ctx.fillText(score, p.x, p.y + totalH / 2 + 4);
-      }
-
-      // ── Center overall score ──────────────────────────────────────
-      ctx.font = `700 ${size * 0.08}px Inter, sans-serif`;
-      ctx.fillStyle = '#111';
-      ctx.textAlign = 'center';
-      ctx.fillText(data.overall.toFixed(0), cx, cy + size * 0.03);
-
-      ctx.font = `400 ${size * 0.03}px Inter, sans-serif`;
-      ctx.fillStyle = '#888';
-      ctx.fillText('Overall', cx, cy + size * 0.065);
-    };
-
-    if (animate) {
-      const duration = 900; // ms
-      const start = performance.now();
-      const tick = (now: number) => {
-        const elapsed = now - start;
-        progressRef.current = Math.min(elapsed / duration, 1);
-        // ease out cubic
-        const t = progressRef.current;
-        const eased = 1 - Math.pow(1 - t, 3);
-        draw(eased);
-        if (t < 1) rafRef.current = requestAnimationFrame(tick);
-      };
-      rafRef.current = requestAnimationFrame(tick);
-    } else {
-      draw(1);
-    }
-
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [data, size, animate]);
+    return points.map(p => `${p.x},${p.y}`).join(' ');
+  });
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{ display: 'block', margin: '0 auto' }}
-    />
+    <div className="flex flex-col items-center">
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label="Cognitive Fingerprint Radar">
+        {gridRings.map((pts, i) => (
+          <polygon key={i} points={pts} fill="none" stroke={i === rings - 1 ? '#E5E7EB' : '#F3F4F6'} strokeWidth={i === rings - 1 ? 1.5 : 1} />
+        ))}
+        {FINGERPRINT_LABELS.map((_, i) => {
+          const angle = (Math.PI * 2 * i) / FINGERPRINT_LABELS.length - Math.PI / 2;
+          return (
+            <line key={i} x1={center} y1={center} x2={center + radius * Math.cos(angle)} y2={center + radius * Math.sin(angle)} stroke="#F3F4F6" strokeWidth={1} />
+          );
+        })}
+
+        {overlay && (
+          <polygon
+            points={polygonPoints(overlay, '#9CA3AF')}
+            fill="rgba(107,114,128,0.08)"
+            stroke="#9CA3AF"
+            strokeWidth={1.5}
+            strokeDasharray="5 4"
+            strokeLinejoin="round"
+          />
+        )}
+
+        {fingerprint && (
+          <polygon
+            points={polygonPoints(fingerprint, '#F26522')}
+            fill="rgba(242,101,34,0.18)"
+            stroke="#F26522"
+            strokeWidth={2}
+            strokeLinejoin="round"
+          />
+        )}
+
+        {fingerprint &&
+          FINGERPRINT_LABELS.map((dim, i) => {
+            const p = point(fingerprintValue(fingerprint, dim.key), i, FINGERPRINT_LABELS.length);
+            return <circle key={dim.key} cx={p.x} cy={p.y} r={3.5} fill="#F26522" stroke="#fff" strokeWidth={1.5} />;
+          })}
+      </svg>
+
+      <div className="grid grid-cols-3 gap-x-6 gap-y-2 mt-4 w-full max-w-[420px]">
+        {FINGERPRINT_LABELS.map(dim => {
+          const value = fingerprintValue(fingerprint, dim.key);
+          return (
+            <div key={dim.key} className="flex items-center justify-between gap-2 text-xs">
+              <span className="text-gray-500 font-medium whitespace-nowrap">{dim.short}</span>
+              <span className="font-bold text-gray-900 tabular-nums">{value.toFixed(0)}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {overlay && (
+        <p className="text-[11px] text-gray-400 mt-2 flex items-center gap-2">
+          <span className="inline-block w-3 h-3 rounded-sm bg-gray-400" />
+          {overlayLabel}
+        </p>
+      )}
+    </div>
   );
 }

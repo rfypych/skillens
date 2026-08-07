@@ -66,8 +66,14 @@ def create_interview(
 
     # Verify the job belongs to the current user's company
     job = app.job
-    if job.owner.company_id != current_user.company_id and current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized for this application")
+    if not job or not job.owner:
+        raise HTTPException(status_code=404, detail="Application job not found")
+    if current_user.role != "admin":
+        if current_user.company_id is None:
+            if job.owner_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Not authorized for this application")
+        elif job.owner.company_id != current_user.company_id:
+            raise HTTPException(status_code=403, detail="Not authorized for this application")
 
     # Enforce minimum 1-day notice (using timezone-aware datetime)
     now = datetime.now(timezone.utc)
@@ -216,6 +222,15 @@ def score_interview(
     ).first()
     if not interview:
         raise HTTPException(status_code=404, detail="Interview not found")
+
+    # Authorization: the interview must belong to the current user's company
+    if current_user.role != "admin":
+        job = interview.application.job if interview.application else None
+        owner = job.owner if job else None
+        if not job or not owner:
+            raise HTTPException(status_code=404, detail="Interview job not found")
+        if owner.company_id != current_user.company_id and owner.id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized for this interview")
 
     interview.interview_score = payload.interview_score
     interview.score_notes = payload.score_notes

@@ -1,9 +1,11 @@
+import logging
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, BackgroundTasks
 import models, schemas
-import random
 import asyncio
 from services.ai_evaluator import evaluate_candidate_answer_task
+
+logger = logging.getLogger(__name__)
 
 def run_ai_eval_sync(application_id: int, result_id: int):
     loop = asyncio.new_event_loop()
@@ -62,9 +64,16 @@ def apply_for_job(
     if file and file.filename:
         if file.content_type != "application/pdf" or not file.filename.lower().endswith(".pdf"):
             raise HTTPException(status_code=400, detail="Only PDF resumes are supported")
-        if file.size and file.size > 5 * 1024 * 1024:
+
+        # UploadFile has no `.size` attribute on starlette 0.41 — read bytes then check length.
+        try:
+            file_bytes = file.file.read()
+        except Exception:
+            raise HTTPException(status_code=400, detail="Failed to read the uploaded resume")
+
+        if len(file_bytes) > 5 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="File too large. Maximum size is 5MB.")
-        
+
         unique_filename = f"{uuid.uuid4()}.pdf"
         upload_dir = "uploads"
         os.makedirs(upload_dir, exist_ok=True)
@@ -72,7 +81,7 @@ def apply_for_job(
         
         try:
             with open(file_path, "wb") as buffer:
-                buffer.write(file.file.read())
+                buffer.write(file_bytes)
             
             resume_url = f"/uploads/{unique_filename}"
             
@@ -127,11 +136,20 @@ def apply_for_job(
     
     return new_app
 
+def _job_visible_to(db: Session, job: models.Job, current_user: models.User) -> bool:
+    """True if the recruiter/admin may access the given job (same company or admin)."""
+    if current_user.role == "admin":
+        return True
+    if current_user.company_id:
+        company_users = [u[0] for u in db.query(models.User.id).filter(models.User.company_id == current_user.company_id).all()]
+        return job.owner_id in company_users
+    return job.owner_id == current_user.id
+
 def get_job_assessment(db: Session, job_id: int, current_user: models.User):
     if current_user.role not in ["recruiter", "admin"]:
         raise HTTPException(status_code=403, detail="Not authorized")
-    job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == current_user.id).first()
-    if not job:
+    job = db.query(models.Job).filter(models.Job.id == job_id).first()
+    if not job or not _job_visible_to(db, job, current_user):
         raise HTTPException(status_code=404, detail="Job not found")
     assessment = db.query(models.Assessment).filter(models.Assessment.job_id == job_id).first()
     if not assessment:
@@ -141,8 +159,8 @@ def get_job_assessment(db: Session, job_id: int, current_user: models.User):
 def update_job_assessment(db: Session, job_id: int, payload: schemas.AssessmentUpdate, current_user: models.User):
     if current_user.role not in ["recruiter", "admin"]:
         raise HTTPException(status_code=403, detail="Not authorized")
-    job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == current_user.id).first()
-    if not job:
+    job = db.query(models.Job).filter(models.Job.id == job_id).first()
+    if not job or not _job_visible_to(db, job, current_user):
         raise HTTPException(status_code=404, detail="Job not found")
     assessment = db.query(models.Assessment).filter(models.Assessment.job_id == job_id).first()
     if not assessment:
@@ -161,15 +179,21 @@ def get_assessment_prompt(db: Session, application_id: int, current_user: models
     assessment = db.query(models.Assessment).filter(models.Assessment.job_id == app.job_id).first()
     if not assessment:
         raise HTTPException(status_code=404, detail="Assessment not ready")
-    return {"scenario_prompt": assessment.scenario_prompt, "hidden_prompt": app.hidden_prompt or assessment.hidden_prompt}
+    # NB: hidden_prompt (anti-cheat trap word) is intentionally NOT exposed to the candidate.
+    return {"scenario_prompt": assessment.scenario_prompt}
 
-def submit_assessment(db: Session, application_id: int, payload: schemas.AssessmentSubmit, current_user: models.User):
+def submit_assessment(db: Session, application_id: int, payload: schemas.AssessmentSubmit, current_user: models.User, background_tasks: BackgroundTasks = None):
     app = db.query(models.Application).filter(models.Application.id == application_id).first()
     if not app:
         raise HTTPException(status_code=404, detail="Application not found")
     if app.user_id != current_user.id and current_user.role not in ["recruiter", "admin"]:
         raise HTTPException(status_code=403, detail="Not authorized to submit this assessment")
-        
+
+    # Guard against duplicate submission — a candidate can only submit once per application.
+    existing = db.query(models.AssessmentResult).filter(models.AssessmentResult.application_id == app.id).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Assessment has already been submitted")
+
     app.status = "evaluated"
     
     result = models.AssessmentResult(
@@ -186,10 +210,30 @@ def submit_assessment(db: Session, application_id: int, payload: schemas.Assessm
     db.add(result)
     db.commit()
     db.refresh(result)
-    
-    from tasks import run_ai_eval_sync_task
-    run_ai_eval_sync_task.delay(app.id, result.id)
+
+    # Dispatch AI evaluation. By default (USE_CELERY=False) evaluation runs inline
+    # in a background task so a result is always produced even without a Celery
+    # worker or Redis. Celery is only used when explicitly enabled and a worker runs.
+    from config import settings as app_settings
+    if app_settings.USE_CELERY:
+        try:
+            from tasks import run_ai_eval_sync_task
+            run_ai_eval_sync_task.delay(app.id, result.id)
+        except Exception as e:
+            logger.warning(f"Celery AI eval unavailable ({e}) — running inline in background.")
+            _schedule_inline_eval(app.id, result.id, background_tasks)
+    else:
+        _schedule_inline_eval(app.id, result.id, background_tasks)
     return {"message": "Assessment submitted successfully. AI evaluation started."}
+
+
+def _schedule_inline_eval(application_id: int, result_id: int, background_tasks: BackgroundTasks = None):
+    from tasks import run_ai_eval_sync
+    if background_tasks is not None:
+        background_tasks.add_task(run_ai_eval_sync, application_id, result_id)
+    else:
+        import threading
+        threading.Thread(target=run_ai_eval_sync, args=(application_id, result_id), daemon=True).start()
 
 from openai import AsyncOpenAI
 

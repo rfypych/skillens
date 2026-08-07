@@ -37,12 +37,19 @@ export default function MetricsDashboard() {
           'Menunggu': 0,
         };
 
+        const toLocalDateKey = (d: Date) => {
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          return `${y}-${m}-${day}`;
+        };
+
         const trendMap = new Map();
         const trendArray: { dateStr: string, label: string, count: number }[] = [];
         for (let i = 6; i >= 0; i--) {
           const d = new Date();
           d.setDate(d.getDate() - i);
-          const dateStr = d.toISOString().split('T')[0];
+          const dateStr = toLocalDateKey(d);
           const label = d.toLocaleDateString('id-ID', { month: 'short', day: 'numeric' });
           trendMap.set(dateStr, { dateStr, label, count: 0 });
           trendArray.push(trendMap.get(dateStr));
@@ -74,7 +81,7 @@ export default function MetricsDashboard() {
             }
 
             if (app.created_at) {
-              const appDateStr = app.created_at.split('T')[0];
+              const appDateStr = toLocalDateKey(new Date(app.created_at));
               if (trendMap.has(appDateStr)) {
                 trendMap.get(appDateStr).count++;
               }

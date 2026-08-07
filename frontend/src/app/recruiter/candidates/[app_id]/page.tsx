@@ -13,9 +13,11 @@ import clsx from 'clsx';
 import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 import TextRollButton from '@/components/TextRollButton';
 import BiosphereSimulationPanel from '@/components/BiosphereSimulationPanel';
+import ComparativeFingerprintView from '@/components/ComparativeFingerprintView';
+import TeamDNAGraph, { type TeamMember } from '@/components/TeamDNAGraph';
+import type { FingerprintValues } from '@/components/CognitiveFingerprintRadar';
 
-
-type Tab = 'analysis' | 'replay' | 'transcript';
+type Tab = 'analysis' | 'replay' | 'transcript' | 'biosphere';
 const SPEED_OPTIONS = [0.5, 1, 2, 5];
 
 export default function CandidateForensicReport() {
@@ -32,6 +34,11 @@ export default function CandidateForensicReport() {
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const [fingerprint, setFingerprint] = useState<FingerprintValues | null>(null);
+  const [teamAverage, setTeamAverage] = useState<FingerprintValues | null>(null);
+  const [cvAnalysis, setCvAnalysis] = useState<any>(null);
+  const [cvLoading, setCvLoading] = useState(false);
+  const [cvError, setCvError] = useState<string | null>(null);
 
   const handleStatusChange = async (newStatus: string) => {
     setUpdatingStatus(true);
@@ -56,6 +63,19 @@ export default function CandidateForensicReport() {
     } catch {
       toast.error('Gagal mengarsipkan kandidat');
       setUpdatingStatus(false);
+    }
+  };
+
+  const handleAnalyzeCV = async () => {
+    setCvLoading(true);
+    setCvError(null);
+    try {
+      const data = await api.post(`/biosphere/analyze-cv/${appId}`);
+      setCvAnalysis(data.cv_analysis ?? data);
+    } catch (e: any) {
+      setCvError(e.message || 'Analisis CV gagal.');
+    } finally {
+      setCvLoading(false);
     }
   };
 
@@ -86,6 +106,29 @@ export default function CandidateForensicReport() {
   if (result?.replay_history) {
     try { replayHistory = JSON.parse(result.replay_history); } catch { }
   }
+
+  useEffect(() => {
+    const jobId = app?.job?.id;
+    if (!jobId) return;
+
+    api.get(`/biosphere/fingerprint/${appId}`)
+      .then((data) => setFingerprint(data.fingerprint ?? null))
+      .catch(() => setFingerprint(null));
+
+    api.get(`/biosphere/team/${jobId}`)
+      .then((data) => {
+        const team: any[] = data.team ?? [];
+        if (team.length === 0) return;
+        const keys = ['analytical_depth', 'communication_clarity', 'execution_velocity', 'integrity_index', 'creative_synthesis', 'pressure_resilience'] as const;
+        const avg: any = {};
+        keys.forEach(k => {
+          const sum = team.reduce((acc, m) => acc + (m.fingerprint?.[k] ?? 0), 0);
+          avg[k] = Math.round((sum / team.length) * 10) / 10;
+        });
+        setTeamAverage(avg);
+      })
+      .catch(() => setTeamAverage(null));
+  }, [appId, app?.job?.id]);
 
   useEffect(() => {
     if (chatEndRef.current) {
@@ -119,7 +162,6 @@ export default function CandidateForensicReport() {
   if (result?.keystroke_metrics) {
     try { keystrokeMetrics = JSON.parse(result.keystroke_metrics); } catch { }
   }
-  const isTranscribing = keystrokeMetrics.total_chars > 300 && keystrokeMetrics.backspace_ratio < 0.02;
 
   const getLabelStyle = (label: string | null, isCheat: boolean) => {
     if (isCheat || label?.includes('Fabricated')) return 'bg-red-50 text-red-700 border-red-200';
@@ -128,12 +170,9 @@ export default function CandidateForensicReport() {
     return 'bg-amber-50 text-amber-800 border-amber-300';
   };
 
-  const focusScore = Math.max(0, 100 - (result?.tab_switches ?? 0) * 10);
-  const authenticityScore = result?.copy_paste_attempts > 0 ? 10 : 100;
-  const paceScore = isTranscribing ? 40 : 80;
-
   const tabs: { key: Tab; label: string; icon: any }[] = [
     { key: 'analysis', label: 'Analisis AI', icon: ChartBar },
+    { key: 'biosphere', label: 'Biosphere', icon: Idea },
     { key: 'replay', label: 'Pemutaran Ulang', icon: Video },
     { key: 'transcript', label: 'Transkrip Jawaban', icon: Document },
   ];
@@ -248,7 +287,7 @@ export default function CandidateForensicReport() {
                     </h3>
                     <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {result.executive_summary || 'Tidak ada ringkasan tersedia.'}
+                        {result.evaluation_feedback || 'Tidak ada ringkasan tersedia.'}
                       </ReactMarkdown>
                     </div>
                   </div>
@@ -284,27 +323,239 @@ export default function CandidateForensicReport() {
                       Rincian Skor Performa
                     </h3>
                     <div className="space-y-4 text-sm">
-                      <div>
-                        <div className="flex justify-between text-xs font-semibold mb-1">
-                          <span className="text-gray-600">Fokus & Perhatian</span>
-                          <span className="text-gray-900">{focusScore}%</span>
-                        </div>
-                        <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                          <div className="bg-[#F26522] h-full rounded-full" style={{ width: `${focusScore}%` }} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between text-xs font-semibold mb-1">
-                          <span className="text-gray-600">Keaslian Penulisan</span>
-                          <span className="text-gray-900">{authenticityScore}%</span>
-                        </div>
-                        <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                          <div className="bg-emerald-600 h-full rounded-full" style={{ width: `${authenticityScore}%` }} />
-                        </div>
-                      </div>
+                      {[
+                        { label: 'Pemahaman Masalah', value: result.score_problem_understanding, color: '#F26522' },
+                        { label: 'Pendekatan Solusi', value: result.score_solution_approach, color: '#8B5CF6' },
+                        { label: 'Logika & Eksekusi', value: result.score_logic_execution, color: '#06B6D4' },
+                        { label: 'Komunikasi', value: result.score_communication, color: '#10B981' },
+                        { label: 'Kualitas Respons', value: result.score_response_quality, color: '#6366F1' },
+                      ].map(s => {
+                        const v = s.value ?? null;
+                        return (
+                          <div key={s.label}>
+                            <div className="flex justify-between text-xs font-semibold mb-1">
+                              <span className="text-gray-600">{s.label}</span>
+                              <span className="text-gray-900">{v !== null ? v.toFixed(0) : '-'}</span>
+                            </div>
+                            <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                              <div className="h-full rounded-full" style={{ width: `${v ?? 0}%`, background: s.color }} />
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'biosphere' && (
+                <motion.div
+                  key="biosphere"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-6"
+                >
+                  {/* CV Analysis */}
+                  <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
+                      <Document className="w-5 h-5 text-[#F26522]" />
+                      Analisis CV (AI)
+                    </h3>
+
+                    {!cvAnalysis && (
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <p className="text-sm text-gray-600 font-normal">
+                          Ekstrak skill, klaim pengalaman, tanda bahaya, dan area fokus wawancara dari CV kandidat secara otomatis.
+                        </p>
+                        <button
+                          onClick={handleAnalyzeCV}
+                          disabled={cvLoading}
+                          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-full text-sm font-semibold hover:bg-gray-700 transition-colors disabled:opacity-50 shrink-0"
+                        >
+                          {cvLoading ? <ThinkingIndicator className="text-xs" /> : <Idea className="w-4 h-4" />}
+                          {cvLoading ? 'Menganalisis…' : 'Analisis CV'}
+                        </button>
+                      </div>
+                    )}
+                    {cvError && <p className="mt-3 text-sm text-red-600 flex items-center gap-1.5"><Warning className="w-4 h-4" />{cvError}</p>}
+
+                    {cvAnalysis && (
+                      <div className="space-y-5">
+                        <div className="flex flex-wrap items-center gap-4">
+                          <div className="text-center bg-gray-50 rounded-2xl px-5 py-3">
+                            <p className="text-2xl font-bold tabular-nums">{cvAnalysis.cv_quality_score ?? '-'}<span className="text-sm text-gray-400">/100</span></p>
+                            <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Kualitas CV</p>
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Estimasi Pengalaman</p>
+                            <p className="text-xl font-bold text-gray-900">{cvAnalysis.years_experience_estimate ?? '-'} tahun</p>
+                          </div>
+                        </div>
+
+                        <p className="text-sm text-gray-800 leading-relaxed font-normal">{cvAnalysis.summary}</p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Skill Terverifikasi</p>
+                            <div className="flex flex-wrap gap-2">
+                              {(cvAnalysis.extracted_skills ?? []).map((s: string, i: number) => (
+                                <span key={i} className="px-3 py-1 bg-emerald-50 text-emerald-800 rounded-full text-xs font-semibold border border-emerald-200">{s}</span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Kekuatan Menonjol</p>
+                            <ul className="space-y-1.5">
+                              {(cvAnalysis.notable_strengths ?? []).map((s: string, i: number) => (
+                                <li key={i} className="flex items-start gap-2 text-sm text-gray-700"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />{s}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Klaim Tanpa Bukti</p>
+                            <ul className="space-y-1.5">
+                              {(cvAnalysis.missing_evidence ?? []).map((s: string, i: number) => (
+                                <li key={i} className="flex items-start gap-2 text-sm text-gray-700"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />{s}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Tanda Bahaya</p>
+                            <ul className="space-y-1.5">
+                              {(cvAnalysis.red_flags ?? []).map((s: string, i: number) => (
+                                <li key={i} className="flex items-start gap-2 text-sm text-gray-700"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />{s}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div className="border-t border-gray-100 pt-4">
+                          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Area Fokus Wawancara</p>
+                          <div className="flex flex-wrap gap-2">
+                            {(cvAnalysis.interview_focus_areas ?? []).map((s: string, i: number) => (
+                              <span key={i} className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold">{s}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Fingerprint + Simulation */}
+                  <BiosphereSimulationPanel appId={appId} fingerprint={fingerprint} teamAverage={teamAverage} />
+
+                  {/* Comparative */}
+                  <ComparativeFingerprintView
+                    appId={appId}
+                    currentName={app.user?.full_name || 'Kandidat Saat Ini'}
+                    currentFingerprint={fingerprint}
+                    getFingerprint={async () => {
+                      const jobId = app?.job?.id;
+                      if (!jobId) return [];
+                      const data = await api.get(`/biosphere/team/${jobId}`);
+                      return (data.team ?? []).map((m: any) => ({ application_id: m.application_id, candidate_name: m.candidate_name, fingerprint: m.fingerprint }));
+                    }}
+                  />
+
+                  {/* Team DNA */}
+                  <TeamDNAGraph
+                    appId={appId}
+                    getTeam={async () => {
+                      const jobId = app?.job?.id;
+                      if (!jobId) return [];
+                      const data = await api.get(`/biosphere/team/${jobId}`);
+                      return (data.team ?? []).map((m: any) => ({ name: m.candidate_name, role: m.role, fingerprint: m.fingerprint }));
+                    }}
+                  />
+                </motion.div>
+              )}
+
+              {activeTab === 'replay' && (
+                <motion.div
+                  key="replay"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs space-y-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-0">Pemutaran Ulang Proses</h3>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={playbackSpeed}
+                        onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
+                        className="bg-gray-50 border border-gray-200 text-xs font-semibold rounded-full px-3 py-1.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
+                      >
+                        {SPEED_OPTIONS.map(s => (
+                          <option key={s} value={s}>{s}x</option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => {
+                          if (replayHistory.length === 0) return;
+                          if (isPlaying) { setIsPlaying(false); return; }
+                          if (replayIndex >= replayHistory.length - 1) setReplayIndex(0);
+                          setIsPlaying(true);
+                        }}
+                        className="flex items-center gap-2 px-4 py-1.5 bg-gray-900 text-white rounded-full text-xs font-semibold hover:bg-gray-700 transition-colors disabled:opacity-40"
+                        disabled={replayHistory.length === 0}
+                      >
+                        {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                        {isPlaying ? 'Jeda' : 'Putar'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {replayHistory.length === 0 ? (
+                    <p className="text-sm text-gray-500 font-normal py-8 text-center">
+                      Tidak ada riwayat pemutaran yang tersedia untuk kandidat ini.
+                    </p>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-3 py-2">
+                        <button
+                          onClick={() => { setReplayIndex(0); setIsPlaying(false); }}
+                          className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+                          title="Ke awal"
+                        >
+                          <SkipBack className="w-4 h-4" />
+                        </button>
+                        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-[#F26522] transition-all duration-200"
+                            style={{ width: `${((replayIndex + 1) / replayHistory.length) * 100}%` }}
+                          />
+                        </div>
+                        <button
+                          onClick={() => {
+                            setIsPlaying(false);
+                            setReplayIndex(prev => Math.max(0, prev - 1));
+                          }}
+                          className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+                          title="Mundur"
+                        >
+                          <SkipBack className="w-4 h-4 rotate-180" />
+                        </button>
+                        <span className="text-xs font-mono text-gray-500 font-semibold w-16 text-right">
+                          {Math.round((replayIndex / Math.max(replayHistory.length - 1, 1)) * 100)}%
+                        </span>
+                      </div>
+
+                      <div className="max-h-[520px] overflow-y-auto pr-2 space-y-4 border-t border-gray-100 pt-4" ref={chatEndRef}>
+                        {replayHistory[replayIndex]?.chat?.map((msg: any, idx: number) => (
+                          <div key={idx} className={`p-4 rounded-2xl ${msg.role === 'user' ? 'bg-gray-900 text-white ml-8' : 'bg-gray-100 text-gray-900 mr-8'}`}>
+                            <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{msg.role === 'user' ? 'Kandidat' : 'Penguji AI'}</p>
+                            <p className="text-sm leading-relaxed font-normal">{msg.content}</p>
+                          </div>
+                        ))}
+                        {replayHistory[replayIndex]?.input && (
+                          <p className="text-xs text-gray-400 italic px-1">Draft input saat itu: "{replayHistory[replayIndex].input}"</p>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </motion.div>
               )}
 
@@ -328,15 +579,10 @@ export default function CandidateForensicReport() {
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* ── Biosphere Simulation Panel (inside flex-1) ── */}
-            <div className="mt-6">
-              <BiosphereSimulationPanel appId={appId} />
-            </div>
           </div>
 
           {/* Right Navigation Controls */}
-          <div className="w-full md:w-64 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-xs space-y-2 shrink-0">
+          <div className="w-full md:w-64 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-xs space-y-2">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Navigasi Laporan</p>
             {tabs.map(t => {
               const Icon = t.icon;

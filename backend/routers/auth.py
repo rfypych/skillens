@@ -34,16 +34,16 @@ def login(request: Request, response: Response, form_data: OAuth2PasswordRequest
         key="access_token",
         value=token_data["access_token"],
         httponly=True,
-        secure=True,
-        samesite="none",
+        secure=settings.ENVIRONMENT == "production",
+        samesite="lax",
         max_age=1800
     )
     res.set_cookie(
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=True,
-        samesite="none",
+        secure=settings.ENVIRONMENT == "production",
+        samesite="lax",
         max_age=7 * 24 * 3600
     )
     return res

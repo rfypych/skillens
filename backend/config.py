@@ -7,6 +7,10 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     REDIS_URL: str = "redis://localhost:6379/0"
     JWT_SECRET_KEY: str
+    # When true, AI evaluations are dispatched to Celery (requires a running worker).
+    # When false (default), evaluations run inline in a background task so results
+    # are always produced even without Redis/worker infrastructure.
+    USE_CELERY: bool = False
     
     @field_validator("JWT_SECRET_KEY")
     @classmethod

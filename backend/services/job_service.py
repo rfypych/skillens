@@ -2,8 +2,9 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, BackgroundTasks
 from typing import List
 import uuid
+import logging
 import models, schemas
-from tasks import generate_assessment_for_job
+from tasks import generate_assessment_for_job, generate_assessment_for_job_sync
 
 def create_job(db: Session, job: schemas.JobCreate, current_user: models.User) -> models.Job:
     if current_user.role not in ["recruiter", "admin"]:
@@ -31,12 +32,41 @@ def create_job(db: Session, job: schemas.JobCreate, current_user: models.User) -
     db.commit()
     db.refresh(db_job)
     
-    try:
-        generate_assessment_for_job.delay(db_job.id)
-    except Exception as e:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.warning(f"Celery task failed, assessment will need manual generation: {e}")
+    # Generate the assessment (scenario + trap word) deterministically.
+    # By default (USE_CELERY=False) the scenario is generated inline so the job is
+    # always usable. Celery is only used when explicitly enabled and a worker runs.
+    # If even the inline generation fails, seed a default scenario so the job never
+    # silently lacks an assessment.
+    logger = logging.getLogger(__name__)
+    generated = False
+    from config import settings as app_settings
+    if app_settings.USE_CELERY:
+        try:
+            generate_assessment_for_job.delay(db_job.id)
+            generated = True
+        except Exception as e:
+            logger.warning(f"Celery task failed, generating assessment inline: {e}")
+
+    if not generated:
+        try:
+            generate_assessment_for_job_sync(db_job.id)
+        except Exception as inline_e:
+            logger.error(f"Inline assessment generation failed: {inline_e}")
+            try:
+                import random
+                trap_words = ["mentimun", "jerapah", "kulkas", "sepeda", "semangka", "kalkulator", "lemari", "jendela", "bantal", "gajah", "durian", "payung", "sepatu", "sendok", "garpu"]
+                db.add(models.Assessment(
+                    job_id=db_job.id,
+                    scenario_prompt=(
+                        "### Background Context\nYou are joining a fast-growing product team on a critical week.\n\n"
+                        "### The Challenge\nA production incident has just been reported and the team is under pressure to deliver a solution.\n\n"
+                        "### Your Mission\n1. Explain how you would diagnose the issue.\n2. Propose a step-by-step action plan.\n3. Describe how you would communicate with stakeholders."
+                    ),
+                    hidden_prompt=random.choice(trap_words),
+                ))
+                db.commit()
+            except Exception as seed_e:
+                logger.error(f"Default assessment seeding failed: {seed_e}")
     return db_job
 
 def get_jobs(db: Session, skip: int = 0, limit: int = 100) -> List[models.Job]:

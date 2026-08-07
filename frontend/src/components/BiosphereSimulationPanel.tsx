@@ -2,326 +2,177 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Analytics,
-  CheckmarkFilled,
-  ChevronDown,
-  ChevronUp,
-  CircleDash,
-  Flash,
-  Idea,
-  Time,
-  Warning,
-  WarningFilled,
-} from '@carbon/icons-react';
-import CognitiveFingerprintRadar, { CognitiveDimensions } from './CognitiveFingerprintRadar';
-import TeamDNAGraph from './TeamDNAGraph';
+import { Flash, Renew, WarningAlt, CheckmarkOutline, Target, Light } from '@carbon/icons-react';
 import { api } from '@/lib/api';
-import toast from 'react-hot-toast';
-
+import CognitiveFingerprintRadar, { type FingerprintValues, fingerprintValue } from '@/components/CognitiveFingerprintRadar';
+import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 
 interface SimulationData {
-  prediction_30_days: string;
-  prediction_90_days: string;
-  prediction_180_days: string;
-  team_compatibility_score: number;
-  success_probability: number;
-  cognitive_archetype: string;
-  archetype_description: string;
-  risk_factors: string[];
-  strength_signals: string[];
-  recruiter_recommendation: string;
-  counter_measure: string;
-}
-
-interface BiosphereResult {
-  application_id: number;
-  candidate_name: string;
-  job_title: string;
-  fingerprint: CognitiveDimensions;
-  simulation: SimulationData;
+  prediction_30_days?: string;
+  prediction_90_days?: string;
+  prediction_180_days?: string;
+  team_compatibility_score?: number;
+  success_probability?: number;
+  cognitive_archetype?: string;
+  archetype_description?: string;
+  risk_factors?: string[];
+  strength_signals?: string[];
+  recruiter_recommendation?: string;
+  counter_measure?: string;
 }
 
 interface Props {
-  appId: string | number;
+  appId: string;
+  fingerprint: FingerprintValues | null;
+  teamAverage?: FingerprintValues | null;
 }
 
-function ScoreRing({ value, label, color }: { value: number; label: string; color: string }) {
-  const radius = 28;
-  const circ   = 2 * Math.PI * radius;
-  const offset = circ - (value / 100) * circ;
+const TimelineCard = ({ label, text, icon }: { label: string; text?: string; icon: React.ReactNode }) => (
+  <div className="border border-gray-100 rounded-2xl p-4 bg-gray-50/60">
+    <p className="text-xs font-bold text-[#F26522] uppercase tracking-wider flex items-center gap-1.5 mb-2">{icon}{label}</p>
+    <p className="text-sm leading-relaxed text-gray-700 font-normal">{text || 'Belum tersedia.'}</p>
+  </div>
+);
 
-  return (
-    <div className="flex flex-col items-center gap-1.5">
-      <div className="relative w-16 h-16">
-        <svg width="64" height="64" viewBox="0 0 64 64" className="-rotate-90">
-          <circle cx="32" cy="32" r={radius} fill="none" stroke="#f0f0f0" strokeWidth="5" />
-          <circle
-            cx="32" cy="32" r={radius}
-            fill="none"
-            stroke={color}
-            strokeWidth="5"
-            strokeDasharray={circ}
-            strokeDashoffset={offset}
-            strokeLinecap="round"
-            style={{ transition: 'stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1)' }}
-          />
-        </svg>
-        <span
-          className="absolute inset-0 flex items-center justify-center text-sm font-bold"
-          style={{ color }}
-        >
-          {value}
-        </span>
-      </div>
-      <span className="text-[11px] font-semibold text-gray-500 text-center leading-tight">{label}</span>
-    </div>
-  );
-}
+const PillList = ({ title, items, danger }: { title: string; items?: string[]; danger?: boolean }) => (
+  <div className="space-y-2">
+    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{title}</p>
+    {items && items.length > 0 ? (
+      <ul className="space-y-1.5">
+        {items.map((item, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm text-gray-700 leading-snug">
+            <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${danger ? 'bg-red-500' : 'bg-emerald-500'}`} />
+            <span className="font-normal">{item}</span>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-sm text-gray-400 italic">Tidak ada data.</p>
+    )}
+  </div>
+);
 
-function TimelineCard({
-  day, text, icon, color, borderColor,
-}: {
-  day: string; text: string; icon: React.ReactNode; color: string; borderColor: string;
-}) {
-  return (
-    <div className={`rounded-2xl border ${borderColor} p-4 bg-white`}>
-      <div className={`flex items-center gap-2 mb-2`}>
-        <span className={`${color} [&>svg]:w-4 [&>svg]:h-4`}>{icon}</span>
-        <span className={`text-xs font-bold uppercase tracking-wider ${color}`}>{day}</span>
-      </div>
-      <p className="text-xs text-gray-700 leading-relaxed font-normal">{text}</p>
-    </div>
-  );
-}
-
-export default function BiosphereSimulationPanel({ appId }: Props) {
-  const [result, setResult]   = useState<BiosphereResult | null>(null);
+export default function BiosphereSimulationPanel({ appId, fingerprint, teamAverage }: Props) {
+  const [simulation, setSimulation] = useState<SimulationData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState('');
-  const [open, setOpen]       = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [ranOnce, setRanOnce] = useState(false);
 
   const runSimulation = async () => {
     setLoading(true);
-    setError('');
+    setError(null);
     try {
       const data = await api.post(`/biosphere/simulate/${appId}`);
-      setResult(data);
-      setOpen(true);
-    } catch (err: any) {
-      setError(err.message || 'Gagal menjalankan simulasi Biosphere');
-      toast.error('Gagal menjalankan simulasi');
+      setSimulation(data.simulation ?? data);
+      setRanOnce(true);
+    } catch (e: any) {
+      setError(e.message || 'Simulasi gagal dijalankan.');
     } finally {
       setLoading(false);
     }
   };
 
-  const prob = result?.simulation.success_probability ?? 0;
-  const comp = result?.simulation.team_compatibility_score ?? 0;
-
-  const probColor  = prob >= 70 ? '#10B981' : prob >= 45 ? '#F59E0B' : '#EF4444';
-  const compColor  = comp >= 70 ? '#06B6D4' : comp >= 45 ? '#F59E0B' : '#EF4444';
+  const sim = simulation;
+  const compat = typeof sim?.team_compatibility_score === 'number' ? sim.team_compatibility_score : null;
+  const success = typeof sim?.success_probability === 'number' ? sim.success_probability : null;
 
   return (
-    <div className="rounded-2xl border border-gray-200/80 bg-white overflow-hidden">
-      {/* Header */}
-      <div
-        className="px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-gray-50/60 transition-colors"
-        onClick={() => result && setOpen(v => !v)}
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#F26522] to-[#8B5CF6] flex items-center justify-center">
-            <Analytics className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <h3 className="text-sm font-bold text-gray-900 tracking-tight">
-              Biosphere Simulation
-            </h3>
-            <p className="text-[11px] text-gray-500 font-normal">
-              {result
-                ? `${result.simulation.cognitive_archetype} · ${prob}% Success Probability`
-                : 'AI-powered predictive performance intelligence'}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          {!result && (
-            <button
-              onClick={(e) => { e.stopPropagation(); runSimulation(); }}
-              disabled={loading}
-              className="px-4 py-2 bg-gradient-to-r from-[#F26522] to-[#8B5CF6] text-white text-xs font-bold rounded-full hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-1.5 shadow-sm"
-            >
-              {loading ? (
-                <>
-                  <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Simulating…
-                </>
-              ) : (
-                <>
-                  <Flash className="w-3.5 h-3.5" />
-                  Run Simulation
-                </>
-              )}
-            </button>
-          )}
-          {result && (open ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />)}
-        </div>
+    <div className="space-y-6">
+      {/* Fingerprint */}
+      <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
+          <Target className="w-5 h-5 text-[#F26522]" />
+          Cognitive Fingerprint
+        </h3>
+        <CognitiveFingerprintRadar fingerprint={fingerprint} overlay={teamAverage} />
       </div>
 
-      {error && (
-        <div className="px-6 pb-4">
-          <p className="text-xs text-red-600 font-medium flex items-center gap-2">
-            <Warning className="w-4 h-4" /> {error}
-          </p>
-        </div>
-      )}
+      {/* Trigger */}
+      <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2 border-b border-gray-100 pb-3">
+          <Flash className="w-5 h-5 text-[#F26522]" />
+          Simulasi Digital Twin (Oracle Report)
+        </h3>
+        <p className="text-sm text-gray-600 leading-relaxed font-normal">
+          Biosphere menempatkan digital twin kandidat ke dalam ekosistem organisasi dan mensimulasikan
+          10.000 jam interaksi kerja untuk memprediksi performa, konflik tim, burnout, hingga risiko resign.
+        </p>
+        <button
+          onClick={runSimulation}
+          disabled={loading}
+          className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-full text-sm font-semibold hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? <ThinkingIndicator className="text-xs" /> : <Flash className="w-4 h-4" />}
+          {loading ? 'Menjalankan simulasi…' : sim ? 'Jalankan Ulang Simulasi' : 'Jalankan Simulasi'}
+        </button>
+        {error && <p className="mt-3 text-sm text-red-600 flex items-center gap-1.5"><WarningAlt className="w-4 h-4" />{error}</p>}
+      </div>
 
-      <AnimatePresence>
-        {result && open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="overflow-hidden"
-          >
-            <div className="px-6 pb-8 border-t border-gray-100 pt-6 space-y-8">
+      {/* Report */}
+      <AnimatePresence mode="wait">
+        {(loading && !ranOnce) && (
+          <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-white p-10 rounded-2xl border border-gray-200/80 shadow-xs flex flex-col items-center gap-4">
+            <ThinkingIndicator />
+            <p className="text-sm text-gray-500 font-medium">Biosphere sedang mensimulasikan 10.000 jam kerja…</p>
+          </motion.div>
+        )}
 
-              {/* ── Cognitive Fingerprint Radar ── */}
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-5 text-center">
-                  Cognitive Fingerprint — {result.candidate_name}
-                </p>
-                <CognitiveFingerprintRadar data={result.fingerprint} size={300} />
-              </div>
-
-              {/* ── Archetype + Score Rings ── */}
-              <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 p-5">
-                <div className="flex flex-col sm:flex-row items-center gap-5">
-                  <div className="flex-1 text-center sm:text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">
-                      Cognitive Archetype
-                    </p>
-                    <h4 className="text-lg font-bold text-gray-900 tracking-tight">
-                      {result.simulation.cognitive_archetype}
-                    </h4>
-                    <p className="text-xs text-gray-600 mt-1 font-normal leading-relaxed">
-                      {result.simulation.archetype_description}
-                    </p>
+        {!loading && sim && (
+          <motion.div key="report" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
+            {/* Archetype + Scores */}
+            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full bg-[#F26522]/10 text-[#F26522] flex items-center justify-center">
+                    <Light className="w-6 h-6" />
                   </div>
-                  <div className="flex gap-6">
-                    <ScoreRing value={prob}  label="Success Probability"     color={probColor} />
-                    <ScoreRing value={comp}  label="Team Compatibility"      color={compColor} />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Arketipe Kognitif</p>
+                    <p className="text-xl font-bold text-gray-900">{sim.cognitive_archetype || 'Unknown'}</p>
+                    <p className="text-sm text-gray-500 font-normal">{sim.archetype_description}</p>
                   </div>
                 </div>
-              </div>
-
-              {/* ── Timeline Predictions ── */}
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
-                  Simulation Timeline
-                </p>
-                <div className="grid grid-cols-1 gap-3">
-                  <TimelineCard
-                    day="Hari ke-30"
-                    text={result.simulation.prediction_30_days}
-                    icon={<CircleDash />}
-                    color="text-blue-600"
-                    borderColor="border-blue-100"
-                  />
-                  <TimelineCard
-                    day="Hari ke-90"
-                    text={result.simulation.prediction_90_days}
-                    icon={<Time />}
-                    color="text-amber-600"
-                    borderColor="border-amber-100"
-                  />
-                  <TimelineCard
-                    day="Hari ke-180"
-                    text={result.simulation.prediction_180_days}
-                    icon={<Idea />}
-                    color="text-purple-600"
-                    borderColor="border-purple-100"
-                  />
+                <div className="flex gap-4">
+                  {[
+                    { label: 'Kecocokan Tim', value: compat, color: compat !== null && compat < 60 ? 'text-red-600' : 'text-gray-900' },
+                    { label: 'Probabilitas Sukses', value: success, color: success !== null && success < 60 ? 'text-red-600' : 'text-gray-900' },
+                  ].map(m => (
+                    <div key={m.label} className="text-center bg-gray-50 rounded-2xl px-5 py-3">
+                      <p className={`text-2xl font-bold tabular-nums ${m.color}`}>{m.value !== null ? m.value : '-'}<span className="text-sm text-gray-400">/100</span></p>
+                      <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">{m.label}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
+            </div>
 
-              {/* ── Strengths & Risks ── */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-emerald-100 p-4 bg-emerald-50/40">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-700 mb-3">
-                    Strength Signals
-                  </p>
-                  <ul className="space-y-2">
-                    {result.simulation.strength_signals.map((s, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs text-emerald-900">
-                        <CheckmarkFilled className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
+            {/* Timeline predictions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <TimelineCard label="30 Hari Pertama" text={sim.prediction_30_days} icon={<Renew className="w-3.5 h-3.5" />} />
+              <TimelineCard label="90 Hari" text={sim.prediction_90_days} icon={<Renew className="w-3.5 h-3.5" />} />
+              <TimelineCard label="180 Hari" text={sim.prediction_180_days} icon={<Renew className="w-3.5 h-3.5" />} />
+            </div>
+
+            {/* Strength & Risk */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs">
+                <PillList title="Sinyal Kekuatan" items={sim.strength_signals} />
+              </div>
+              <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs">
+                <PillList title="Faktor Risiko" items={sim.risk_factors} danger />
+              </div>
+            </div>
+
+            {/* Recommendation */}
+            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Rekomendasi Rekruter</p>
+              <p className="text-sm text-gray-800 leading-relaxed font-normal">{sim.recruiter_recommendation}</p>
+              {sim.counter_measure && (
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5"><CheckmarkOutline className="w-4 h-4 text-emerald-600" />Strategi Mitigasi</p>
+                  <p className="text-sm text-gray-800 leading-relaxed font-normal">{sim.counter_measure}</p>
                 </div>
-                <div className="rounded-2xl border border-red-100 p-4 bg-red-50/40">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-red-700 mb-3">
-                    Risk Factors
-                  </p>
-                  <ul className="space-y-2">
-                    {result.simulation.risk_factors.map((r, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs text-red-900">
-                        <WarningFilled className="w-3.5 h-3.5 text-red-400 flex-shrink-0 mt-0.5" />
-                        {r}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              {/* ── Recruiter Recommendation ── */}
-              <div className="rounded-2xl border border-gray-200 p-5 bg-gray-50/60">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
-                  Recruiter Recommendation
-                </p>
-                <p className="text-sm text-gray-800 leading-relaxed font-normal">
-                  {result.simulation.recruiter_recommendation}
-                </p>
-                {result.simulation.counter_measure && result.simulation.counter_measure !== '-' && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-amber-600 mb-2">
-                      Counter-Measure Strategy
-                    </p>
-                    <p className="text-xs text-gray-700 leading-relaxed font-normal">
-                      {result.simulation.counter_measure}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* ── Team DNA Graph ── */}
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
-                  Team DNA Impact Simulation
-                </p>
-                <TeamDNAGraph
-                  candidate={{
-                    name: result.candidate_name,
-                    archetype: result.simulation.cognitive_archetype,
-                    fingerprint: result.fingerprint,
-                  }}
-                />
-              </div>
-
-              {/* Re-run button */}
-              <div className="flex justify-end">
-                <button
-                  onClick={runSimulation}
-                  disabled={loading}
-                  className="text-xs font-semibold text-gray-400 hover:text-gray-900 transition-colors flex items-center gap-1.5"
-                >
-                  <Flash className="w-3.5 h-3.5" />
-                  {loading ? 'Re-simulating…' : 'Re-run Simulation'}
-                </button>
-              </div>
-
+              )}
             </div>
           </motion.div>
         )}

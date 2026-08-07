@@ -39,7 +39,10 @@ def apply_for_job(
             max_age=1800
         )
         from utils.auth import create_refresh_token
-        refresh_token = create_refresh_token(data={"sub": payload.email})
+        # Use the applicant's actual email (from the session or the form) so the
+        # refresh token is always resolvable.
+        user_email = current_user.email if current_user else (email or payload.email)
+        refresh_token = create_refresh_token(data={"sub": user_email})
         res.set_cookie(
             key="refresh_token",
             value=refresh_token,
@@ -80,9 +83,10 @@ def submit_assessment(
     application_id: int, 
     payload: schemas.AssessmentSubmit,
     db: Session = Depends(get_db), 
-    current_user: models.User = Depends(auth.get_current_user)
+    current_user: models.User = Depends(auth.get_current_user),
+    background_tasks: BackgroundTasks = BackgroundTasks()
 ):
-    return assessment_service.submit_assessment(db, application_id, payload, current_user)
+    return assessment_service.submit_assessment(db, application_id, payload, current_user, background_tasks)
 
 @router.post("/{application_id}/chat")
 async def chat_assessment(

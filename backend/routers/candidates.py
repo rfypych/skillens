@@ -30,7 +30,10 @@ async def upload_document(
         raise HTTPException(status_code=403, detail="Only candidates can upload documents")
 
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    safe_filename = f"{timestamp}_{file.filename}"
+    # Sanitize filename to prevent path traversal / arbitrary file writes
+    import uuid as _uuid
+    original_name = os.path.basename(file.filename or "resume")
+    safe_filename = f"{timestamp}_{_uuid.uuid4().hex[:8]}_{original_name}"
     file_path = os.path.join(UPLOAD_DIR, safe_filename)
 
     with open(file_path, "wb") as buffer:

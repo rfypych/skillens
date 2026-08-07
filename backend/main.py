@@ -127,10 +127,12 @@ from fastapi import Depends, HTTPException
 
 @app.get("/uploads/{filename}")
 def get_upload_file(filename: str):
-    file_path = os_mod.path.join("uploads", filename)
+    from fastapi import HTTPException as HExc
+    # Sanitize: only serve files directly inside the uploads directory
+    safe_name = os_mod.path.basename(filename)
+    file_path = os_mod.path.join("uploads", safe_name)
     if not os_mod.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="File not found")
-        
+        raise HExc(status_code=404, detail="File not found")
     return FileResponse(file_path)
 
 @app.get("/health")
