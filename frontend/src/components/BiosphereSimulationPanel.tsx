@@ -15,8 +15,10 @@ import {
   WarningFilled,
 } from '@carbon/icons-react';
 import CognitiveFingerprintRadar, { CognitiveDimensions } from './CognitiveFingerprintRadar';
+import TeamDNAGraph from './TeamDNAGraph';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
+
 
 interface SimulationData {
   prediction_30_days: string;
@@ -292,6 +294,20 @@ export default function BiosphereSimulationPanel({ appId }: Props) {
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* ── Team DNA Graph ── */}
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                  Team DNA Impact Simulation
+                </p>
+                <TeamDNAGraph
+                  candidate={{
+                    name: result.candidate_name,
+                    archetype: result.simulation.cognitive_archetype,
+                    fingerprint: result.fingerprint,
+                  }}
+                />
               </div>
 
               {/* Re-run button */}

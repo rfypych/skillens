@@ -1,9 +1,9 @@
 'use client';
 
-import { Archive, CheckmarkOutline, CloseOutline, Filter, Idea, Search, Security, Warning } from '@carbon/icons-react';
-import { motion } from 'framer-motion';
+import { Archive, CheckmarkOutline, Filter, Search, Security, View, ViewOff } from '@carbon/icons-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { api } from '@/lib/api';
 import clsx from 'clsx';
 import TextRollButton from '@/components/TextRollButton';
@@ -25,24 +25,31 @@ interface Application {
   assessment_results: AssessmentResult[];
 }
 
+// Blind mode anonymous name generator
+const GREEK = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota', 'Kappa',
+  'Lambda', 'Mu', 'Nu', 'Xi', 'Omicron', 'Pi', 'Rho', 'Sigma', 'Tau', 'Upsilon'];
+
 export default function CandidatesPage() {
   const [applications, setApplications] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [loading, setLoading]           = useState(true);
+  const [search, setSearch]             = useState('');
+  const [blindMode, setBlindMode]       = useState(false);
+  const [blindReveal, setBlindReveal]   = useState<Set<number>>(new Set());
 
   useEffect(() => {
     api.get('/applications')
-      .then(data => {
-        if (Array.isArray(data)) setApplications(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      .then(data => { if (Array.isArray(data)) setApplications(data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  const filtered = applications.filter(app =>
-    app.user.full_name.toLowerCase().includes(search.toLowerCase()) ||
-    `APP-${app.id}`.toLowerCase().includes(search.toLowerCase()) ||
-    (app.job?.title ?? '').toLowerCase().includes(search.toLowerCase())
+  const filtered = useMemo(() =>
+    applications.filter(app =>
+      app.user.full_name.toLowerCase().includes(search.toLowerCase()) ||
+      `APP-${app.id}`.toLowerCase().includes(search.toLowerCase()) ||
+      (app.job?.title ?? '').toLowerCase().includes(search.toLowerCase())
+    ),
+    [applications, search]
   );
 
   const handleArchive = async (id: number) => {
@@ -50,9 +57,15 @@ export default function CandidatesPage() {
     try {
       await api.delete(`/applications/${id}`);
       setApplications(prev => prev.filter(a => a.id !== id));
-    } catch {
-      alert('Gagal mengarsipkan');
-    }
+    } catch { alert('Gagal mengarsipkan'); }
+  };
+
+  const toggleReveal = (id: number) => {
+    setBlindReveal(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
   };
 
   const getLabelStyle = (label: string | null, isCheat: boolean) => {
@@ -69,12 +82,64 @@ export default function CandidatesPage() {
 
   return (
     <div className="w-full flex flex-col space-y-6 font-sans">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold text-gray-900 mb-1">Daftar Kandidat</h1>
           <p className="text-gray-600 text-sm font-normal">Laporan bukti otentik dan evaluasi perilaku AI kandidat.</p>
         </div>
+
+        {/* Blind Mode CTA */}
+        <motion.button
+          onClick={() => { setBlindMode(v => !v); setBlindReveal(new Set()); }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          className={clsx(
+            'flex items-center gap-2.5 px-5 py-3 rounded-2xl text-sm font-bold transition-all duration-300 border shadow-xs self-start',
+            blindMode
+              ? 'bg-gray-900 text-white border-gray-900'
+              : 'bg-white text-gray-700 border-gray-200 hover:border-gray-900 hover:text-gray-900'
+          )}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            {blindMode ? (
+              <motion.span key="off" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}>
+                <View className="w-4 h-4" />
+              </motion.span>
+            ) : (
+              <motion.span key="on" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}>
+                <ViewOff className="w-4 h-4" />
+              </motion.span>
+            )}
+          </AnimatePresence>
+          {blindMode ? 'Nonaktifkan Blind Mode' : 'Aktifkan Blind Hiring'}
+          {blindMode && (
+            <span className="ml-1 px-2 py-0.5 bg-white/20 rounded-full text-[10px] font-bold tracking-wider">AKTIF</span>
+          )}
+        </motion.button>
       </div>
+
+      {/* Blind Mode Banner */}
+      <AnimatePresence>
+        {blindMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="bg-gray-900 text-white rounded-2xl px-6 py-4 flex items-start gap-4"
+          >
+            <ViewOff className="w-5 h-5 flex-shrink-0 mt-0.5 text-gray-400" />
+            <div>
+              <p className="text-sm font-bold mb-0.5">Blind Hiring Mode Aktif</p>
+              <p className="text-xs text-gray-400 font-normal leading-relaxed">
+                Identitas kandidat disembunyikan otomatis untuk mengeliminasi bias tidak sadar. 
+                Anda hanya melihat <strong className="text-white">skor, data AI, dan telemetri</strong> — murni berdasarkan kemampuan.
+                Klik ikon mata pada kandidat untuk melihat identitasnya secara individual.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Filters and Search */}
       <div className="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-xs flex flex-col sm:flex-row gap-4 justify-between items-center">
@@ -104,7 +169,13 @@ export default function CandidatesPage() {
           <table className="w-full text-left border-collapse min-w-[700px]">
             <thead>
               <tr className="bg-gray-50/80 text-gray-500 text-xs uppercase tracking-wider font-medium border-b border-gray-100">
-                <th className="px-6 py-4">Kandidat</th>
+                <th className="px-6 py-4">
+                  {blindMode ? (
+                    <span className="flex items-center gap-1.5">
+                      <ViewOff className="w-3 h-3" /> ID Anonim
+                    </span>
+                  ) : 'Kandidat'}
+                </th>
                 <th className="px-6 py-4">Posisi & Tanggal</th>
                 <th className="px-6 py-4">Label AI</th>
                 <th className="px-6 py-4">Skor Bukti</th>
@@ -120,19 +191,22 @@ export default function CandidatesPage() {
                 <tr><td colSpan={6} className="px-6 py-12 text-center text-gray-500 text-sm font-medium">Tidak ada kandidat ditemukan.</td></tr>
               )}
               {filtered.map((app, index) => {
-                const latest = app.assessment_results?.[app.assessment_results.length - 1];
-                const score = latest?.overall_score ?? null;
-                const label = latest?.claim_vs_evidence_label ?? null;
-                const isCheat = latest?.ai_cheating_detected ?? false;
-                const tabSwitches = latest?.tab_switches ?? 0;
-                const pastes = latest?.copy_paste_attempts ?? 0;
+                const latest     = app.assessment_results?.[app.assessment_results.length - 1];
+                const score      = latest?.overall_score ?? null;
+                const label      = latest?.claim_vs_evidence_label ?? null;
+                const isCheat    = latest?.ai_cheating_detected ?? false;
+                const tabSw      = latest?.tab_switches ?? 0;
+                const pastes     = latest?.copy_paste_attempts ?? 0;
                 const displayLabel = isCheat ? 'Terindikasi Kecurangan' : label ?? 'Menunggu';
-
-                const telemetryClean = !isCheat && tabSwitches <= 2 && pastes === 0;
-                const telemetryText = isCheat
+                const telemetryClean = !isCheat && tabSw <= 2 && pastes === 0;
+                const telemetryText  = isCheat
                   ? 'Kode hasil AI ditempel'
-                  : tabSwitches > 5 ? `Perpindahan tab tinggi (${tabSwitches}x)` : 
-                    pastes > 0 ? `${pastes} peristiwa paste terdeteksi` : 'Bersih';
+                  : tabSw > 5 ? `Perpindahan tab tinggi (${tabSw}x)`
+                  : pastes > 0 ? `${pastes} peristiwa paste terdeteksi` : 'Bersih';
+
+                const isRevealed = blindReveal.has(app.id);
+                const blindName  = `Kandidat ${GREEK[index % GREEK.length]}`;
+                const blindInitials = (GREEK[index % GREEK.length] ?? 'X').slice(0, 2).toUpperCase();
 
                 return (
                   <motion.tr
@@ -142,31 +216,77 @@ export default function CandidatesPage() {
                     transition={{ duration: 0.2, delay: index * 0.03 }}
                     className="hover:bg-gray-50/80 transition-colors group text-sm"
                   >
+                    {/* Candidate identity cell */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                          {app.user.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                        <div className={clsx(
+                          'w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs shadow-xs transition-all duration-300',
+                          blindMode && !isRevealed
+                            ? 'bg-gray-300 text-gray-600'
+                            : 'bg-gray-900 text-white'
+                        )}>
+                          {blindMode && !isRevealed ? blindInitials : app.user.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">{app.user.full_name}</p>
+                          <AnimatePresence mode="wait" initial={false}>
+                            {blindMode && !isRevealed ? (
+                              <motion.p
+                                key="blind"
+                                initial={{ opacity: 0, filter: 'blur(4px)' }}
+                                animate={{ opacity: 1, filter: 'blur(0px)' }}
+                                exit={{ opacity: 0 }}
+                                className="font-semibold text-gray-500 italic"
+                              >
+                                {blindName}
+                              </motion.p>
+                            ) : (
+                              <motion.p
+                                key="real"
+                                initial={{ opacity: 0, filter: 'blur(4px)' }}
+                                animate={{ opacity: 1, filter: 'blur(0px)' }}
+                                exit={{ opacity: 0 }}
+                                className="font-semibold text-gray-900"
+                              >
+                                {app.user.full_name}
+                              </motion.p>
+                            )}
+                          </AnimatePresence>
                           <p className="text-xs text-gray-500 font-mono mt-0.5">APP-{app.id}</p>
                         </div>
+
+                        {/* Reveal toggle button */}
+                        {blindMode && (
+                          <button
+                            onClick={() => toggleReveal(app.id)}
+                            className="ml-1 p-1.5 rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
+                            title={isRevealed ? 'Sembunyikan identitas' : 'Tampilkan identitas'}
+                          >
+                            {isRevealed
+                              ? <ViewOff className="w-3.5 h-3.5" />
+                              : <View className="w-3.5 h-3.5" />}
+                          </button>
+                        )}
                       </div>
                     </td>
+
                     <td className="px-6 py-4">
                       <p className="font-semibold text-gray-900">{app.job?.title ?? 'N/A'}</p>
                       <p className="text-xs text-gray-500 font-mono">
                         {new Date(app.created_at).toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </p>
                     </td>
+
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${getLabelStyle(label, isCheat)}`}>
                         {displayLabel}
                       </span>
                     </td>
+
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-semibold text-gray-900 w-6">{score !== null ? score.toFixed(0) : '-'}</span>
+                        <span className="text-sm font-semibold text-gray-900 w-6">
+                          {score !== null ? score.toFixed(0) : '-'}
+                        </span>
                         <div className="w-full bg-gray-200 rounded-full h-1.5 max-w-[100px] overflow-hidden">
                           {score !== null && (
                             <div
@@ -177,6 +297,7 @@ export default function CandidatesPage() {
                         </div>
                       </div>
                     </td>
+
                     <td className="px-6 py-4">
                       {telemetryClean ? (
                         <span className="text-gray-600 flex items-center gap-1 text-xs font-normal">
@@ -190,6 +311,7 @@ export default function CandidatesPage() {
                         </span>
                       )}
                     </td>
+
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
@@ -200,11 +322,7 @@ export default function CandidatesPage() {
                           <Archive className="w-4 h-4" />
                         </button>
                         <Link href={`/recruiter/candidates/${app.id}`}>
-                          <TextRollButton
-                            text="Laporan"
-                            variant="dark"
-                            size="sm"
-                          />
+                          <TextRollButton text="Laporan" variant="dark" size="sm" />
                         </Link>
                       </div>
                     </td>
@@ -216,6 +334,12 @@ export default function CandidatesPage() {
         </div>
         <div className="p-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-normal">
           <span>Menampilkan {filtered.length} dari {applications.length} kandidat</span>
+          {blindMode && (
+            <span className="flex items-center gap-1.5 text-gray-400">
+              <ViewOff className="w-3 h-3" />
+              Blind Hiring aktif — {filtered.length - blindReveal.size} identitas tersembunyi
+            </span>
+          )}
         </div>
       </div>
     </div>
