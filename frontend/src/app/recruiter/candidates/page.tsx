@@ -7,6 +7,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { api } from '@/lib/api';
 import clsx from 'clsx';
 import TextRollButton from '@/components/TextRollButton';
+import ComparativeFingerprintView from '@/components/ComparativeFingerprintView';
+import type { CognitiveDimensions } from '@/components/CognitiveFingerprintRadar';
 
 interface AssessmentResult {
   overall_score: number | null;
@@ -342,6 +344,36 @@ export default function CandidatesPage() {
           )}
         </div>
       </div>
+
+      {/* ── Comparative Fingerprint View ── */}
+      {(() => {
+        const withFingerprints = applications.filter(app => {
+          const r = app.assessment_results?.[app.assessment_results.length - 1];
+          return r && r.overall_score !== null;
+        });
+        if (withFingerprints.length < 2) return null;
+
+        // Build synthetic fingerprint from available score data
+        const compareCandidates = withFingerprints.slice(0, 8).map(app => {
+          const r = app.assessment_results[app.assessment_results.length - 1];
+          const score = r.overall_score ?? 50;
+          // Approximate fingerprint dimensions from available score data
+          const fingerprint: CognitiveDimensions = {
+            analytical_depth:      Math.min(100, score * 1.05),
+            communication_clarity: Math.min(100, score * 0.98),
+            execution_velocity:    Math.min(100, score * 1.02),
+            integrity_index:       r.ai_cheating_detected ? 20 : r.copy_paste_attempts > 0 ? 55 : Math.min(100, score + 10),
+            creative_synthesis:    Math.min(100, score * 0.95),
+            pressure_resilience:   Math.min(100, score * (r.tab_switches > 3 ? 0.85 : 1.0)),
+            overall:               score,
+          };
+          return { id: app.id, name: app.user.full_name, fingerprint };
+        });
+
+        return (
+          <ComparativeFingerprintView allCandidates={compareCandidates} />
+        );
+      })()}
     </div>
   );
 }
