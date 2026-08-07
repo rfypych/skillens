@@ -12,6 +12,8 @@ import { api } from '@/lib/api';
 import clsx from 'clsx';
 import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 import TextRollButton from '@/components/TextRollButton';
+import BiosphereSimulationPanel from '@/components/BiosphereSimulationPanel';
+
 
 type Tab = 'analysis' | 'replay' | 'transcript';
 const SPEED_OPTIONS = [0.5, 1, 2, 5];
@@ -326,10 +328,15 @@ export default function CandidateForensicReport() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* ── Biosphere Simulation Panel (inside flex-1) ── */}
+            <div className="mt-6">
+              <BiosphereSimulationPanel appId={appId} />
+            </div>
           </div>
 
           {/* Right Navigation Controls */}
-          <div className="w-full md:w-64 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-xs space-y-2">
+          <div className="w-full md:w-64 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-xs space-y-2 shrink-0">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Navigasi Laporan</p>
             {tabs.map(t => {
               const Icon = t.icon;
