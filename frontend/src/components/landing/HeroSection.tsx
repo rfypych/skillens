@@ -101,6 +101,18 @@ export function HeroSection() {
 
         {/* ── Main Heading + Subtitle ── */}
         <div className="relative z-30 flex flex-col items-center text-center px-5 mt-[4vh] sm:mt-[7vh] md:mt-[8vh]">
+
+          {/* Innovation pill */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mb-5 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gray-300/60 bg-white/60 backdrop-blur-sm text-[11px] font-semibold uppercase tracking-wider text-gray-600"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#F26522] animate-pulse" />
+            Biosphere Intelligence · Prediksi masa depan tim
+          </motion.div>
+
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -111,13 +123,13 @@ export function HeroSection() {
               className="block font-playfair italic font-normal text-5xl sm:text-7xl md:text-8xl lg:text-[8.5rem]"
               style={{ letterSpacing: '-0.05em' }}
             >
-              Merekrut tanpa
+              Bukan sekadar
             </span>
             <span
               className="block font-normal text-5xl sm:text-7xl md:text-8xl lg:text-[8.5rem] -mt-1 sm:-mt-3 md:-mt-5"
               style={{ letterSpacing: '-0.08em' }}
             >
-              tebakan.
+              menyaring.
             </span>
           </motion.h1>
 
@@ -127,7 +139,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-gray-600 text-sm sm:text-base md:text-lg max-w-xl mx-auto text-center font-normal leading-relaxed mt-6 sm:mt-8"
           >
-            Evaluasi keahlian nyata kandidat lewat simulasi studi kasus interaktif yang tidak bisa diakali AI.
+            Skillens mensimulasikan masa depan kandidat di dalam tim Anda — bukan hanya menilai CV hari ini.
           </motion.p>
 
           <motion.div
@@ -159,10 +171,10 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.65 }}
-          className="hidden sm:block absolute bottom-10 sm:bottom-14 left-8 md:left-14 max-w-[260px] z-30"
+          className="hidden sm:block absolute bottom-10 sm:bottom-14 left-8 md:left-14 max-w-[280px] z-30"
         >
           <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
-            Setiap tahapan simulasi mencatat kapabilitas nyata kandidat, dari kedalaman pemecahan masalah hingga penalaran keputusan.
+            Dari sidik jari kognitif kandidat hingga simulasi dampaknya di dalam tim — keputusan rekrutmen berbasis sains, bukan intuisi.
           </p>
         </motion.div>
 
