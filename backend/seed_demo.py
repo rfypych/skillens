@@ -1,25 +1,26 @@
 """
-Skillens Demo Seeding Script
-=============================
+Skillens Demo Seeding
+=====================
 Creates a realistic demo workspace for the JHIC 2.0 / LKS demo:
 one recruiter with a company, one job with an assessment, and five
 candidates with full assessment results, CV text and telemetry that
 exercise the Biosphere (fingerprint, simulation, CV analysis).
 
-Run: python seed_demo.py
+Run:  python seed_demo.py
 Idempotent: re-running creates missing records only.
+
+Also importable: seed_demo(db, recruiter) creates/verifies the full
+workspace for a given recruiter (used by POST /seed/demo in the UI).
 """
 import sys
 import os
 import json
+from typing import Optional
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from database import SessionLocal  # noqa: E402
 import models  # noqa: E402
 from utils.auth import get_password_hash  # noqa: E402
-
-db = SessionLocal()
 
 RECRUITER_EMAIL = "demo-recruiter@skillens.id"
 RECRUITER_PASS = "SkillensDemo2024!"
@@ -28,7 +29,7 @@ JOB_TITLE = "Senior Product Engineer"
 JOB_LANG = "Bahasa Indonesia"
 
 
-def get_or_create_company():
+def get_or_create_company(db):
     company = db.query(models.Company).filter(models.Company.name == COMPANY_NAME).first()
     if not company:
         company = models.Company(name=COMPANY_NAME, description="Perusahaan teknologi fiktif untuk demo.")
@@ -39,8 +40,8 @@ def get_or_create_company():
     return company
 
 
-def get_or_create_recruiter():
-    company = get_or_create_company()
+def get_or_create_recruiter(db):
+    company = get_or_create_company(db)
     rec = db.query(models.User).filter(models.User.email == RECRUITER_EMAIL).first()
     if rec:
         print(f"  [OK] Recruiter exists: {RECRUITER_EMAIL}")
@@ -59,8 +60,11 @@ def get_or_create_recruiter():
     return rec
 
 
-def get_or_create_job(recruiter):
-    job = db.query(models.Job).filter(models.Job.title == JOB_TITLE).first()
+def get_or_create_job(db, recruiter):
+    job = db.query(models.Job).filter(
+        models.Job.title == JOB_TITLE,
+        models.Job.owner_id == recruiter.id,
+    ).first()
     if job:
         print(f"  [OK] Job exists: {JOB_TITLE}")
         return job
@@ -313,7 +317,7 @@ def build_chat(label: str) -> list:
     return chat
 
 
-def create_candidate(candidate, job):
+def create_candidate(db, candidate, job):
     user = db.query(models.User).filter(models.User.email == candidate["email"]).first()
     if not user:
         user = models.User(
@@ -353,7 +357,7 @@ def create_candidate(candidate, job):
     ).first()
     if existing:
         print(f"  [OK] {candidate['name']} already has assessment result")
-        return
+        return {"created": False, "application_id": app.id, "candidate": candidate["name"]}
 
     keystroke = json.dumps({
         "wpm": candidate["wpm"],
@@ -390,17 +394,43 @@ def create_candidate(candidate, job):
     db.add(result)
     db.commit()
     print(f"  [+] {candidate['name']} assessment created (label: {candidate['label']})")
+    return {"created": True, "application_id": app.id, "candidate": candidate["name"]}
+
+
+def seed_demo(db, recruiter, verbose: bool = True):
+    """Create/verify the full demo workspace for the given recruiter.
+
+    Idempotent: existing records are left untouched.
+    Returns a summary dict (job_id, applications) for API responses.
+    """
+    def log(msg):
+        if verbose:
+            print(msg)
+
+    log("=== Skillens Demo Seeding ===")
+    job = get_or_create_job(db, recruiter)
+    log(f"  Creating {len(CANDIDATES)} demo candidates...")
+    applications = []
+    for candidate in CANDIDATES:
+        applications.append(create_candidate(db, candidate, job))
+    log(f"=== Done. Job: {JOB_TITLE} (id={job.id}) ===")
+    return {
+        "job_id": job.id,
+        "job_title": JOB_TITLE,
+        "candidates": applications,
+    }
 
 
 def main():
-    print("=== Skillens Demo Seeding ===")
-    recruiter = get_or_create_recruiter()
-    job = get_or_create_job(recruiter)
-    print(f"  Creating {len(CANDIDATES)} demo candidates...")
-    for candidate in CANDIDATES:
-        create_candidate(candidate, job)
-    print("=== Done. Login sebagai demo-recruiter@skillens.id / SkillensDemo2024! ===")
-    db.close()
+    from database import SessionLocal  # noqa: F401
+
+    db = SessionLocal()
+    try:
+        recruiter = get_or_create_recruiter(db)
+        seed_demo(db, recruiter)
+        print("=== Login sebagai demo-recruiter@skillens.id / SkillensDemo2024! ===")
+    finally:
+        db.close()
 
 
 if __name__ == "__main__":

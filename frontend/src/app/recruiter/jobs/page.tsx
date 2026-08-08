@@ -1,6 +1,6 @@
 'use client';
 
-import { Add, CheckmarkOutline, CloseOutline, Copy, Edit, Group, OverflowMenuVertical, Portfolio, Time, ArrowRight } from '@carbon/icons-react';
+import { Add, CheckmarkOutline, CloseOutline, Copy, Edit, Group, OverflowMenuVertical, Portfolio, Time, ArrowRight, MagicWand } from '@carbon/icons-react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -14,7 +14,38 @@ export default function ActiveRolesPage() {
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [demoLoading, setDemoLoading] = useState(false);
   const router = useRouter();
+
+  const loadJobs = () => {
+    setLoading(true);
+    api.get('/jobs/my-jobs')
+      .then(data => {
+        if (Array.isArray(data)) setJobs(data.filter((j: any) => j.status === 'open'));
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  };
+
+  useEffect(() => { loadJobs(); }, []);
+
+  const loadDemo = async () => {
+    if (demoLoading) return;
+    setDemoLoading(true);
+    try {
+      const res = await api.post('/seed/demo');
+      const count = Array.isArray(res?.candidates) ? res.candidates.length : 0;
+      toast.success(`Data demo dimuat: ${res?.job_title ?? 'posisi demo'} + ${count} kandidat ternilai.`);
+      setTimeout(() => {
+        setDemoLoading(false);
+        loadJobs();
+        if (res?.job_id) router.push(`/recruiter/jobs/${res.job_id}`);
+      }, 1200);
+    } catch (err: any) {
+      setDemoLoading(false);
+      toast.error(err?.message || 'Gagal memuat data demo.');
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: any) => {
@@ -73,9 +104,19 @@ export default function ActiveRolesPage() {
           <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-2 tracking-tight">Posisi Aktif</h1>
           <p className="text-gray-600 text-base font-normal">Kelola posisi terbuka dan atur evaluasi simulasi AI kandidat.</p>
         </div>
-        <Link href="/recruiter/jobs/new" className="w-full sm:w-auto">
-          <TextRollButton text="Buat Posisi Baru" variant="orange" size="md" />
-        </Link>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <button
+            onClick={loadDemo}
+            disabled={demoLoading}
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-[#F26522] to-[#FF8A4C] text-white text-sm font-semibold shadow-md hover:shadow-lg hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-wait"
+          >
+            <MagicWand className={`w-4 h-4 ${demoLoading ? 'animate-spin' : ''}`} />
+            {demoLoading ? 'Memuat Data Demo...' : 'Muat Data Demo'}
+          </button>
+          <Link href="/recruiter/jobs/new" className="w-full sm:w-auto">
+            <TextRollButton text="Buat Posisi Baru" variant="orange" size="md" />
+          </Link>
+        </div>
       </div>
 
       {!loading && jobs.length === 0 && (
@@ -83,9 +124,19 @@ export default function ActiveRolesPage() {
           <Portfolio className="w-12 h-12 text-gray-400 mb-3" />
           <h3 className="text-xl font-bold text-gray-900 mb-1">Belum Ada Posisi Aktif</h3>
           <p className="text-gray-500 text-sm max-w-sm mb-6 font-normal">Buat posisi pertama Anda untuk mulai mengevaluasi kandidat dengan penilaian berbasis AI.</p>
-          <Link href="/recruiter/jobs/new">
-            <TextRollButton text="Buat Posisi Baru" variant="orange" size="md" />
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <button
+              onClick={loadDemo}
+              disabled={demoLoading}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#F26522] to-[#FF8A4C] text-white text-sm font-semibold shadow-md hover:shadow-lg hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-wait"
+            >
+              <MagicWand className={`w-4 h-4 ${demoLoading ? 'animate-spin' : ''}`} />
+              {demoLoading ? 'Memuat Data Demo...' : 'Muat Data Demo (1 Klik)'}
+            </button>
+            <Link href="/recruiter/jobs/new">
+              <TextRollButton text="Buat Posisi Baru" variant="dark" size="md" />
+            </Link>
+          </div>
         </div>
       )}
 

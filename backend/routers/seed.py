@@ -4,6 +4,7 @@ from database import get_db
 from utils import auth
 import models
 import random
+from seed_demo import seed_demo as seed_demo_workspace
 
 router = APIRouter(
     prefix="/seed",
@@ -101,6 +102,22 @@ def seed_data(
         db.commit()
 
     return {"message": "Dummy data added successfully."}
+
+@router.post("/demo")
+def seed_demo(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user),
+):
+    """One-click demo loader: creates a demo job + 5 fully-evaluated
+    candidates owned by the current recruiter. Idempotent."""
+    if current_user.role not in ["recruiter", "admin"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    try:
+        summary = seed_demo_workspace(db, current_user, verbose=False)
+    except Exception as exc:  # noqa: BLE001
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Gagal memuat data demo: {exc}")
+    return summary
 
 @router.post("/clear")
 def clear_data(

@@ -1,9 +1,11 @@
 'use client';
 
-import { Aperture, ArrowUpRight, ChevronRight, Group, Idea, Security } from '@carbon/icons-react';
+import { Aperture, ArrowUpRight, ChevronRight, Group, Idea, Security, MagicWand } from '@carbon/icons-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { toast, Toaster } from 'react-hot-toast';
 import { api } from '@/lib/api';
 import clsx from 'clsx';
 import TextRollButton from '@/components/TextRollButton';
@@ -30,15 +32,38 @@ interface Application {
 export default function RecruiterDashboard() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
+  const [demoLoading, setDemoLoading] = useState(false);
+  const router = useRouter();
 
-  useEffect(() => {
+  const loadApplications = () => {
+    setLoading(true);
     api.get('/applications')
       .then(data => {
         if (Array.isArray(data)) setApplications(data);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { loadApplications(); }, []);
+
+  const loadDemo = async () => {
+    if (demoLoading) return;
+    setDemoLoading(true);
+    try {
+      const res = await api.post('/seed/demo');
+      const count = Array.isArray(res?.candidates) ? res.candidates.length : 0;
+      toast.success(`Data demo dimuat: ${res?.job_title ?? 'posisi demo'} + ${count} kandidat ternilai.`);
+      setTimeout(() => {
+        setDemoLoading(false);
+        loadApplications();
+        if (res?.job_id) router.push(`/recruiter/jobs/${res.job_id}`);
+      }, 1200);
+    } catch (err: any) {
+      setDemoLoading(false);
+      toast.error(err?.message || 'Gagal memuat data demo.');
+    }
+  };
 
   const totalEvaluated = applications.filter(a => a.status === 'evaluated' || a.status === 'hired' || a.status === 'interview').length;
   let hiddenGemsCount = 0;
@@ -87,7 +112,8 @@ export default function RecruiterDashboard() {
 
   return (
     <div className="w-full space-y-8 font-sans">
-      
+      <Toaster position="top-right" />
+
       {/* Hero Banner Section with WebGL Shader Overlay */}
       <div className="bg-[#0F172A] text-white p-8 md:p-12 rounded-2xl relative overflow-hidden shadow-sm min-h-[260px] flex flex-col justify-center">
         {/* Animated WebGL Shader Background Overlay */}
@@ -107,8 +133,16 @@ export default function RecruiterDashboard() {
           </p>
 
           <div className="pt-4 flex flex-wrap items-center gap-4">
+            <button
+              onClick={loadDemo}
+              disabled={demoLoading}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#F26522] to-[#FF8A4C] text-white text-sm font-semibold shadow-lg hover:shadow-xl hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-wait"
+            >
+              <MagicWand className={`w-4 h-4 ${demoLoading ? 'animate-spin' : ''}`} />
+              {demoLoading ? 'Memuat Data Demo...' : 'Muat Data Demo (1 Klik)'}
+            </button>
             <Link href="/recruiter/jobs/new">
-              <TextRollButton text="Program Posisi Baru" variant="orange" size="md" />
+              <TextRollButton text="Program Posisi Baru" variant="white" size="md" />
             </Link>
             <Link href="/recruiter/candidates">
               <TextRollButton text="Lihat Daftar Kandidat" variant="white" size="md" />
