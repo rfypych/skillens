@@ -54,23 +54,21 @@ export function CTASection() {
             transition={{ duration: 0.5, delay: 0.25 }}
             className="flex flex-row items-center gap-3 mt-2"
           >
-            {/* Launch App — solid white */}
             <Link
               href="/signup"
               className="inline-flex items-center gap-3 bg-white text-gray-900 text-base font-semibold pl-7 pr-2 py-2 rounded-full hover:bg-[#F26522] hover:text-white transition-colors duration-200"
             >
               Mulai Gratis
-              <span className="bg-gray-900 rounded-full p-2 group-hover:bg-white transition-colors">
-                <IconArrowUpRight size={14} className="text-white group-hover:text-gray-900" />
+              <span className="bg-gray-900 rounded-full p-2">
+                <IconArrowUpRight size={14} className="text-white" />
               </span>
             </Link>
 
-            {/* Read Docs — blur pill */}
             <Link
               href="/recruiter"
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white text-base font-medium px-7 py-3 rounded-full border border-white/10 hover:bg-white/20 transition-colors duration-200"
+              className="text-sm font-medium text-white/50 hover:text-white transition-colors duration-150 px-2"
             >
-              Lihat Demo
+              Lihat Demo &rarr;
             </Link>
           </motion.div>
         </div>
