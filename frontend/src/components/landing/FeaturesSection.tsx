@@ -10,8 +10,8 @@ import {
   IconArrowUpRight,
 } from '@/components/icons/CustomIcons';
 
-/* Card 1 — Tall left (row-span-2) — BIOSPHERE HERO */
-function CardBiosphere() {
+/* Card 1 — Tall left (row-span-2) — MICRO-SIMULATION ASSESSMENT */
+function CardMicroSim() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -36,26 +36,26 @@ function CardBiosphere() {
       <div className="relative z-10">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F26522]/20 border border-[#F26522]/30 mb-5">
           <span className="w-1.5 h-1.5 rounded-full bg-[#F26522] animate-pulse" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-[#F26522]">Inovasi Utama</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#F26522]">Lapisan 1 — Inovasi Utama</span>
         </div>
         <h3
           className="text-white text-2xl md:text-3xl font-semibold leading-snug mt-2 max-w-xs"
           style={{ letterSpacing: '-0.03em' }}
         >
-          Biosphere Intelligence
+          Micro-Simulation Assessment
         </h3>
         <p className="text-gray-400 text-sm leading-relaxed mt-3 max-w-[240px]">
-          Simulasikan masa depan kandidat di dalam tim Anda — 30, 90, dan 180 hari ke depan — sebelum mereka bergabung.
+          Kandidat menghadapi studi kasus nyata sesuai posisi — bukan soal pilihan ganda. AI mewawancarai multi-putaran dan menilai 5 dimensi kompetensi.
         </p>
       </div>
 
       {/* Feature list + CTA */}
       <div className="relative z-10 space-y-3">
         {[
-          { dot: '#F26522', text: 'Sidik Jari Kognitif 6 Dimensi' },
-          { dot: '#8B5CF6', text: 'Team DNA Network Graph' },
-          { dot: '#06B6D4', text: 'Prediksi Performa 180 Hari' },
-          { dot: '#10B981', text: 'Blind Hiring Anti-Bias Mode' },
+          { dot: '#F26522', text: 'Pemahaman Masalah & Akar Penyebab' },
+          { dot: '#8B5CF6', text: 'Pendekatan Solusi & Trade-off' },
+          { dot: '#06B6D4', text: 'Eksekusi Logis & Urutan Berpikir' },
+          { dot: '#10B981', text: 'Label Integritas 5 Kategori' },
         ].map(f => (
           <div key={f.text} className="flex items-center gap-2.5">
             <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: f.dot }} />
@@ -74,8 +74,8 @@ function CardBiosphere() {
   );
 }
 
-/* Card 2 — Wide top-right (col-span-2) */
-function CardRealtime() {
+/* Card 2 — Wide top-right (col-span-2) — TELEMETRY & ANTI-CHEAT */
+function CardTelemetry() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -91,23 +91,23 @@ function CardRealtime() {
         />
       </div>
       <div className="relative z-10">
-        <span className="text-[11px] uppercase tracking-widest text-gray-400 font-medium">Telemetri Real-time</span>
+        <span className="text-[11px] uppercase tracking-widest text-gray-400 font-medium">Lapisan 2 — Telemetri & Anti-Kecurangan</span>
         <h3
           className="text-gray-900 text-2xl md:text-3xl font-semibold mt-3"
           style={{ letterSpacing: '-0.03em' }}
         >
-          Evaluasi Instan. Tanpa Bias.
+          Deteksi kecurangan. Tanpa kamera.
         </h3>
       </div>
       <p className="relative z-10 text-gray-500 text-[15px] leading-relaxed max-w-sm">
-        Hasil sidik jari kognitif tersedia dalam hitungan menit. AI menilai kedalaman berpikir nyata — bukan sekadar hafalan atau copy-paste.
+        Keystroke forensics menganalisis 13 sinyal perilaku secara real-time — kecepatan, jeda, copy-paste, dan pola mengetik — untuk mendeteksi anomali tanpa proctoring invasif.
       </p>
     </motion.div>
   );
 }
 
-/* Card 3 — Bottom middle */
-function CardUnlock() {
+/* Card 3 — Bottom middle — TALENT INTELLIGENCE */
+function CardTalentIntel() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -123,15 +123,15 @@ function CardUnlock() {
         />
       </div>
       <div className="relative z-10">
-        <span className="text-[11px] uppercase tracking-widest text-gray-400 font-medium">Anti-Manipulasi</span>
+        <span className="text-[11px] uppercase tracking-widest text-gray-400 font-medium">Lapisan 3 — Talent Intelligence</span>
         <h3
           className="text-gray-900 text-2xl font-semibold mt-3 leading-snug"
           style={{ letterSpacing: '-0.02em' }}
         >
-          Tidak bisa<br />diakali AI.
+          Cognitive<br />Fingerprint.
         </h3>
         <p className="text-gray-500 text-[15px] mt-3 leading-relaxed">
-          Studi kasus dikalibrasi dinamis. Setiap kandidat mendapat soal unik yang tidak bisa di-Google atau di-ChatGPT.
+          Profil multi-dimensi kandidat dari jawaban dan perilaku — bukan hanya skor angka. Prediksi performa dan temukan Hidden Gem tersembunyi.
         </p>
       </div>
       <Link
@@ -145,7 +145,7 @@ function CardUnlock() {
   );
 }
 
-/* Card 4 — Bottom right */
+/* Card 4 — Bottom right — COMPARATIVE RANKING */
 function CardComparative() {
   return (
     <motion.div
@@ -155,7 +155,7 @@ function CardComparative() {
       transition={{ duration: 0.55, delay: 0.3 }}
       className="group relative bg-white rounded-[1.5rem] md:rounded-[2rem] p-8 md:p-10 min-h-[14rem] flex flex-col items-center justify-center overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-300 text-center gap-4"
     >
-      <span className="text-[11px] uppercase tracking-widest text-gray-400 font-medium">Multi-Kandidat</span>
+      <span className="text-[11px] uppercase tracking-widest text-gray-400 font-medium">Perbandingan Objektif</span>
       <h3
         className="text-gray-900 text-2xl font-semibold leading-tight"
         style={{ letterSpacing: '-0.02em' }}
@@ -182,7 +182,7 @@ export function FeaturesSection() {
           className="text-gray-900 text-3xl md:text-4xl font-semibold max-w-md leading-snug"
           style={{ letterSpacing: '-0.03em' }}
         >
-          Platform HR yang berpikir satu langkah ke depan.
+          Tiga lapisan bukti. Satu keputusan tepat.
         </motion.h2>
         <motion.div
           initial={{ opacity: 0 }}
@@ -202,9 +202,9 @@ export function FeaturesSection() {
 
       {/* Card grid — 3 cols, 2 rows */}
       <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-4">
-        <CardBiosphere />
-        <CardRealtime />
-        <CardUnlock />
+        <CardMicroSim />
+        <CardTelemetry />
+        <CardTalentIntel />
         <CardComparative />
       </div>
     </section>

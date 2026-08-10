@@ -84,7 +84,7 @@ function Navbar() {
 }
 
 /* ────────────────────────────────────────
-   HERO SECTION (Restored Cool Design)
+   HERO SECTION — Evidence-Based Hiring
 ──────────────────────────────────────── */
 export function HeroSection() {
   return (
@@ -102,57 +102,46 @@ export function HeroSection() {
         {/* ── Main Heading + Subtitle ── */}
         <div className="relative z-30 flex flex-col items-center text-center px-5 mt-[4vh] sm:mt-[7vh] md:mt-[8vh]">
 
-          {/* Innovation pill */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-5 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gray-300/60 bg-white/60 backdrop-blur-sm text-[11px] font-semibold uppercase tracking-wider text-gray-600"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F26522] animate-pulse" />
-            Biosphere Intelligence · Prediksi masa depan tim
-          </motion.div>
-
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.15 }}
             className="text-gray-900 leading-[0.95]"
           >
             <span
               className="block font-playfair italic font-normal text-5xl sm:text-7xl md:text-8xl lg:text-[8.5rem]"
               style={{ letterSpacing: '-0.05em' }}
             >
-              Bukan sekadar
+              Merekrut tanpa
             </span>
             <span
               className="block font-normal text-5xl sm:text-7xl md:text-8xl lg:text-[8.5rem] -mt-1 sm:-mt-3 md:-mt-5"
               style={{ letterSpacing: '-0.08em' }}
             >
-              menyaring.
+              tebakan.
             </span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.8, delay: 0.38 }}
             className="text-gray-600 text-sm sm:text-base md:text-lg max-w-xl mx-auto text-center font-normal leading-relaxed mt-6 sm:mt-8"
           >
-            Skillens mensimulasikan masa depan kandidat di dalam tim Anda — bukan hanya menilai CV hari ini.
+            Evaluasi keahlian nyata kandidat lewat simulasi studi kasus interaktif — bukan sekadar membaca CV yang bisa diklaim sembarangan.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.55 }}
+            transition={{ duration: 0.6, delay: 0.52 }}
             className="flex items-center gap-3 mt-8"
           >
             <Link
               href="/signup"
               className="inline-flex items-center gap-3 bg-gray-900 text-white text-base font-medium pl-7 pr-2 py-2 rounded-full hover:bg-[#F26522] transition-colors duration-200 shadow-md"
             >
-              Coba Simulasi
+              Mulai Evaluasi
               <span className="bg-white rounded-full p-2">
                 <IconArrowUpRight size={14} className="text-gray-900" />
               </span>
@@ -174,11 +163,11 @@ export function HeroSection() {
           className="hidden sm:block absolute bottom-10 sm:bottom-14 left-8 md:left-14 max-w-[280px] z-30"
         >
           <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
-            Dari sidik jari kognitif kandidat hingga simulasi dampaknya di dalam tim — keputusan rekrutmen berbasis sains, bukan intuisi.
+            Deteksi kecurangan otomatis berbasis keystroke forensics. Kandidat dinilai dari bukti jawaban nyata — bukan klaim di kertas.
           </p>
         </motion.div>
 
-        {/* ── Bottom-Right Inverted Cut-Out Corner Widget (Reference Match) ── */}
+        {/* ── Bottom-Right Inverted Cut-Out Corner Widget ── */}
         <div className="hidden sm:block absolute bottom-0 right-0 z-30 pointer-events-auto">
           <div className="relative bg-[#f0f0f0] px-7 py-5 rounded-tl-[2.5rem] flex items-center gap-3.5">
             {/* Inverted curve - Top edge junction */}
@@ -202,14 +191,14 @@ export function HeroSection() {
             </svg>
 
             {/* Content inside corner */}
-            <Link href="/signup" className="flex items-center gap-3.5 group/corner">
+            <Link href="/recruiter" className="flex items-center gap-3.5 group/corner">
               <div className="w-10 h-10 rounded-full bg-[#F26522] flex items-center justify-center flex-shrink-0 shadow-sm group-hover/corner:scale-105 transition-transform duration-200">
                 <IconArrowUpRight size={18} className="text-white" />
               </div>
               <div className="flex flex-col text-left">
-                <span className="text-xs font-semibold text-gray-900 leading-tight">Dokumentasi</span>
+                <span className="text-xs font-semibold text-gray-900 leading-tight">Untuk Rekruiter</span>
                 <span className="text-[11px] font-medium text-[#F26522] flex items-center gap-0.5">
-                  Panduan &gt;
+                  Lihat Dashboard &gt;
                 </span>
               </div>
             </Link>
