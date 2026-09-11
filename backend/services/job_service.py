@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from fastapi import HTTPException, BackgroundTasks
 from typing import List
 import uuid
@@ -84,7 +85,7 @@ def get_my_jobs(db: Session, current_user: models.User, skip: int = 0, limit: in
     query = db.query(models.Job).options(selectinload(models.Job.applications).load_only(models.Application.id))
     
     if current_user.company_id:
-        company_users = db.query(models.User.id).filter(models.User.company_id == current_user.company_id).subquery()
+        company_users = select(models.User.id).where(models.User.company_id == current_user.company_id)
         query = query.filter(models.Job.owner_id.in_(company_users))
     else:
         query = query.filter(models.Job.owner_id == current_user.id)
@@ -98,19 +99,60 @@ def get_job(db: Session, job_id: int) -> models.Job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
 
+def get_job_by_magic(db: Session, token: str) -> models.Job:
+    job = db.query(models.Job).filter(models.Job.magic_link_token == token).first()
+    if job is None:
+        raise HTTPException(status_code=404, detail="Invalid magic link")
+    if job.status != "open":
+        raise HTTPException(status_code=400, detail="Job posting is closed")
+    return job
+
+# ── JD Debiasing Check (heuristik ringan, tanpa LLM) ──
+BIASED_PATTERNS = [
+    (r"\b(muda|berusia muda|fresh graduate saja|usia maksimal \d+)\b", "Hindari batasan usia; ganti dengan kebutuhan pengalaman."),
+    (r"\b(laki-?laki|perempuan|cowok|cewek|cantik|ganteng)\b", "Hindari penyebutan gender/fisik; fokus pada kompetensi."),
+    (r"\b(agresif|dominan|ninja|rockstar|guru|jagoan)\b", "Gunakan bahasa netral: 'proaktif', 'kolaboratif', 'berpengalaman'."),
+    (r"\b(suku|agama|ras|berdarah|pribumi|non-?pribumi)\b", "Hindari referensi SARA; fokus pada keterampilan."),
+    (r"\b(mustahil|tidak cocok untuk (wanita|perempuan|difabel|disabilitas))\b", "Kalimat eksklusif; ganti dengan akomodasi yang tersedia."),
+    (r"\b(kerja lembur terus|siap lembur setiap hari|tanpa kehidupan)\b", "Hindari ekspektasi overwork; jelaskan jam kerja wajar."),
+]
+
+INCLUSIVE_TIPS = [
+    "Gunakan 'Anda' yang netral dan sebutkan akomodasi disabilitas.",
+    "Ganti syarat usia dengan rentang pengalaman yang terukur.",
+    "Tambahkan kalimat: 'Kami mendorong pelamar dari semua latar belakang.'",
+]
+
+def check_jd_bias(title: str = "", description: str = "", expected_outcomes: str = "", specific_skills: str = "") -> dict:
+    import re
+    text = f"{title}\n{description}\n{expected_outcomes}\n{specific_skills}"
+    issues = []
+    for pattern, suggestion in BIASED_PATTERNS:
+        for m in re.finditer(pattern, text, flags=re.IGNORECASE):
+            issues.append({"match": m.group(0), "suggestion": suggestion})
+            if len(issues) >= 10:
+                break
+    bias_score = min(100, len(issues) * 20)
+    return {
+        "bias_score": bias_score,
+        "label": "Rendah" if bias_score < 20 else ("Sedang" if bias_score < 60 else "Tinggi"),
+        "issues": issues,
+        "suggestions": INCLUSIVE_TIPS if issues else ["Deskripsi sudah inklusif. Pertahankan bahasa netral."],
+    }
+
 def update_job(db: Session, job_id: int, job_update: schemas.JobUpdate, current_user: models.User) -> models.Job:
     if current_user.role not in ["recruiter", "admin"]:
         raise HTTPException(status_code=403, detail="Not authorized")
         
     if current_user.company_id:
-        company_users = db.query(models.User.id).filter(models.User.company_id == current_user.company_id).subquery()
+        company_users = select(models.User.id).where(models.User.company_id == current_user.company_id)
         job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id.in_(company_users)).first()
     else:
         job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == current_user.id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     
-    update_data = job_update.dict(exclude_unset=True)
+    update_data = job_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(job, key, value)
         
@@ -123,7 +165,7 @@ def delete_job(db: Session, job_id: int, current_user: models.User):
         raise HTTPException(status_code=403, detail="Not authorized")
         
     if current_user.company_id:
-        company_users = db.query(models.User.id).filter(models.User.company_id == current_user.company_id).subquery()
+        company_users = select(models.User.id).where(models.User.company_id == current_user.company_id)
         job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id.in_(company_users)).first()
     else:
         job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == current_user.id).first()

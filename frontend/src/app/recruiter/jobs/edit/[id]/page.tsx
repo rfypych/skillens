@@ -13,7 +13,8 @@ import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 export default function EditJob() {
   const router = useRouter();
   const params = useParams();
-  const id = params.id;
+  const _rawId = params.id;
+  const id = Array.isArray(_rawId) ? _rawId[0] : _rawId;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(true);

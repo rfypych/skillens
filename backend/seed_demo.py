@@ -67,6 +67,11 @@ def get_or_create_job(db, recruiter):
     ).first()
     if job:
         print(f"  [OK] Job exists: {JOB_TITLE}")
+        if not job.magic_link_token:
+            import uuid as _uuid
+            job.magic_link_token = str(_uuid.uuid4())
+            db.commit()
+            print("  [FIX] Backfilled missing magic_link_token")
         return job
     job = models.Job(
         title=JOB_TITLE,

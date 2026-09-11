@@ -151,7 +151,8 @@ function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClos
 export default function AssessmentInstructions() {
   const router = useRouter();
   const params = useParams();
-  const application_id = params.application_id;
+  const _rawApplicationId = params.application_id;
+  const application_id = Array.isArray(_rawApplicationId) ? _rawApplicationId[0] : _rawApplicationId;
 
   const [agreed, setAgreed] = useState(false);
   const [showGuide, setShowGuide] = useState(false);

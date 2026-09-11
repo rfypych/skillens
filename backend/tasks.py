@@ -84,23 +84,23 @@ Do NOT output markdown code blocks (like ```json) for the JSON envelope, just re
                 messages=[{"role": "user", "content": system_prompt}],
                 response_format={"type": "json_object"},
                 temperature=0.7,
-                max_tokens=1500
+                max_tokens=900  # Groq free-tier OTPM limit is 1000; keep headroom
             )
             scenario_prompt, generated_job_desc = extract_json_scenario(response.choices[0].message.content.strip())
         except Exception as e:
             logger.error(f"Primary LLM error generating scenario: {str(e)}. Falling back to Groq.")
             try:
                 groq_client = OpenAI(
-                    api_key=os.getenv("GROQ_API_KEY"),
+                    api_key=os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY"),
                     base_url="https://api.groq.com/openai/v1",
                     timeout=30.0
                 )
                 response = groq_client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
+                    model=os.getenv("LLM_FALLBACK_MODEL", "llama-3.1-8b-instant"),
                     messages=[{"role": "user", "content": system_prompt}],
                     response_format={"type": "json_object"},
                     temperature=0.7,
-                    max_tokens=1500
+                    max_tokens=900  # Groq free-tier OTPM limit is 1000; keep headroom
                 )
                 scenario_prompt, generated_job_desc = extract_json_scenario(response.choices[0].message.content.strip())
             except Exception as e2:

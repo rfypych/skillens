@@ -20,8 +20,7 @@ export default function SettingsPage() {
       try {
         const data = await api.get('/auth/me');
         setUser(data);
-      } catch (err) {
-        console.error(err);
+      } catch {
       }
     };
     fetchMe();

@@ -19,7 +19,8 @@ export default function CandidateDashboard() {
   const [applyingTo, setApplyingTo] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'applications' | 'positions'>('applications');
 
-  useEffect(() => {
+  const loadDashboard = () => {
+    setLoading(true);
     Promise.all([
       api.get('/jobs'),
       api.get('/applications')
@@ -28,7 +29,29 @@ export default function CandidateDashboard() {
       setApplications(Array.isArray(appsData) ? appsData : []);
       setLoading(false);
     }).catch(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadDashboard();
   }, [router]);
+
+  const handleDownloadReport = async (appId: number) => {
+    try {
+      const [fp, app] = await Promise.all([
+        api.get(`/biosphere/fingerprint/${appId}`).catch(() => null),
+        api.get(`/applications/${appId}`).catch(() => null),
+      ]);
+      const blob = new Blob([JSON.stringify({ application_id: appId, fingerprint: fp, application: app, exported_at: new Date().toISOString() }, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `skillens-report-${appId}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert('Report belum tersedia.');
+    }
+  };
 
   const handleApply = (jobId: number) => {
     router.push(`/candidate/apply/${jobId}`);
@@ -93,6 +116,13 @@ export default function CandidateDashboard() {
               <h2 className="text-2xl font-semibold text-gray-900">Lamaran Saya</h2>
               <p className="text-gray-500 mt-0.5 text-xs font-normal">Pantau evaluasi aktif dan laporan Anda.</p>
             </div>
+            <button
+              onClick={loadDashboard}
+              disabled={loading}
+              className="px-4 py-2 rounded-full bg-gray-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-[#F26522] disabled:opacity-60"
+            >
+              {loading ? 'Memuat...' : 'Refresh'}
+            </button>
           </div>
 
           {applications.length === 0 && (
@@ -152,6 +182,14 @@ export default function CandidateDashboard() {
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-700 border border-red-200">
                             <CheckCircle2 className="w-3.5 h-3.5" /> Tidak Terpilih
                           </span>
+                        )}
+                        {app.status !== 'testing' && (
+                          <button
+                            onClick={() => handleDownloadReport(app.id)}
+                            className="px-3 py-1 text-xs font-bold rounded-full border border-gray-300 text-gray-700 hover:border-[#F26522] hover:text-[#F26522] transition-colors"
+                          >
+                            Unduh Report
+                          </button>
                         )}
                       </div>
                     )}

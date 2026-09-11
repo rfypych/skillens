@@ -184,10 +184,21 @@ export default function CandidateProfile() {
                 <div className="relative group">
                   <input
                     type="file"
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf,application/pdf"
                     onChange={async (e) => {
                       if (!e.target.files || e.target.files.length === 0) return;
                       const file = e.target.files[0];
+                      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+                      if (!isPdf) {
+                        toast.error('Hanya file PDF yang didukung.');
+                        e.target.value = '';
+                        return;
+                      }
+                      if (file.size > 5 * 1024 * 1024) {
+                        toast.error('File terlalu besar. Maksimum 5MB.');
+                        e.target.value = '';
+                        return;
+                      }
                       const formDataObj = new FormData();
                       formDataObj.append('file', file);
                       formDataObj.append('document_type', 'resume');
@@ -211,7 +222,7 @@ export default function CandidateProfile() {
                       <p className="text-xs font-semibold text-gray-700">
                         {formData.profile.resume_url ? 'Ganti CV (Opsional)' : 'Unggah CV / Resume'}
                       </p>
-                      <p className="text-[10px] text-gray-400">PDF, DOC, DOCX — Maks 5MB</p>
+                      <p className="text-[10px] text-gray-400">PDF saja — Maks 5MB</p>
                     </div>
                   </div>
                 </div>

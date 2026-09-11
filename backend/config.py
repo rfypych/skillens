@@ -1,7 +1,8 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="allow")
     PROJECT_NAME: str = "Skillens API"
     ENVIRONMENT: str = "development"
     DATABASE_URL: str
@@ -11,6 +12,13 @@ class Settings(BaseSettings):
     # When false (default), evaluations run inline in a background task so results
     # are always produced even without Redis/worker infrastructure.
     USE_CELERY: bool = False
+    # LLM contract: primary via OPENAI_* (OpenAI-compatible, default Groq),
+    # fallback via GROQ_API_KEY (or reuse OPENAI_API_KEY) + LLM_FALLBACK_MODEL.
+    OPENAI_API_KEY: str = ""
+    OPENAI_API_BASE: str = "https://api.groq.com/openai/v1"
+    LLM_MODEL_NAME: str = "qwen/qwen3.8-27b"
+    GROQ_API_KEY: str = ""
+    LLM_FALLBACK_MODEL: str = "openai/gpt-oss-120b"
     
     @field_validator("JWT_SECRET_KEY")
     @classmethod
@@ -18,9 +26,5 @@ class Settings(BaseSettings):
         if len(v) < 32:
             raise ValueError("JWT_SECRET_KEY must be at least 32 characters long")
         return v
-    
-    class Config:
-        env_file = ".env"
-        extra = "allow"
 
 settings = Settings()

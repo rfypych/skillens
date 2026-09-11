@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session, joinedload, defer
+from sqlalchemy import select
 from fastapi import HTTPException
 from typing import List
 import models, schemas
@@ -22,10 +23,10 @@ def get_applications(db: Session, current_user: models.User, skip: int = 0, limi
     elif current_user.role in ["recruiter", "admin"]:
         # Recruiters see applications for their jobs (excluding archived)
         if current_user.company_id:
-            company_users = db.query(models.User.id).filter(models.User.company_id == current_user.company_id).subquery()
-            jobs = db.query(models.Job.id).filter(models.Job.owner_id.in_(company_users)).subquery()
+            company_users = select(models.User.id).where(models.User.company_id == current_user.company_id)
+            jobs = select(models.Job.id).where(models.Job.owner_id.in_(company_users))
         else:
-            jobs = db.query(models.Job.id).filter(models.Job.owner_id == current_user.id).subquery()
+            jobs = select(models.Job.id).where(models.Job.owner_id == current_user.id)
         applications = db.query(models.Application)\
             .options(
                 defer(models.Application.resume_text), 

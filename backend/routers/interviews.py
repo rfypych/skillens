@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List, Optional
 from datetime import datetime, timedelta, timezone
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from database import get_db
 import models, schemas
@@ -33,8 +33,7 @@ class InterviewResponse(BaseModel):
     score_notes: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class InterviewScoreUpdate(BaseModel):
     interview_score: float
@@ -48,6 +47,7 @@ def _notify_user(db: Session, user_id: int, message: str):
 
 # --- Routes ---
 
+@router.post("", response_model=InterviewResponse, include_in_schema=False)
 @router.post("/", response_model=InterviewResponse)
 def create_interview(
     payload: InterviewScheduleCreate,

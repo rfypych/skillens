@@ -17,13 +17,15 @@ import { useParams, useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { api } from '@/lib/api';
+import type { ChatMessage } from '@/types/api';
 import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 import TextRollButton from '@/components/TextRollButton';
 
 export default function CandidateAssessment() {
   const params = useParams();
   const router = useRouter();
-  const appId = params.app_id;
+  const _rawAppId = params.app_id;
+  const appId = Array.isArray(_rawAppId) ? _rawAppId[0] : _rawAppId;
 
   const [timeLeft, setTimeLeft] = useState(15 * 60);
   const [submitted, setSubmitted] = useState(false);
@@ -39,7 +41,7 @@ export default function CandidateAssessment() {
   const [tabSwitches, setTabSwitches] = useState(0);
   const [pasteCount, setPasteCount] = useState(0);
   const [keystrokeMetrics, setKeystrokeMetrics] = useState({ total_chars: 0, backspace_count: 0 });
-  const [replayHistory, setReplayHistory] = useState<{ time: number; chat: any[]; input: string }[]>([]);
+  const [replayHistory, setReplayHistory] = useState<{ time: number; chat: ChatMessage[]; input: string }[]>([]);
   const lastSnapshotRef = useRef('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,7 +61,7 @@ export default function CandidateAssessment() {
         setPromptData(data);
         setMessages([{ role: 'assistant', content: data.scenario_prompt }]);
       })
-      .catch(console.error);
+      .catch(() => {});
   }, [appId, router]);
 
   useEffect(() => {
@@ -137,8 +139,7 @@ export default function CandidateAssessment() {
     try {
       const res = await api.post(`/assessment/${appId}/chat`, { messages: newMessages });
       if (res.reply) setMessages([...newMessages, { role: 'assistant', content: res.reply }]);
-    } catch (err) {
-      console.error('Chat error:', err);
+    } catch {
     } finally {
       setIsAiTyping(false);
     }
@@ -171,14 +172,30 @@ export default function CandidateAssessment() {
         replay_history: JSON.stringify(replayHistory),
       });
       setSubmitted(true);
-    } catch (err: any) {
-      console.error('Submission error:', err);
+    } catch {
     } finally {
       setIsSubmitting(false);
     }
   };
 
   if (submitted) {
+    const handleDownloadReport = async () => {
+      try {
+        const [fp, app] = await Promise.all([
+          api.get(`/biosphere/fingerprint/${appId}`).catch(() => null),
+          api.get(`/applications/${appId}`).catch(() => null),
+        ]);
+        const blob = new Blob([JSON.stringify({ application_id: appId, fingerprint: fp, application: app, exported_at: new Date().toISOString() }, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `skillens-report-${appId}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch {
+        alert('Report belum tersedia. Tunggu evaluasi AI selesai lalu unduh dari dasbor.');
+      }
+    };
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#EFEFEF] p-4 font-sans relative overflow-hidden">
         <motion.div
@@ -192,10 +209,19 @@ export default function CandidateAssessment() {
           <h2 className="text-2xl font-semibold text-gray-900 mb-3 tracking-tight">Evaluasi Berhasil Dikirim</h2>
           <p className="text-gray-600 text-sm leading-relaxed mb-8">
             Terima kasih telah menyelesaikan sesi evaluasi AI. Hasil performa dan telemetry Anda telah tersimpan secara aman.
+            Personal Skill &amp; Competency Report (radar) dapat diunduh dari dasbor setelah evaluasi selesai.
           </p>
-          <button onClick={() => router.push('/candidate/dashboard')}>
-            <TextRollButton text="Kembali Ke Dasbor" variant="orange" size="md" />
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button onClick={() => router.push('/candidate/dashboard')}>
+              <TextRollButton text="Kembali Ke Dasbor" variant="orange" size="md" />
+            </button>
+            <button
+              onClick={handleDownloadReport}
+              className="px-6 py-3 rounded-full border border-gray-300 text-sm font-bold text-gray-800 hover:border-[#F26522] hover:text-[#F26522] transition-colors"
+            >
+              Unduh Report
+            </button>
+          </div>
         </motion.div>
       </div>
     );

@@ -54,7 +54,15 @@ def _client() -> AsyncOpenAI:
 
 
 def _model() -> str:
-    return os.getenv("LLM_MODEL_NAME", "llama-3.3-70b-versatile")
+    return os.getenv("LLM_MODEL_NAME", "llama-3.1-8b-instant")
+
+
+def _fallback_model() -> str:
+    return os.getenv("LLM_FALLBACK_MODEL", "llama-3.1-8b-instant")
+
+
+def _fallback_key() -> str | None:
+    return os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY")
 
 
 async def _llm_complete(system: str, user: str) -> str:
@@ -68,7 +76,7 @@ async def _llm_complete(system: str, user: str) -> str:
                 {"role": "user", "content": user},
             ],
             response_format={"type": "json_object"},
-            max_tokens=1400,
+            max_tokens=900,  # Groq free-tier OTPM limit is 1000; keep headroom
             temperature=0.7,
         )
         return response.choices[0].message.content.strip()
@@ -78,18 +86,18 @@ async def _llm_complete(system: str, user: str) -> str:
 
     try:
         groq = AsyncOpenAI(
-            api_key=os.getenv("GROQ_API_KEY"),
+            api_key=_fallback_key(),
             base_url="https://api.groq.com/openai/v1",
             timeout=60.0,
         )
         response = await groq.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model=_fallback_model(),
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
             ],
             response_format={"type": "json_object"},
-            max_tokens=1400,
+            max_tokens=900,  # Groq free-tier OTPM limit is 1000; keep headroom
             temperature=0.7,
         )
         return response.choices[0].message.content.strip()

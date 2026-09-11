@@ -16,6 +16,14 @@ import BiosphereSimulationPanel from '@/components/BiosphereSimulationPanel';
 import ComparativeFingerprintView from '@/components/ComparativeFingerprintView';
 import TeamDNAGraph, { type TeamMember } from '@/components/TeamDNAGraph';
 import type { FingerprintValues } from '@/components/CognitiveFingerprintRadar';
+import type {
+  ApplicationDetail,
+  ChatMessage,
+  CvAnalysis,
+  IconComponent,
+  ReplayEntry,
+  TeamApiItem,
+} from '@/types/api';
 
 type Tab = 'analysis' | 'replay' | 'transcript' | 'biosphere';
 const SPEED_OPTIONS = [0.5, 1, 2, 5];
@@ -23,9 +31,10 @@ const SPEED_OPTIONS = [0.5, 1, 2, 5];
 export default function CandidateForensicReport() {
   const params = useParams();
   const router = useRouter();
-  const appId = params.app_id as string;
+  const _rawAppId = params.app_id as string | string[];
+  const appId = Array.isArray(_rawAppId) ? _rawAppId[0] : _rawAppId;
 
-  const [app, setApp] = useState<any>(null);
+  const [app, setApp] = useState<ApplicationDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [replayIndex, setReplayIndex] = useState(0);
@@ -36,7 +45,7 @@ export default function CandidateForensicReport() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [fingerprint, setFingerprint] = useState<FingerprintValues | null>(null);
   const [teamAverage, setTeamAverage] = useState<FingerprintValues | null>(null);
-  const [cvAnalysis, setCvAnalysis] = useState<any>(null);
+  const [cvAnalysis, setCvAnalysis] = useState<CvAnalysis | null>(null);
   const [cvLoading, setCvLoading] = useState(false);
   const [cvError, setCvError] = useState<string | null>(null);
 
@@ -44,7 +53,7 @@ export default function CandidateForensicReport() {
     setUpdatingStatus(true);
     try {
       await api.put(`/applications/${appId}`, { status: newStatus });
-      setApp((prev: any) => ({ ...prev, status: newStatus }));
+      setApp((prev: ApplicationDetail | null) => ({ ...prev, status: newStatus } as ApplicationDetail));
       toast.success(`Status kandidat diperbarui ke ${newStatus}`);
     } catch {
       toast.error('Gagal memperbarui status');
@@ -72,8 +81,8 @@ export default function CandidateForensicReport() {
     try {
       const data = await api.post(`/biosphere/analyze-cv/${appId}`);
       setCvAnalysis(data.cv_analysis ?? data);
-    } catch (e: any) {
-      setCvError(e.message || 'Analisis CV gagal.');
+    } catch (e: unknown) {
+      setCvError(e instanceof Error ? e.message : 'Analisis CV gagal.');
     } finally {
       setCvLoading(false);
     }
@@ -90,9 +99,10 @@ export default function CandidateForensicReport() {
 
     fetchApp();
     const interval = setInterval(() => {
-      setApp((prev: any) => {
-        if (prev?.assessment_results?.length > 0) {
-          const latest = prev.assessment_results[prev.assessment_results.length - 1];
+      setApp((prev: ApplicationDetail | null) => {
+        const results = prev?.assessment_results;
+        if (results && results.length > 0) {
+          const latest = results[results.length - 1];
           if (latest.claim_vs_evidence_label === 'Pending AI Evaluation') fetchApp();
         }
         return prev;
@@ -101,7 +111,7 @@ export default function CandidateForensicReport() {
     return () => clearInterval(interval);
   }, [appId, router]);
 
-  let replayHistory: { time: number; chat: any[]; input: string }[] = [];
+  let replayHistory: ReplayEntry[] = [];
   const result = app?.assessment_results?.[app.assessment_results.length - 1] ?? null;
   if (result?.replay_history) {
     try { replayHistory = JSON.parse(result.replay_history); } catch { }
@@ -117,15 +127,15 @@ export default function CandidateForensicReport() {
 
     api.get(`/biosphere/team/${jobId}`)
       .then((data) => {
-        const team: any[] = data.team ?? [];
+        const team: TeamApiItem[] = data.team ?? [];
         if (team.length === 0) return;
         const keys = ['analytical_depth', 'communication_clarity', 'execution_velocity', 'integrity_index', 'creative_synthesis', 'pressure_resilience'] as const;
-        const avg: any = {};
+        const avg: Record<string, number> = {};
         keys.forEach(k => {
           const sum = team.reduce((acc, m) => acc + (m.fingerprint?.[k] ?? 0), 0);
           avg[k] = Math.round((sum / team.length) * 10) / 10;
         });
-        setTeamAverage(avg);
+        setTeamAverage(avg as unknown as FingerprintValues);
       })
       .catch(() => setTeamAverage(null));
   }, [appId, app?.job?.id]);
@@ -152,7 +162,7 @@ export default function CandidateForensicReport() {
     }
   }, [isPlaying, replayIndex, replayHistory.length, playbackSpeed]);
 
-  let chatTranscript: any[] = [];
+  let chatTranscript: ChatMessage[] = [];
   if (result?.candidate_answer) {
     try { chatTranscript = JSON.parse(result.candidate_answer); }
     catch { chatTranscript = [{ role: 'user', content: result.candidate_answer }]; }
@@ -163,14 +173,14 @@ export default function CandidateForensicReport() {
     try { keystrokeMetrics = JSON.parse(result.keystroke_metrics); } catch { }
   }
 
-  const getLabelStyle = (label: string | null, isCheat: boolean) => {
+  const getLabelStyle = (label: string | null | undefined, isCheat: boolean | undefined) => {
     if (isCheat || label?.includes('Fabricated')) return 'bg-red-50 text-red-700 border-red-200';
     if (label?.includes('Hidden Gem')) return 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
     if (label?.includes('Highly Validated')) return 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
     return 'bg-amber-50 text-amber-800 border-amber-300';
   };
 
-  const tabs: { key: Tab; label: string; icon: any }[] = [
+  const tabs: { key: Tab; label: string; icon: IconComponent }[] = [
     { key: 'analysis', label: 'Analisis AI', icon: ChartBar },
     { key: 'biosphere', label: 'Biosphere', icon: Idea },
     { key: 'replay', label: 'Pemutaran Ulang', icon: Video },
@@ -253,7 +263,7 @@ export default function CandidateForensicReport() {
 
             <div className="text-right w-full sm:w-auto mt-2 sm:mt-0 border-t sm:border-0 border-gray-100 pt-3 sm:pt-0">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Skor Bukti</p>
-              <p className={`text-3xl font-bold ${result.overall_score < 60 ? 'text-red-600' : 'text-gray-900'}`}>
+              <p className={`text-3xl font-bold ${(result.overall_score ?? 0) < 60 ? 'text-red-600' : 'text-gray-900'}`}>
                 {result.overall_score?.toFixed(0) ?? '-'}<span className="text-lg text-gray-400">/100</span>
               </p>
             </div>
@@ -301,11 +311,11 @@ export default function CandidateForensicReport() {
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between items-center py-2 border-b border-gray-50">
                         <span className="text-gray-600 font-medium">Perpindahan Tab</span>
-                        <span className={`font-bold ${result.tab_switches > 3 ? 'text-red-600' : 'text-gray-900'}`}>{result.tab_switches}x</span>
+                        <span className={`font-bold ${(result.tab_switches ?? 0) > 3 ? 'text-red-600' : 'text-gray-900'}`}>{result.tab_switches}x</span>
                       </div>
                       <div className="flex justify-between items-center py-2 border-b border-gray-50">
                         <span className="text-gray-600 font-medium">Peristiwa Copy-Paste</span>
-                        <span className={`font-bold ${result.copy_paste_attempts > 0 ? 'text-red-600' : 'text-emerald-700'}`}>{result.copy_paste_attempts}x</span>
+                        <span className={`font-bold ${(result.copy_paste_attempts ?? 0) > 0 ? 'text-red-600' : 'text-emerald-700'}`}>{result.copy_paste_attempts}x</span>
                       </div>
                       <div className="flex justify-between items-center py-2">
                         <span className="text-gray-600 font-medium">Deteksi Kode AI</span>
@@ -455,7 +465,7 @@ export default function CandidateForensicReport() {
                       const jobId = app?.job?.id;
                       if (!jobId) return [];
                       const data = await api.get(`/biosphere/team/${jobId}`);
-                      return (data.team ?? []).map((m: any) => ({ application_id: m.application_id, candidate_name: m.candidate_name, fingerprint: m.fingerprint }));
+                      return (data.team ?? []).map((m: TeamApiItem) => ({ application_id: m.application_id, candidate_name: m.candidate_name, fingerprint: m.fingerprint }));
                     }}
                   />
 
@@ -466,7 +476,7 @@ export default function CandidateForensicReport() {
                       const jobId = app?.job?.id;
                       if (!jobId) return [];
                       const data = await api.get(`/biosphere/team/${jobId}`);
-                      return (data.team ?? []).map((m: any) => ({ name: m.candidate_name, role: m.role, fingerprint: m.fingerprint }));
+                      return (data.team ?? []).map((m: TeamApiItem) => ({ name: m.candidate_name, role: m.role, fingerprint: m.fingerprint }));
                     }}
                   />
                 </motion.div>
@@ -544,7 +554,7 @@ export default function CandidateForensicReport() {
                       </div>
 
                       <div className="max-h-[520px] overflow-y-auto pr-2 space-y-4 border-t border-gray-100 pt-4" ref={chatEndRef}>
-                        {replayHistory[replayIndex]?.chat?.map((msg: any, idx: number) => (
+                        {replayHistory[replayIndex]?.chat?.map((msg: ChatMessage, idx: number) => (
                           <div key={idx} className={`p-4 rounded-2xl ${msg.role === 'user' ? 'bg-gray-900 text-white ml-8' : 'bg-gray-100 text-gray-900 mr-8'}`}>
                             <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{msg.role === 'user' ? 'Kandidat' : 'Penguji AI'}</p>
                             <p className="text-sm leading-relaxed font-normal">{msg.content}</p>
@@ -569,7 +579,7 @@ export default function CandidateForensicReport() {
                 >
                   <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-3">Transkrip Lengkap Wawancara AI</h3>
                   <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-                    {chatTranscript.map((msg: any, idx: number) => (
+                    {chatTranscript.map((msg: ChatMessage, idx: number) => (
                       <div key={idx} className={`p-4 rounded-2xl ${msg.role === 'user' ? 'bg-gray-900 text-white ml-8' : 'bg-gray-100 text-gray-900 mr-8'}`}>
                         <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{msg.role === 'user' ? 'Kandidat' : 'Penguji AI'}</p>
                         <p className="text-sm leading-relaxed font-normal">{msg.content}</p>

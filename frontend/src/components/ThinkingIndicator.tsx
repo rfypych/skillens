@@ -24,8 +24,7 @@ export function ThinkingIndicator({ className, statusText }: { className?: strin
         raf = requestAnimationFrame(tick);
       };
       raf = requestAnimationFrame(tick);
-    }).catch(err => {
-      console.error("Failed to load thinking animation:", err);
+    }).catch(() => {
       if (active) setFrame('...');
     });
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 from typing import List, Optional
 from datetime import datetime
 from enum import Enum
@@ -29,8 +29,7 @@ class CompanyResponse(CompanyBase):
     id: int
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class CandidateProfileBase(BaseModel):
     bio: Optional[str] = None
@@ -47,8 +46,7 @@ class CandidateProfileResponse(CandidateProfileBase):
     id: int
     user_id: int
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class UserRole(str, Enum):
     CANDIDATE = "candidate"
@@ -81,8 +79,7 @@ class UserResponse(BaseModel):
     created_at: datetime
     profile: Optional[CandidateProfileResponse] = None
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
@@ -127,14 +124,14 @@ class JobResponse(JobBase):
     created_at: datetime
     candidate_count: int = 0
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class JobResponseDetailed(JobResponse):
     magic_link_token: Optional[str] = None
 
 class AssessmentUpdate(BaseModel):
-    scenario_prompt: str
+    scenario_prompt: Optional[str] = None
+    hidden_prompt: Optional[str] = None
 
 class AssessmentSubmit(BaseModel):
     answer: str
@@ -164,8 +161,7 @@ class AssessmentResultResponse(BaseModel):
     interview_questions: Optional[str] = None
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class ApplicationBase(BaseModel):
     job_id: int
@@ -189,8 +185,7 @@ class ApplicationResponse(ApplicationBase):
     user: Optional[UserResponse] = None # Including user info to show in dashboard
     job: Optional[JobResponse] = None # Including job info to show in dashboard
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class ApplicationApplyResponse(ApplicationResponse):
     access_token: Optional[str] = None
@@ -203,8 +198,7 @@ class CandidateDocumentResponse(BaseModel):
     name: Optional[str] = None
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class NotificationResponse(BaseModel):
     id: int
@@ -213,8 +207,7 @@ class NotificationResponse(BaseModel):
     is_read: bool
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class CandidateApplicationDetailedResponse(ApplicationResponse):
     rank: Optional[int] = None

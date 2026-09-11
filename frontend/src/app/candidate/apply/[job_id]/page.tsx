@@ -32,11 +32,17 @@ export default function ApplyForJob() {
   const storedResumeFileName = storedResumeUrl ? storedResumeUrl.split('/').pop() : null;
   // User can choose to use a new file OR fallback to stored CV
   const hasValidCV = !!file || !!storedResumeUrl;
+  const [resolvedJobId, setResolvedJobId] = useState<string | number | null>(null);
+
+  const isMagicToken = (v: unknown) =>
+    typeof v === 'string' && v.includes('-') && v.length >= 20;
 
   useEffect(() => {
     const init = async () => {
       try {
-        const jobPromise = api.get(`/jobs/${job_id}`, { requireAuth: false });
+        const rawId = Array.isArray(job_id) ? job_id[0] : (job_id as string);
+        const jobPath = isMagicToken(rawId) ? `/jobs/by-magic/${rawId}` : `/jobs/${rawId}`;
+        const jobPromise = api.get(jobPath, { requireAuth: false });
         
         const token = localStorage.getItem('token');
         const userPromise = token 
@@ -46,6 +52,7 @@ export default function ApplyForJob() {
         const [jobData, userData] = await Promise.all([jobPromise, userPromise]);
         
         setJob(jobData);
+        setResolvedJobId(jobData?.id ?? (Array.isArray(job_id) ? job_id[0] : job_id));
         
         if (userData) {
           setUser(userData);
@@ -78,10 +85,10 @@ export default function ApplyForJob() {
         throw new Error("Harap unggah resume PDF yang valid untuk melanjutkan.");
       }
 
-      const data = await api.post(`/assessment/${job_id}/apply`, dataPayload, { requireAuth: false });
+      const data = await api.post(`/assessment/${resolvedJobId ?? job_id}/apply`, dataPayload, { requireAuth: false });
       router.push(`/candidate/instructions/${data.id}`);
-    } catch (err: any) {
-      setError(err.message || 'Terjadi kesalahan saat mengirimkan lamaran.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Terjadi kesalahan saat mengirimkan lamaran.');
     } finally {
       setLoading(false);
     }
@@ -89,6 +96,31 @@ export default function ApplyForJob() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const MAX_CV_BYTES = 5 * 1024 * 1024;
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0] || null;
+    if (!selected) {
+      setFile(null);
+      return;
+    }
+    const isPdf = selected.type === 'application/pdf' || selected.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) {
+      setFile(null);
+      e.target.value = '';
+      setError('Hanya file PDF yang didukung. Unggah resume dalam format .pdf.');
+      return;
+    }
+    if (selected.size > MAX_CV_BYTES) {
+      setFile(null);
+      e.target.value = '';
+      setError('File terlalu besar. Maksimum ukuran berkas 5MB.');
+      return;
+    }
+    setError('');
+    setFile(selected);
   };
 
   if (initLoading) {
@@ -253,9 +285,9 @@ export default function ApplyForJob() {
                 <div className="relative group">
                   <input
                     type="file"
-                    accept=".pdf"
-                    required={!storedResumeUrl && !user}
-                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                    accept=".pdf,application/pdf"
+                    required={!storedResumeUrl}
+                    onChange={handleFileChange}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
                   <div className={`flex items-center gap-3 w-full px-4 py-4 bg-white border-2 border-dashed ${file ? 'border-[#F26522] bg-orange-50/50' : 'border-gray-200 group-hover:border-[#F26522]/50 group-hover:bg-gray-50'} rounded-2xl transition-all`}>
@@ -284,7 +316,7 @@ export default function ApplyForJob() {
               </div>
 
               <div className="pt-4">
-                <button type="submit" disabled={loading || !job || (!hasValidCV && !user)} className="w-full">
+                <button type="submit" disabled={loading || !job || !hasValidCV} className="w-full">
                   <TextRollButton
                     text={loading ? 'Memproses...' : 'Lanjut Ke Petunjuk Ujian'}
                     variant="orange"

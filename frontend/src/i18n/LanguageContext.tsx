@@ -41,8 +41,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           setLanguageState('en');
           localStorage.setItem('app_lang', 'en');
         }
-      } catch (error) {
-        console.error('Failed to detect location, defaulting to ID', error);
+      } catch {
         setLanguageState('id');
         localStorage.setItem('app_lang', 'id');
       } finally {

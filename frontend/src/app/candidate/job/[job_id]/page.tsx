@@ -20,15 +20,19 @@ export default function JobDetail() {
   const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
+    const rawId = Array.isArray(jobId) ? jobId[0] : (jobId as string);
+    const isMagicToken = typeof rawId === 'string' && rawId.includes('-') && rawId.length >= 20;
+    const jobPath = isMagicToken ? `/jobs/by-magic/${rawId}` : `/jobs/${rawId}`;
     Promise.all([
-      api.get(`/jobs/${jobId}`),
+      api.get(jobPath),
       api.get('/applications').catch(() => []),
       api.get('/auth/me').catch(() => null),
     ])
       .then(([jobData, appsData, meData]) => {
         setJob(jobData);
+        const numericId = jobData?.id ?? rawId;
         if (Array.isArray(appsData)) {
-          setAlreadyApplied(appsData.some((a: any) => String(a.job_id) === String(jobId)));
+          setAlreadyApplied(appsData.some((a: any) => String(a.job_id) === String(numericId)));
         }
         if (meData) {
           setUserProfile(meData);
@@ -46,8 +50,10 @@ export default function JobDetail() {
     setError('');
     try {
       // Send empty FormData — backend auto-uses profile CV
+      // Gunakan numeric job id hasil resolve magic-link agar POST /assessment/{id}/apply valid
+      const numericId = job?.id ?? jobId;
       const formData = new FormData();
-      const app = await api.post(`/assessment/${jobId}/apply`, formData);
+      const app = await api.post(`/assessment/${numericId}/apply`, formData);
       router.push(`/candidate/instructions/${app.id}`);
     } catch (e: any) {
       setError(e.message || 'Something went wrong. Try again.');

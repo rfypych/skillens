@@ -28,8 +28,7 @@ export default function ShaderBackground({ variant = 'light', className = '' }: 
       .then(mod => {
         setShaderComponents(mod);
       })
-      .catch(err => {
-        console.warn('Failed to load shaders/react:', err);
+      .catch(() => {
         setWebglSupported(false);
       });
   }, []);

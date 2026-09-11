@@ -34,13 +34,15 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import type { ApplicationSummary } from '@/types/api';
 import toast, { Toaster } from 'react-hot-toast';
 import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 
 export default function JobAssessmentReview() {
   const params = useParams();
   const router = useRouter();
-  const jobId = params.id as string;
+  const _rawJobId = params.id as string | string[];
+  const jobId = Array.isArray(_rawJobId) ? _rawJobId[0] : _rawJobId;
   
   const [job, setJob] = useState<any>(null);
   const [assessment, setAssessment] = useState<{scenario_prompt: string, hidden_prompt: string} | null>(null);
@@ -64,9 +66,11 @@ export default function JobAssessmentReview() {
     expected_outcomes: '',
     specific_skills: '',
     kkm_score: 70,
+    max_questions: 4,
     status: 'open',
     deadline: ''
   });
+  const [trapWord, setTrapWord] = useState('');
 
   // Interview Schedule State
   const [schedulingAppId, setSchedulingAppId] = useState<number | null>(null);
@@ -139,21 +143,21 @@ export default function JobAssessmentReview() {
         expected_outcomes: jobRes.expected_outcomes || '',
         specific_skills: jobRes.specific_skills || '',
         kkm_score: jobRes.kkm_score ?? 70,
+        max_questions: jobRes.max_questions ?? 4,
         status: jobRes.status || 'open',
         deadline: deadlineFormatted
       });
 
       const allApps = await api.get('/applications');
       if (Array.isArray(allApps)) {
-        const jobApps = allApps.filter((a: any) => a.job_id === Number(jobId));
+        const jobApps = allApps.filter((a: ApplicationSummary) => a.job_id === Number(jobId));
         setApplications(jobApps);
       }
 
       try {
         const recs = await api.get(`/interviews/recommend/${jobId}`);
         if (Array.isArray(recs)) setRecommendations(recs);
-      } catch (e) {
-        console.error('Recommendations error', e);
+      } catch {
       }
 
       try {
@@ -161,15 +165,13 @@ export default function JobAssessmentReview() {
         if (Array.isArray(intvs)) {
           setInterviews(intvs);
         }
-      } catch (e) {
-        console.error('Interviews error', e);
+      } catch {
       }
 
     } catch (err: any) {
       if (err.message && err.message.includes('403')) {
         router.push('/login');
       }
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -187,9 +189,10 @@ export default function JobAssessmentReview() {
         if (isMounted) {
           setAssessment(assessmentRes);
           setPromptValue((prev) => prev || assessmentRes.scenario_prompt);
+          setTrapWord(assessmentRes.hidden_prompt || '');
         }
-      } catch (err) {
-        console.log("Assessment prompt pending...");
+      } catch {
+        // Assessment belum siap — panel tampil setelah generate selesai
       }
     };
     fetchAssessment();
@@ -199,7 +202,11 @@ export default function JobAssessmentReview() {
   const handleSaveAssessment = async () => {
     setSaving(true);
     try {
-      await api.put(`/assessment/job/${jobId}`, { scenario_prompt: promptValue });
+      await api.put(`/assessment/job/${jobId}`, { scenario_prompt: promptValue, hidden_prompt: trapWord || undefined });
+      // Sinkronkan turn/durasi per-job via max_questions
+      if (jobForm.max_questions) {
+        await api.put(`/jobs/${jobId}`, { max_questions: Number(jobForm.max_questions) });
+      }
       toast.success("Penilaian simulasi berhasil disimpan!");
     } catch (err) {
       toast.error("Gagal menyimpan perubahan penilaian.");
@@ -211,7 +218,7 @@ export default function JobAssessmentReview() {
   const handleSaveJobDetails = async () => {
     setSaving(true);
     try {
-      const payload: any = { ...jobForm };
+      const payload: Record<string, unknown> = { ...jobForm };
       if (jobForm.deadline) {
         payload.deadline = new Date(jobForm.deadline).toISOString();
       } else {
@@ -598,69 +605,6 @@ export default function JobAssessmentReview() {
               )}
             </div>
 
-            {/* Modal Scheduling Interview */}
-            {schedulingAppId && (
-              <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-                <div className="bg-white p-6 md:p-8 max-w-lg w-full space-y-5 rounded-2xl border border-gray-200 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-                  <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-                    <h3 className="text-base font-bold uppercase tracking-wide text-gray-900 flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-[#F26522]" /> Jadwalkan Wawancara Kandidat
-                    </h3>
-                    <button onClick={() => setSchedulingAppId(null)} className="text-gray-400 hover:text-gray-900 text-sm">✕</button>
-                  </div>
-
-                  <p className="text-xs text-gray-600 leading-relaxed">
-                    Sesuai aturan platform, undangan wawancara wajib diset dengan <strong>jarak minimal 1-2 hari</strong> dari hari ini agar kandidat memiliki waktu konfirmasi (Terima / Tolak).
-                  </p>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Tanggal & Waktu Wawancara</label>
-                      <input
-                        type="datetime-local"
-                        value={scheduleForm.scheduled_at}
-                        onChange={(e) => setScheduleForm({ ...scheduleForm, scheduled_at: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:border-[#F26522] focus:ring-0"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Lokasi / Tautan Sesi (Zoom / Google Meet)</label>
-                      <input
-                        type="text"
-                        value={scheduleForm.location}
-                        onChange={(e) => setScheduleForm({ ...scheduleForm, location: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:border-[#F26522] focus:ring-0"
-                        placeholder="https://meet.google.com/xyz..."
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Catatan Tambahan untuk Kandidat</label>
-                      <textarea
-                        value={scheduleForm.notes}
-                        onChange={(e) => setScheduleForm({ ...scheduleForm, notes: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:border-[#F26522] focus:ring-0 h-20 resize-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end gap-3 pt-3">
-                    <button onClick={() => setSchedulingAppId(null)} className="px-4 py-2 text-xs font-bold text-gray-600 hover:text-gray-900 uppercase tracking-wider">
-                      Batal
-                    </button>
-                    <button
-                      onClick={() => handleScheduleInterview(schedulingAppId)}
-                      disabled={saving}
-                      className="px-6 py-2.5 bg-[#F26522] text-white rounded-full text-xs font-bold uppercase tracking-wider hover:bg-[#e05a1a] disabled:opacity-50 shadow-xs"
-                    >
-                      {saving ? 'Mengirim...' : 'Kirim Undangan Wawancara'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* List of Scheduled Interviews */}
             <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200/80 shadow-xs space-y-4">
               <h3 className="text-base font-bold uppercase tracking-wide text-gray-900 flex items-center gap-2">
@@ -708,49 +652,113 @@ export default function JobAssessmentReview() {
               )}
             </div>
 
-            {/* Modal Post-Interview Scoring */}
-            {scoringInterviewId && (
-              <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-                <div className="bg-white p-6 max-w-md w-full space-y-4 rounded-2xl border border-gray-200 shadow-2xl">
-                  <h3 className="text-base font-bold uppercase tracking-wide text-gray-900">Penilaian Poin Sesi Wawancara</h3>
-                  <p className="text-xs text-gray-600">Berikan nilai wawancara (0 - 100) untuk dikombinasikan dalam hasil pemeringkatan akhir kandidat.</p>
-                  
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Skor Wawancara (0-100)</label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={scoreForm.interview_score}
-                      onChange={(e) => setScoreForm({ ...scoreForm, interview_score: Number(e.target.value) })}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-bold font-mono focus:border-[#F26522] focus:ring-0"
-                    />
-                  </div>
+          </motion.div>
+        )}
 
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Catatan Evaluasi HRD</label>
-                    <textarea
-                      value={scoreForm.score_notes}
-                      onChange={(e) => setScoreForm({ ...scoreForm, score_notes: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm h-20 resize-none focus:border-[#F26522] focus:ring-0"
-                      placeholder="Catatan kelebihan / kekurangan jawaban kandidat..."
-                    />
-                  </div>
+        {/* Modal Scheduling Interview — root-level agar bisa dibuka dari tab mana pun */}
+        {schedulingAppId && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+            <div className="bg-white p-6 md:p-8 max-w-lg w-full space-y-5 rounded-2xl border border-gray-200 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+              <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                <h3 className="text-base font-bold uppercase tracking-wide text-gray-900 flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-[#F26522]" /> Jadwalkan Wawancara Kandidat
+                </h3>
+                <button onClick={() => setSchedulingAppId(null)} className="text-gray-400 hover:text-gray-900 text-sm">✕</button>
+              </div>
 
-                  <div className="flex justify-end gap-2 pt-2">
-                    <button onClick={() => setScoringInterviewId(null)} className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-600">Batal</button>
-                    <button
-                      onClick={() => handleSubmitInterviewScore(scoringInterviewId)}
-                      disabled={saving}
-                      className="px-5 py-2 bg-[#F26522] text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-[#e05a1a] shadow-xs"
-                    >
-                      Simpan Poin
-                    </button>
-                  </div>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Sesuai aturan platform, undangan wawancara wajib diset dengan <strong>jarak minimal 1-2 hari</strong> dari hari ini agar kandidat memiliki waktu konfirmasi (Terima / Tolak).
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Tanggal & Waktu Wawancara</label>
+                  <input
+                    type="datetime-local"
+                    value={scheduleForm.scheduled_at}
+                    onChange={(e) => setScheduleForm({ ...scheduleForm, scheduled_at: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:border-[#F26522] focus:ring-0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-1">Lokasi / Tautan Sesi (Zoom / Google Meet)</label>
+                  <input
+                    type="text"
+                    value={scheduleForm.location}
+                    onChange={(e) => setScheduleForm({ ...scheduleForm, location: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:border-[#F26522] focus:ring-0"
+                    placeholder="https://meet.google.com/xyz..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Catatan Tambahan untuk Kandidat</label>
+                  <textarea
+                    value={scheduleForm.notes}
+                    onChange={(e) => setScheduleForm({ ...scheduleForm, notes: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:border-[#F26522] focus:ring-0 h-20 resize-none"
+                  />
                 </div>
               </div>
-            )}
-          </motion.div>
+
+              <div className="flex justify-end gap-3 pt-3">
+                <button onClick={() => setSchedulingAppId(null)} className="px-4 py-2 text-xs font-bold text-gray-600 hover:text-gray-900 uppercase tracking-wider">
+                  Batal
+                </button>
+                <button
+                  onClick={() => handleScheduleInterview(schedulingAppId)}
+                  disabled={saving}
+                  className="px-6 py-2.5 bg-[#F26522] hover:bg-[#e05a1a] text-white font-bold text-xs uppercase tracking-wider rounded-full transition-all flex items-center gap-2 shadow-xs"
+                >
+                  {saving ? 'Mengirim...' : 'Kirim Undangan Wawancara'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Post-Interview Scoring — root-level agar bisa dibuka dari tab mana pun */}
+        {scoringInterviewId && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+            <div className="bg-white p-6 max-w-md w-full space-y-4 rounded-2xl border border-gray-200 shadow-2xl">
+              <h3 className="text-base font-bold uppercase tracking-wide text-gray-900">Penilaian Poin Sesi Wawancara</h3>
+              <p className="text-xs text-gray-600">Berikan nilai wawancara (0 - 100) untuk dikombinasikan dalam hasil pemeringkatan akhir kandidat.</p>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Skor Wawancara (0-100)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={scoreForm.interview_score}
+                  onChange={(e) => setScoreForm({ ...scoreForm, interview_score: Number(e.target.value) })}
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-bold font-mono focus:border-[#F26522] focus:ring-0"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Catatan Evaluasi HRD</label>
+                <textarea
+                  value={scoreForm.score_notes}
+                  onChange={(e) => setScoreForm({ ...scoreForm, score_notes: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm h-20 resize-none focus:border-[#F26522] focus:ring-0"
+                  placeholder="Catatan kelebihan / kekurangan jawaban kandidat..."
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button onClick={() => setScoringInterviewId(null)} className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-600">Batal</button>
+                <button
+                  onClick={() => handleSubmitInterviewScore(scoringInterviewId)}
+                  disabled={saving}
+                  className="px-5 py-2 bg-[#F26522] text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-[#e05a1a] shadow-xs"
+                >
+                  Simpan Poin
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* TAB 3: ASSESSMENT SIMULATION PROMPT & KKM SETUP */}
@@ -879,17 +887,39 @@ export default function JobAssessmentReview() {
                 </div>
               )}
 
-              {assessment?.hidden_prompt && (
-                <div className="bg-red-50 p-4 border border-red-200 flex items-start gap-3 rounded-xl">
-                  <Locked className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="bg-red-50 p-4 border border-red-200 flex items-start gap-3 rounded-xl">
+                <Locked className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1 space-y-3">
                   <div>
                     <h4 className="text-xs font-bold text-red-900 uppercase tracking-wider">Perangkap Anti-Cheat Scooby-Doo AI</h4>
                     <p className="text-xs text-red-700 mt-0.5">
-                      Kata kunci rahasia: <code className="font-mono font-bold bg-white px-2 py-0.5 border border-red-300 text-red-900 rounded">{assessment.hidden_prompt}</code>. Jika kandidat menyalin soal ke AI (ChatGPT), kata ini akan diam-diam terpicu untuk mendeteksi kecurangan.
+                      Kata kunci rahasia tersembunyi. Jika kandidat menyalin soal ke AI, kata ini akan terpicu untuk mendeteksi kecurangan.
                     </p>
                   </div>
+                  <div className="flex flex-wrap items-end gap-4">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-red-900 mb-1">Trap word (editable)</label>
+                      <input
+                        value={trapWord}
+                        onChange={(e) => setTrapWord(e.target.value)}
+                        placeholder="mis. mentimun"
+                        className="px-3 py-2 bg-white border border-red-300 rounded-xl text-sm font-mono text-red-900 focus:outline-none focus:ring-2 focus:ring-red-400"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-red-900 mb-1">Turn / durasi per-job (max turn)</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={15}
+                        value={jobForm.max_questions}
+                        onChange={(e) => setJobForm({ ...jobForm, max_questions: Number(e.target.value) })}
+                        className="px-3 py-2 bg-white border border-red-300 rounded-xl text-sm font-mono text-red-900 w-24 focus:outline-none focus:ring-2 focus:ring-red-400"
+                      />
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
 
               <div className="flex justify-end pt-2">
                 <button 

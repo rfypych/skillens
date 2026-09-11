@@ -1,0 +1,437 @@
+---
+title: 'JHIC 2.0 - Business Plan Competition Guideline (Official)'
+subtitle: 'Jagoan Hosting Innovation Competition 2.0 - Resmi Panitia'
+version: '2.0'
+organizer: Jagoanhosting.com
+supported_by: Komdigi, Garuda Spark, Ngalup
+competition_categories: Web Development, Digital Business Challenge, Penggerak Inovasi Digital
+target: Siswa SMA/SMK sederajat + Guru Pendamping
+period: 19 Juni 2026 - 17 Oktober 2026
+pages: 49
+classification: Confidential - Jagoanhosting.com (c) 2026
+source: 'Google Drive (1-V5fybSs0DPob0trWYREv1DnFUQJcn2L)'
+---
+
+# JHIC 2.0 — Business Plan Competition Guideline
+
+> **Dokumen resmi panitia Jagoan Hosting Innovation Competition 2.0** — panduan lengkap kompetisi pengembangan solusi dan inovasi digital yang dituangkan ke dalam format Web App.
+
+Dokumen ini bersifat rahasia dan mengandung informasi proprietari serta hak kekayaan intelektual milik **Jagoanhosting.com © 2026**. Disusun sebagai panduan resmi untuk seluruh peserta JHIC 2.0 cabang Business Plan Competition (Digital Business Challenge).
+
+---
+
+## 1. Tentang Jagoan Hosting
+
+Sebagai penyedia hosting terkemuka di Indonesia, Jagoan Hosting adalah brand pertama yang berfokus pada penyediaan **hosting, domain, server, dan cloud**.
+
+| Statistik | Nilai |
+|---|---|
+| Pelanggan Terlayani | **200K+** |
+| Kunjungan Bulanan | **500K+** |
+
+**Sertifikasi & Validasi:**
+
+- **ISO 27001** — Mengikuti praktik keamanan terbaik tingkat global dan telah tersertifikasi ISO 27001.
+- **MANRS Routing Security** — Routing jaringan telah divalidasi oleh MANRS untuk memastikan sistem routing tetap aman.
+
+---
+
+## 2. Tentang JHIC 2.0
+
+JHIC 2.0 dirancang **tidak hanya untuk siswa dengan latar belakang IT**, tetapi juga terbuka bagi seluruh siswa SMA dan SMK dari berbagai jurusan. Dengan pendekatan ini, JHIC memberikan kesempatan yang setara bagi seluruh siswa dan guru untuk berpartisipasi, berinovasi, dan membuktikan bahwa ide dan kreativitas memiliki peran yang sama pentingnya dengan kemampuan teknis.
+
+### 2.1 Benefit Mengikuti JHIC 2.0
+
+| Benefit | Penjelasan |
+|---|---|
+| **Penguasaan Teknologi & Skill Teknis** | Pengembangan kemampuan teknis di bidang web app development |
+| **Peluang Karir & Networking** | Koneksi dengan profesional industri |
+| **Penghargaan di Tingkat Nasional** | Pengakuan untuk sekolah pemenang |
+| **Medali, Trophy, Sertifikat, Uang Pembinaan** | Total hadiah hingga **Rp 30 juta** |
+
+---
+
+## 3. Timeline Pelaksanaan (4 Fase)
+
+Kompetisi JHIC 2.0 berlangsung dari **19 Juni 2026 hingga 17 Oktober 2026** dengan empat fase utama:
+
+| Fase | Periode | Mode | Aktivitas |
+|---|---|---|---|
+| **1. Registrasi** | 19 Juni - 30 Agustus 2026 | ONLINE | Proses awal JHIC untuk pendaftaran tim dan guru pendamping |
+| **2. Kick Off & Preliminary** | 12 September 2026 | HYBRID* | Peserta menyampaikan slide presentasi wireframe/mockup/prototype web app |
+| **3. Bootcamp** | 21 - 25 September 2026 | ONLINE | Peserta mengikuti short bootcamp untuk mempersiapkan hasil akhir Web App |
+| **4. Final Day + Awarding** | 17 Oktober 2026 | OFFLINE | Tim terbaik mempresentasikan hasil akhir solusi yang telah dibuat |
+
+> **\*HYBRID:** Peserta domisili DIY dan Jawa Tengah **wajib hadir offline**. Peserta luar Jawa boleh online.
+
+### 3.1 Detail Setiap Fase
+
+**Fase 1 — Registrasi**
+
+Peserta mengisi data diri masing-masing anggota, mengumpulkan slide presentasi, dan mengerjakan tes essay.
+
+**Fase 2 — Kick Off & Preliminary**
+
+Peserta masing-masing menyampaikan slide presentasi wireframe/mockup/prototype web app yang akan dibuat. Sekolah domisili DIY dan Jawa Tengah wajib mengikuti kegiatan secara offline. Tim terbaik akan masuk ke tahap selanjutnya untuk melakukan sesi pitching.
+
+**Fase 3 — Bootcamp**
+
+Peserta akan mengikuti short bootcamp untuk mempersiapkan hasil akhir dari Web App yang telah dibuat.
+
+**Fase 4 — Final Day + Awarding**
+
+Tim terbaik akan mempresentasikan hasil akhir solusi yang telah dibuat di hadapan juri dan panitia.
+
+---
+
+## 4. Business Plan Competition
+
+**Business Plan Competition** merupakan kompetisi pengembangan solusi dan inovasi digital yang dituangkan ke dalam format **Web App**. Peserta akan melalui proses problem solving hingga pembuatan solusi, di mana setiap tim didorong untuk menciptakan produk yang tidak hanya menarik secara konsep, tetapi juga memiliki potensi implementasi dan kebermanfaatan di dunia nyata.
+
+### 4.1 Empat Tema Kompetisi
+
+Peserta diwajibkan memilih salah satu dari 4 tema yang telah ditentukan:
+
+| # | Tema | Fokus |
+|---|---|---|
+| 1 | **Karir (POV Recruiter)** | Solusi rekrutmen & ketenagakerjaan |
+| 2 | **Pariwisata** | Solusi industri pariwisata Indonesia |
+| 3 | **Kesehatan Fisik & Mental** | Solusi kesehatan fisik dan mental |
+| 4 | **Keuangan** | Solusi keuangan dan financial technology |
+
+---
+
+## 5. Tutorial Pendaftaran (14 Langkah)
+
+Berikut adalah langkah-langkah resmi pendaftaran JHIC 2.0 sesuai panduan panitia:
+
+1. **Akses link menuju LP Utama JHIC 2.0** — Buka landing page resmi JHIC 2.0.
+2. **Pilih kategori lomba** — Pilih kategori lomba yang ingin diikuti (Web Development / Digital Business Challenge / Penggerak Inovasi Digital).
+3. **Klik 'Daftar Sekarang'** — Setelah memilih kategori, klik tombol 'Daftar Sekarang' untuk mendapatkan formulir pendaftaran.
+4. **Menerima link formulir via WhatsApp** — Min Rey akan mengirimkan link formulir melalui WhatsApp.
+5. **Bayar biaya komitmen** — Daftarkan diri melalui platform yang telah disediakan untuk membayar biaya komitmen. **Penting:** Email yang digunakan WAJIB SAMA untuk pendaftaran tim di tahap selanjutnya.
+6. **Lengkapi formulir pendaftaran JHIC** — Setelah membayar, peserta akan langsung diarahkan menuju formulir pendaftaran JHIC. Akun email yang digunakan HARUS SAMA dengan email saat pembayaran.
+7. **Step 1: Lengkapi informasi anggota tim** — Pada step 1, lengkapi informasi anggota tim pada kolom yang telah disediakan. Peserta dapat menambah jumlah anggota pada kolom yang disediakan.
+8. **Simpan informasi** — Jika sudah terisi, peserta dapat menyimpan terlebih dahulu informasi yang telah di-input. **Note:** Peserta tetap bisa merubah informasi pendaftaran sampai waktu yang telah ditentukan.
+9. **Gabung grup WhatsApp resmi** — Setelah mengumpulkan data diri, klik link WhatsApp yang telah disediakan untuk bergabung ke official grup JHIC 2.0. Bagikan invitation link grup kepada seluruh anggota tim.
+10. **Lanjut pendaftaran di grup** — Setelah masuk grup, lanjutkan pendaftaran dengan melengkapi berkas administrasi pada laman selanjutnya.
+11. **Pengumpulan Pitch Deck & Essay** — Kumpulkan pitch deck pada laman 'Pengumpulan Pitch Deck', dan isi essay sesuai dengan kategori lomba yang diikuti.
+12. **Pengumpulan berkas administrasi** — Kumpulkan berkas administrasi per masing-masing anggota, seperti: twibbon, foto formal, CV, dan project yang pernah dikerjakan sebelumnya.
+13. **Selesai** — Jika sudah menyelesaikan seluruh proses pendaftaran, tampilan akhir akan menunjukkan status completion.
+14. **Pantau pengumuman** — Informasi mengenai pengumuman daftar dipantau melalui grup official JHIC 2.0.
+
+**Link pendaftaran resmi:** `https://to.jagoanhosting.com/daftar-digi`
+
+---
+
+## 6. Technical & Administration Selection (Fase Seleksi)
+
+### 6.1 Kriteria Peserta
+
+1. Peserta yang mewakili sekolah merupakan siswa/i aktif SMA/SMK sederajat dari jurusan apapun.
+2. Siswa kelas 10, 11, 12, maupun 13 boleh mengikuti lomba.
+3. Setiap sekolah boleh mengirimkan lebih dari 1 tim perwakilan.
+4. Setiap tim harus memiliki guru pembimbing.
+5. Guru pembimbing boleh membimbing lebih dari 1 tim.
+6. Setiap tim beranggotakan **2-3 ORANG** dengan role **Hacker, Hipster, dan Hustler**.
+7. Siswa hanya boleh tergabung dalam **1 TIM**.
+
+> **Catatan:** Kami tidak menutup peluang untuk siswa/i di luar jurusan yang tertera untuk bergabung dalam kompetisi.
+
+### 6.2 Berkas Pendaftaran
+
+| No | Berkas |
+|---|---|
+| 1 | Nama Tim |
+| 2 | Data Diri Anggota 1-3 |
+| 3 | CV Anggota 1-3 |
+| 4 | Asal Sekolah |
+| 5 | Data Diri Guru Pembimbing |
+| 6 | Twibbon Anggota 1-3 — `https://jagoanhosting.com/jhic-twibbon/` |
+| 7 | Foto Tim dengan Guru Pembimbing* |
+| 8 | Foto Personal 1-3 |
+| 9 | Pitch Deck |
+
+> **\*Penting:** Pastikan foto dalam kualitas HD (tidak blur, disarankan menggunakan kamera), pencahayaan jelas, dan menggunakan seragam.
+
+### 6.3 Pembagian Peran Tim
+
+| Role | Tanggung Jawab |
+|---|---|
+| **HACKER** | Bertanggung jawab pada pengembangan teknis seperti coding, sistem, dan memastikan produk dapat berjalan dengan baik. |
+| **HUSTLER** | Berfokus pada strategi bisnis, komunikasi, marketing, dan bagaimana produk dapat dikenal serta digunakan banyak orang. |
+| **HIPSTER** | Berperan dalam desain, kreativitas, branding, dan pengalaman pengguna agar produk lebih menarik dan nyaman digunakan. |
+
+### 6.4 Kriteria Penilaian Seleksi (Fase 1)
+
+| Kriteria | Bobot | Penjelasan |
+|---|---|---|
+| **Relevansi Masalah** | 50% | Kreativitas, serta relevansi solusi atau ide yang dikembangkan dalam menjawab permasalahan yang diangkat. Inovasi dapat berupa fitur, pendekatan, teknologi, maupun implementasi yang memberikan nilai tambah. |
+| **Pitch Deck & Prototype** | 30% | Kualitas penyampaian ide melalui pitch deck, mulai dari problem yang akan diangkat, kreativitas penyajian pitch deck, visualisasi, hingga kemampuan prototype yang dihasilkan jelas dan mudah dipahami oleh audiens. |
+| **Kelengkapan Administrasi** | 20% | Kemampuan konten dalam menarik interaksi audiens secara alami, seperti jumlah komentar, likes, shares, serta keterlibatan pengguna yang menunjukkan ketertarikan nyata terhadap konten yang dibuat. |
+
+### 6.5 Timeline Seleksi
+
+| Aktivitas | Tanggal |
+|---|---|
+| Deadline Pengumpulan Administrasi & Pitch Deck | **30 Agustus 2026, maks. pukul 16.59 WIB** |
+| Pengumuman Tim yang Lolos ke Tahap Selanjutnya | **7 September 2026** |
+| Technical Meeting | **8 September 2026** |
+
+---
+
+## 7. Preliminary Phase (Fase Penyisihan)
+
+### 7.1 Timeline Kick Off & Preliminary
+
+Peserta domisili Yogyakarta dan Jawa Tengah yang lolos ke fase Preliminary **diwajibkan** untuk mengikuti kegiatan Kick Off dan Preliminary secara **offline**. Saat preliminary, seluruh tim akan mempresentasikan hasil pitch deck di hadapan para juri.
+
+Tim yang lolos diperbolehkan untuk memperbaiki pitch deck dan prototype sebelum kick off dan preliminary dengan deadline yang telah ditentukan.
+
+### 7.2 Lokasi Pelaksanaan Kick Off & Preliminary
+
+> **Gedung Pertunjukan FBSB, UNY**
+>
+> Daerah Istimewa Yogyakarta
+
+### 7.3 Timeline Preliminary
+
+| Aktivitas | Tanggal | Mode |
+|---|---|---|
+| Pelaksanaan Kick-off & Preliminary | **12 September 2026** | HYBRID |
+| Proses Penilaian oleh Juri | 12 - 16 September 2026 | - |
+| Pengumuman Tim yang Lolos ke Tahap Selanjutnya | **18 September 2026** | - |
+
+### 7.4 Kriteria Penilaian Preliminary
+
+| Kriteria | Bobot | Penjelasan |
+|---|---|---|
+| **Relevansi Masalah** | 40% | Seberapa tepat tim mengidentifikasi dan menjawab problem yang diangkat melalui solusi web app nya. |
+| **Relevansi Prototipe** | 25% | Sejauh mana prototype/draft yang disajikan mudah dimengerti dan menggambarkan fitur dengan baik. |
+| **Kreativitas & Inovasi** | 20% | Seberapa kreatif dan inovatif project yang akan dibuat. |
+| **Presentasi & Ketanggapan QnA** | 15% | Seberapa siap dan tenang tim saat menjawab pertanyaan dari juri. |
+
+---
+
+## 8. Short Bootcamp (Fase Pembekalan)
+
+### 8.1 Format Pelaksanaan
+
+- Short bootcamp dilaksanakan secara **online** dengan durasi per-pertemuan **2 jam**.
+- Setiap tim akan disediakan **Infrastruktur VPS Hosting by Jagoan Hosting**.
+- Akun yang akan diaktivasi adalah **email saat registrasi**.
+- Informasi login VPS Hosting akan dikirimkan melalui email yang teregistrasi.
+- Bootcamp dilaksanakan dalam **4 pertemuan**, pada hari Selasa dan Kamis setiap minggunya.
+- Penilaian berdasarkan **kehadiran** dan **hasil akhir** yang telah dibuat.
+
+### 8.2 Bootcamp Schedule
+
+| No | Tanggal | Jam | Topic | Detail Pembelajaran |
+|---|---|---|---|---|
+| 1 | Senin, 21 September 2026 | 15.00 WIB | **Digital Business** | - Problem – Solution – Tech Stack – Impact<br>- Think like a digipreneur |
+| 2 | Selasa, 22 September 2026 | 19.00 WIB | **Introduction to VPS Hosting by Jagoan Hosting** | - Hands-on VPS Hosting |
+| 3 | Rabu, 23 September 2026 | 19.00 WIB | **UI/UX** | - Prinsip dasar UI/UX untuk sistem admin panel/dashboard<br>- Tools: Figma |
+| 4 | Kamis, 24 September 2026 | 19.00 WIB | **Deployment using VPS Hosting** | - Demo deploy hasil web/app melalui VPS Hosting |
+
+### 8.3 Timeline Pelaksanaan Bootcamp
+
+| Aktivitas | Tanggal |
+|---|---|
+| Pelaksanaan Short Bootcamp | **21 - 24 September 2026** |
+| Pengumuman Tim yang Lolos ke Final Day | **30 September 2026** |
+| Finalisasi Website dan Pitch Deck | 1 - 12 Oktober 2026 |
+| Pelaksanaan Final dan Awarding | **17 Oktober 2026** |
+
+### 8.4 Kriteria Penilaian Bootcamp
+
+| Kriteria | Bobot | Penjelasan |
+|---|---|---|
+| **Hasil Web App** | 60% | Penilaian berdasarkan hasil WebApp dan Pitch Deck yang telah disubmit |
+| **Partisipasi Aktif** | 20% | Keaktifan dalam diskusi, bertanya, dan berbagi selama sesi |
+| **Absensi** | 20% | Kehadiran tim selama sesi bootcamp (offline/online), tepat waktu, konsisten |
+
+---
+
+## 9. Final Day (Fase Akhir)
+
+### 9.1 Format Pelaksanaan Final Day
+
+- Setiap tim akan diminta untuk menyiapkan slide presentasi (PPT) dengan **maksimal 10 halaman**.
+- Peserta wajib menggunakan **template presentasi yang disediakan tim JHIC**, dapat diakses di link berikut: `to.jagoanhosting.com/deckjhic2026`
+- Website sekolah dan seluruh halaman PPT yang dikembangkan **wajib mencantumkan 5 logo**:
+  - **JHIC**
+  - **Jagoan Hosting**
+  - **Komdigi**
+  - **Garuda Spark**
+  - **Ngalup**
+- Logo dapat diunduh melalui link yang disediakan panitia.
+
+### 9.2 Ketentuan Deck Presentasi
+
+Berikut adalah ketentuan 6 halaman utama deck presentasi (dapat disesuaikan dengan website yang dibuat peserta):
+
+| Halaman | Judul | Konten Wajib |
+|---|---|---|
+| **1** | **Cover** | Nama tim, nama anggota, asal sekolah, judul project |
+| **2** | **Fitur & Teknologi** | - Fitur yang sudah selesai diimplementasikan<br>- Teknologi yang digunakan (CMS/Framework/etc) |
+| **3** | **Optimasi & Strategi Skalabilitas** | - Optimasi yang dilakukan untuk menurunkan latency dan meningkatkan kapasitas traffic |
+| **4** | **Uji Performa & Hasil Analisis** | - Metode pengujian (tools yang digunakan dan skema pengujian)<br>- Rencana peningkatan performa jika traffic lebih tinggi |
+| **5** | **Hasil Deploy Website** | - Demo singkat tampilan terbaru website/app<br>- UI/UX tampilan website |
+| **6** | **Optimasi & Strategi Skalabilitas** | - Ringkasan capaian akhir<br>- Rencana pengembangan ke depan |
+
+> **Catatan:** Untuk halaman presentasi disesuaikan dengan website yang dibuat peserta.
+
+### 9.3 Aturan Pengumpulan PPT Final
+
+- **Finalisasi website dan pengumpulan PPT terakhir:** Senin, 12 Oktober 2026, pukul 23.59 WIB
+- Jika melewati batas pengumpulan akhir, maka peserta dianggap **mengundurkan diri**.
+- PPT yang dipresentasikan adalah yang dikumpulkan saat tanggal 12 Oktober. Peserta **tidak diperkenankan** untuk merubah isi dari PPT.
+- Jika peserta tetap merubah isi konten setelah dikumpulkan, maka pihak panitia akan tetap menampilkan **versi awal** di hadapan para juri.
+
+### 9.4 Waktu Pelaksanaan Final Day
+
+- Fase final dilaksanakan secara **Offline** di Gedung Pertunjukan FBSB, UNY, Yogyakarta.
+- Durasi presentasi yang diberikan ke masing-masing tim adalah **7 menit** & **5 menit** untuk menjawab pertanyaan dewan juri.
+- Fase final akan dilaksanakan dalam **satu hari**.
+- Peserta diwajibkan hadir **15 menit sebelum acara dimulai**.
+
+### 9.5 Lokasi Pelaksanaan Final Day
+
+> **Gedung Pertunjukan FBSB, UNY**
+>
+> Daerah Istimewa Yogyakarta
+
+### 9.6 Kriteria Penilaian Final Day
+
+| Kriteria | Bobot | Penjelasan |
+|---|---|---|
+| **Responsivitas** | 40% | Produk digital dinilai dari kestabilan akses, kecepatan loading, & kemampuannya menghadapi traffic tinggi tanpa gangguan. |
+| **Strategi Pemasaran** | 25% | Aspek ini menilai seberapa unik, menarik, dan fungsional pendekatan yang digunakan dalam desain dan pengembangan website. |
+| **SEO & Kualitas Konten** | 20% | Poin ini menilai bagaimana tim menyampaikan ide dan solusi mereka secara terstruktur, dan bagaimana strategi promosi yang digunakan bisa berhasil. |
+| **Presentasi dan Ketanggapan QnA** | 15% | Seberapa baik tim menyampaikan idenya selama presentasi dan seberapa siap dan tenang tim saat menjawab pertanyaan dari juri. |
+
+---
+
+## 10. Hadiah & Uang Pembinaan
+
+Total hadiah JHIC 2.0 Business Plan Competition mencapai **Rp 30 juta** ditambah sertifikat, medali, dan trophy:
+
+| Pemenang | Hadiah |
+|---|---|
+| **JUARA 1** | Rp 5.000.000 + Sertifikat + Medali + Trophy |
+| **JUARA 2** | Rp 4.000.000 + Sertifikat + Medali + Trophy |
+| **JUARA 3** | Rp 3.000.000 + Sertifikat + Medali + Trophy |
+| **JUARA TERFAVORIT** | Rp 1.500.000 + Sertifikat + Trophy |
+| **PEOPLE CHOICE AWARD** | Rp 1.500.000 + Sertifikat + Trophy |
+| **APRESIASI GURU PENDAMPING** | Rp 15.000.000 (Guru Pendamping dari Sekolah Finalis) |
+
+---
+
+## 11. Frequently Asked Questions (FAQ)
+
+Berikut 12 pertanyaan yang paling sering ditanyakan beserta jawaban resmi dari panitia:
+
+### 1. JHIC ada berapa cabang lomba?
+
+Jagoan Hosting Innovation Competition 2.0 terdapat 3 cabang lomba, terdapat 2 cabang lomba untuk siswa dan 1 cabang lomba untuk guru. Lomba untuk siswa SMA/SMK sederajat yaitu **Web Development** dan **Digital Business Challenge**, sedangkan lomba untuk guru adalah **Penggerak Inovasi Digital**.
+
+### 2. Apakah juara JHIC 1.0 boleh ikut JHIC 2.0?
+
+Khusus untuk juara 1-3 JHIC 1.0 **tidak diperkenankan** mengikuti cabang lomba Web Development di JHIC 2026, berlaku per individu maupun per kelompok. Namun peserta tetap bisa mengikuti cabang lomba Digital Business Challenge.
+
+### 3. Jika 1 tim saya berbeda kelas apakah diperbolehkan?
+
+Dalam 1 tim diperkenankan berbeda kelas dan jurusan.
+
+### 4. Saya pernah ikut JHIC 1.0, apakah diperbolehkan ikut lagi?
+
+Para peserta dan finalis JHIC 1.0 diperbolehkan untuk mengikuti JHIC 2.0 cabang lomba apapun.
+
+### 5. Saya dan tim saya pernah mengikuti JHIC 1.0, apakah diperbolehkan ganti anggota tim?
+
+Peserta yang pernah mengikuti JHIC 2025, diperkenankan untuk mengganti anggota tim.
+
+### 6. Apakah 1 sekolah boleh mengirimkan lebih dari 1 tim?
+
+Boleh. Namun kuota tim dari satu sekolah bisa dibatasi jika pendaftaran melebihi kapasitas lomba.
+
+### 7. Apakah semua fase lomba dilakukan secara offline?
+
+Kick off dan preliminary diadakan secara hybrid. Peserta yang berada di luar pulau Jawa diperkenankan mengikuti penyisihan secara online. Namun peserta yang berasal dari pulau Jawa **wajib** mengikuti penyisihan secara offline di Yogyakarta.
+
+### 8. Apakah panitia menanggung biaya transportasi dan akomodasi peserta?
+
+Tidak. Peserta yang lolos ke tahap offline bertanggung jawab atas biaya transportasi dan akomodasi. Namun, panitia menyediakan rekomendasi penginapan terdekat.
+
+### 9. Apakah peserta wajib membawa laptop sendiri saat lomba offline?
+
+Ya. Setiap tim wajib membawa minimal 1 laptop saat penyisihan dan final, beserta charger dan kebutuhan lainnya.
+
+### 10. Bagaimana jika tim tidak memiliki mentor pendamping?
+
+Mentor tidak wajib hadir di setiap sesi, tapi wajib terdaftar. Jika sekolah tidak bisa menyediakan, bisa menunjuk guru lain sebagai pendamping administratif.
+
+### 11. Apakah karya yang dibuat wajib berada di server Jagoan Hosting?
+
+Ya, peserta **wajib deploy** hasil karya di server Jagoan Hosting yang telah disediakan.
+
+### 12. Apakah inovasi yang saya buat boleh pakai produk pendukung berupa alat (hardware)?
+
+Peserta diperbolehkan untuk menggunakan alat pendukung untuk inovasi yang dibuat saat final day.
+
+---
+
+## 12. Contact Person & Call To Action
+
+### 12.1 Contact Person Resmi
+
+| Channel | Detail |
+|---|---|
+| **Nama** | Min Rey |
+| **WhatsApp** | +62 851 4116 2580 |
+
+### 12.2 Link Pendaftaran Resmi
+
+```text
+https://to.jagoanhosting.com/daftar-digi
+```
+
+### 12.3 Link Template Pitch Deck Final
+
+```text
+https://to.jagoanhosting.com/deckjhic2026
+```
+
+### 12.4 Link Twibbon Wajib
+
+```text
+https://jagoanhosting.com/jhic-twibbon/
+```
+
+---
+
+## 13. Ringkasan Deadline Penting
+
+| Tanggal | Aktivitas | Status |
+|---|---|---|
+| 19 Juni 2026 | Pembukaan Registrasi | 🟢 Mulai |
+| **30 Agustus 2026, 16.59 WIB** | Deadline Pengumpulan Administrasi & Pitch Deck | 🔴 HARUS SELESAI |
+| 7 September 2026 | Pengumuman Tim Lolos Tahap Selanjutnya | 📋 Pantau Grup WA |
+| 8 September 2026 | Technical Meeting | 📋 Wajib Hadir |
+| **12 September 2026** | Kick Off & Preliminary (HYBRID di UNY Yogyakarta) | 🎯 PRELIMINARY |
+| 18 September 2026 | Pengumuman Tim Lolos ke Bootcamp | 📋 Pantau Grup WA |
+| **21 - 24 September 2026** | Short Bootcamp (ONLINE) | 🎯 BOOTCAMP |
+| 30 September 2026 | Pengumuman Tim Lolos ke Final Day | 📋 Pantau Grup WA |
+| 1 - 12 Oktober 2026 | Finalisasi Website dan Pitch Deck | 🔧 BUILD PHASE |
+| **12 Oktober 2026, 23.59 WIB** | Deadline Pengumpulan PPT Final | 🔴 HARUS SELESAI |
+| **17 Oktober 2026** | Final Day + Awarding (OFFLINE di UNY Yogyakarta) | 🏆 FINAL |
+
+---
+
+## 14. Penutup
+
+> **"Harumkan sekolahmu, jadi juara, dan jadilah bagian dari #JagoanTeknologi!"**
+
+Dokumen ini adalah **panduan resmi panitia JHIC 2.0** untuk cabang Business Plan Competition. Setiap tim wajib membaca dan memahami seluruh ketentuan dalam dokumen ini sebelum mengikuti kompetisi. Pelanggaran terhadap ketentuan dapat mengakibatkan diskualifikasi.
+
+**Klasifikasi dokumen:** Confidential — contains proprietary information and intellectual property of Jagoanhosting.com © 2026.

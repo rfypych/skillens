@@ -58,7 +58,7 @@ def apply_telemetry_penalties(result, eval_data, candidate_answer):
             metrics = json.loads(result.keystroke_metrics)
             total_chars = metrics.get("total_chars", 0)
             backspace_ratio = metrics.get("backspace_ratio", 100.0)
-        except:
+        except (ValueError, AttributeError, TypeError):
             pass
             
     # Fallback just in case metrics failed
@@ -223,12 +223,12 @@ Do NOT output markdown (like ```json), just the raw JSON object.
         logger.error(f"Primary API error evaluating application {application_id}: {str(e)}. Falling back to Groq.")
         try:
             groq_client = AsyncOpenAI(
-                api_key=os.getenv("GROQ_API_KEY"),
+                api_key=os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY"),
                 base_url="https://api.groq.com/openai/v1",
                 timeout=10.0
             )
             response = await groq_client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model=os.getenv("LLM_FALLBACK_MODEL", "llama-3.1-8b-instant"),
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
@@ -260,7 +260,7 @@ Do NOT output markdown (like ```json), just the raw JSON object.
                     result.claim_vs_evidence_label = "Error"
                     result.evaluation_feedback = f"Evaluation failed: {str(e)} | Fallback: {str(fallback_e)}"
                     db.commit()
-            except:
+            except Exception:
                 pass
     finally:
         db.close()

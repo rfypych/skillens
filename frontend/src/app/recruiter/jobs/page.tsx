@@ -8,9 +8,10 @@ import { useRouter } from 'next/navigation';
 import { toast, Toaster } from 'react-hot-toast';
 import { api } from '@/lib/api';
 import TextRollButton from '@/components/TextRollButton';
+import type { Job } from '@/types/api';
 
 export default function ActiveRolesPage() {
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
@@ -21,7 +22,7 @@ export default function ActiveRolesPage() {
     setLoading(true);
     api.get('/jobs/my-jobs')
       .then(data => {
-        if (Array.isArray(data)) setJobs(data.filter((j: any) => j.status === 'open'));
+        if (Array.isArray(data)) setJobs(data.filter((j: Job) => j.status === 'open'));
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -41,16 +42,17 @@ export default function ActiveRolesPage() {
         loadJobs();
         if (res?.job_id) router.push(`/recruiter/jobs/${res.job_id}`);
       }, 1200);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setDemoLoading(false);
-      toast.error(err?.message || 'Gagal memuat data demo.');
+      toast.error(err instanceof Error ? err.message : 'Gagal memuat data demo.');
     }
   };
 
   useEffect(() => {
-    const handleClickOutside = (e: any) => {
-      if (e.target && typeof e.target.closest === 'function') {
-        if (!e.target.closest('.action-menu-trigger')) {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && typeof target.closest === 'function') {
+        if (!target.closest('.action-menu-trigger')) {
           setOpenMenuId(null);
         }
       } else {
@@ -59,15 +61,6 @@ export default function ActiveRolesPage() {
     };
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    api.get('/jobs/my-jobs')
-      .then(data => {
-        if (Array.isArray(data)) setJobs(data.filter((j: any) => j.status === 'open'));
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
   }, []);
 
   const handleArchive = async (jobId: number) => {
@@ -81,7 +74,7 @@ export default function ActiveRolesPage() {
     }
   };
 
-  const copyMagicLink = (job: any) => {
+  const copyMagicLink = (job: Job) => {
     const url = `${window.location.origin}/candidate/apply/${job.magic_link_token}`;
     navigator.clipboard.writeText(url);
     setCopiedId(job.id);
@@ -89,7 +82,7 @@ export default function ActiveRolesPage() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const isExpired = (deadline: string) => {
+  const isExpired = (deadline: string | null | undefined) => {
     if (!deadline) return false;
     return new Date() > new Date(deadline);
   };

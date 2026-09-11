@@ -171,6 +171,26 @@ export default function NewJobWizard() {
   const [expectedOutcomes, setExpectedOutcomes] = useState<string[]>(['Mampu merancang arsitektur terdistribusi dengan toleransi kegagalan tinggi']);
   const [specificSkills, setSpecificSkills] = useState<string[]>(['React', 'Node.js', 'PostgreSQL', 'Docker']);
   const [complianceCriteria, setComplianceCriteria] = useState<string[]>(['Kode bersih', 'Dokumentasi rapi', 'Bebas kerentanan OWASP']);
+  const [debiasLoading, setDebiasLoading] = useState(false);
+  const [debiasResult, setDebiasResult] = useState<any>(null);
+
+  const handleDebiasCheck = async () => {
+    setDebiasLoading(true);
+    setDebiasResult(null);
+    try {
+      const res = await api.post('/jobs/debias-check', {
+        title: formData.title,
+        description: formData.description,
+        expected_outcomes: expectedOutcomes.join('\n'),
+        specific_skills: specificSkills.join(', '),
+      });
+      setDebiasResult(res);
+    } catch (e: any) {
+      setDebiasResult({ bias_score: 0, label: 'Gagal', issues: [], suggestions: [e.message || 'Gagal memeriksa bias'] });
+    } finally {
+      setDebiasLoading(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -420,6 +440,46 @@ export default function NewJobWizard() {
                 />
               </div>
             )}
+
+            {/* JD Debiasing Check */}
+            <div className="bg-orange-50/60 border border-orange-200/70 rounded-2xl p-4 space-y-3">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                  <p className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                    <Security className="w-4 h-4 text-[#F26522]" /> JD Debiasing Check
+                  </p>
+                  <p className="text-[11px] text-gray-500">Skor bias + saran kalimat inklusif sebelum publikasi.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDebiasCheck}
+                  disabled={debiasLoading}
+                  className="px-4 py-2 rounded-full bg-gray-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-[#F26522] disabled:opacity-60"
+                >
+                  {debiasLoading ? 'Memeriksa...' : 'Cek Bias'}
+                </button>
+              </div>
+              {debiasResult && (
+                <div className="bg-white border border-gray-200 rounded-xl p-3 text-xs space-y-2">
+                  <p className="font-bold text-gray-900">
+                    Skor bias: <span className="text-[#F26522]">{debiasResult.bias_score}</span>
+                    <span className="ml-2 px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">{debiasResult.label}</span>
+                  </p>
+                  {debiasResult.issues?.length > 0 ? (
+                    <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                      {debiasResult.issues.map((it: any, i: number) => (
+                        <li key={i}><b>{it.match}</b> — {it.suggestion}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-emerald-700 font-semibold">Tidak ada pola bias terdeteksi.</p>
+                  )}
+                  <ul className="list-disc pl-5 text-gray-500">
+                    {debiasResult.suggestions?.map((s: string, i: number) => <li key={i}>{s}</li>)}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex justify-end pt-4">

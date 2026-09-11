@@ -154,7 +154,15 @@ def update_job_assessment(db: Session, job_id: int, payload: schemas.AssessmentU
     if not assessment:
         raise HTTPException(status_code=404, detail="Assessment not found")
     
-    assessment.scenario_prompt = payload.scenario_prompt
+    if payload.scenario_prompt:
+        assessment.scenario_prompt = payload.scenario_prompt
+    if payload.hidden_prompt:
+        assessment.hidden_prompt = payload.hidden_prompt.strip().lower()
+        # Sinkronkan trap word ke aplikasi yang masih testing (belum submit)
+        db.query(models.Application).filter(
+            models.Application.job_id == job_id,
+            models.Application.status == "testing",
+        ).update({"hidden_prompt": assessment.hidden_prompt}, synchronize_session=False)
     db.commit()
     return {"message": "Assessment updated successfully"}
 
@@ -275,7 +283,7 @@ Instructions:
     except Exception as e:
         # Fallback handling for RateLimits or other API errors
         error_msg = str(e)
-        print(f"LLM API Error: {error_msg}")
+        logger.warning(f"LLM API Error: {error_msg}")
         raise HTTPException(status_code=503, detail="AI Service is currently unavailable (Rate limit or provider error). Please try again later.")
         
     return {"reply": reply}

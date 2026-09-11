@@ -72,8 +72,7 @@ function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
   const handleLogout = async () => {
     try {
       await api.post('/auth/logout');
-    } catch (e) {
-      console.error('Logout error', e);
+    } catch {
     } finally {
       router.push('/login');
     }

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Flowchart Alur Pengguna Skillens &mdash; Evidence-Based Hiring</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+<h1 id="flowchart-alur-pengguna-skillens-evidence-based-hiring">Flowchart Alur Pengguna Skillens — Evidence-Based Hiring</h1>
+<blockquote>
+<p>Lampiran teknis <code>INOVASI_SKILLENS.md</code> (v1.8).</p>
+</blockquote>
+<hr>
+<h2 id="diagram-1-aktor-titik-masuk-high-level">Diagram 1 — Aktor & Titik Masuk (High-level)</h2>
+<pre><code class="language-mermaid">flowchart TD
+    R[&quot;Recruiter&quot;] --&gt;|&quot;login / register&quot;| RB[&quot;Dasbor Recruiter&quot;]
+    R --&gt;|&quot;1 klik&quot;| DEMO[&quot;POST /seed/demo&lt;br/&gt;1 job + 5 kandidat ternilai&quot;]
+
+    K[&quot;Kandidat&quot;] --&gt;|&quot;buka link posisi / magic link&quot;| APPLY[&quot;Halaman Apply&quot;]
+    APPLY --&gt; INST[&quot;Petunjuk + Consent Telemetry&quot;]
+    INST --&gt; TEST[&quot;Assessment AI (chat multi-turn)&quot;]
+    TEST --&gt; SUB[&quot;Submit&quot;]
+    SUB --&gt;|&quot;ack &lt; 1 detik&quot;| DONE[&quot;Halaman Selesai&quot;]
+    SUB -.-&gt;|&quot;asinkron&quot;| EVAL[&quot;Backend: evaluasi LLM + telemetry + fingerprint&quot;]
+
+    EVAL --&gt;|&quot;refresh / lihat&quot;| RB
+    RB --&gt;|&quot;review&quot;| CAN[&quot;Detail Kandidat&quot;]</code></pre>
+<hr>
+<h2 id="diagram-2-alur-recruiter-detail">Diagram 2 — Alur Recruiter (Detail)</h2>
+<pre><code class="language-mermaid">flowchart TD
+    A[&quot;Login / register&quot;] --&gt; B[&quot;Dasbor /recruiter&quot;]
+    B --&gt; C[&quot;Buat posisi&lt;br/&gt;(title, deskripsi, expected outcomes, skills, lokasi, deadline)&quot;]
+    C -.-&gt; D[&quot;JD Debiasing Check&lt;br/&gt;bias score + saran kalimat inklusif&quot;]
+    C --&gt; E[&quot;Atur assessment&lt;br/&gt;scenario prompt + trap word tersembunyi&lt;br/&gt;turn &amp; durasi per-job&quot;]
+    E --&gt; F[&quot;Publikasikan posisi&quot;]
+    F --&gt; G[&quot;Magic link / undangan ke kandidat&quot;]
+    G --&gt; H[&quot;Kandidat apply + selesaikan assessment&quot;]
+    H --&gt; I[&quot;Klik 'Muat Data Demo' (opsional demo)&quot;]
+    I --&gt; I1[&quot;Seed idempotent: job 'Senior Product Engineer' + 5 kandidat&quot;]
+    H --&gt; J[&quot;Refresh daftar kandidat&quot;]
+    J --&gt; K{&quot;Status evaluasi?&quot;}
+    K --&gt;|&quot;Pending&quot;| K1[&quot;Tunggu evaluasi asinkron (puluhan detik)&quot;]
+    K --&gt;|&quot;Selesai&quot;| L[&quot;Detail kandidat&quot;]
+    L --&gt; L1[&quot;Skor 5 dimensi + overall&quot;]
+    L --&gt; L2[&quot;Label integritas (5 label)&quot;]
+    L --&gt; L3[&quot;Cognitive Fingerprint radar + overlay tim&quot;]
+    L --&gt; L4[&quot;Behavior Replay: timeline keystroke&quot;]
+    L --&gt; L5[&quot;Analisis CV (OCR scan) + pertanyaan interview lanjutan&quot;]
+    L --&gt; M[&quot;Ranking kandidat per posisi&quot;]
+    M --&gt; N[&quot;Jadwalkan interview + skor manual&quot;]
+    N --&gt; O[&quot;Metrics: performa recruiter&quot;]</code></pre>
+<hr>
+<h2 id="diagram-3-alur-kandidat-top-funnel-detail">Diagram 3 — Alur Kandidat (Top-Funnel, Detail)</h2>
+<pre><code class="language-mermaid">flowchart TD
+    A[&quot;Buka link posisi&quot;] --&gt; B{&quot;Sudah login?&quot;}
+    B --&gt;|&quot;Ya&quot;| B1[&quot;Auto-fill nama/email + pakai CV tersimpan&quot;]
+    B --&gt;|&quot;Tidak&quot;| B2[&quot;Isi nama + email + upload PDF (max 5MB)&quot;]
+    B1 --&gt; C
+    B2 --&gt; C[&quot;Submit apply (POST /assessment/{job}/apply)&quot;]
+    C --&gt; C0{&quot;File upload valid?&quot;}
+    C0 --&gt;|&quot;bukan .pdf / &gt;5MB&quot;| C1[&quot;Error: 'Hanya PDF / file terlalu besar'&quot;]
+    C0 --&gt;|&quot;valid / tanpa upload (CV tersimpan)&quot;| D[&quot;Ekstrak teks CV&lt;br/&gt;scan/gagal -&gt; OCR RapidOCR + PyMuPDF&quot;]
+    D --&gt; G[&quot;Buat/simpan akun + cookie token (30 mnt)&quot;]
+    G --&gt; H[&quot;Halaman Petunjuk: aturan + consent pemantauan telemetry&quot;]
+    H --&gt; I[&quot;Klik 'Mulai Tes' — timer 15 menit tak bisa dihentikan&quot;]
+    I --&gt; J[&quot;Skenario prompt + chat AI interviewer&quot;]
+    J --&gt; K[&quot;Telemetry aktif: keystroke, backspace, paste diblokir, tab-switch, replay&quot;]
+    K --&gt; L{&quot;Turn ke-4 / waktu habis?&quot;}
+    L --&gt;|&quot;belum&quot;| J
+    L --&gt;|&quot;ya&quot;| M[&quot;Konfirmasi 'Kirim Jawaban'&quot;]
+    M --&gt; N[&quot;Submit -&gt; ack &lt; 1 detik&quot;]
+    N --&gt; O[&quot;Halaman 'Evaluasi Berhasil Dikirim'&quot;]
+    O --&gt; P[&quot;Dasbor kandidat&quot;]
+    P -.-&gt; Q[&quot;Personal Skill &amp; Competency Report (radar)&lt;br/&gt;download untuk portofolio&quot;]</code></pre>
+<hr>
+<h2 id="diagram-4-pipeline-evaluasi-backend-detail">Diagram 4 — Pipeline Evaluasi Backend (Detail)</h2>
+<pre><code class="language-mermaid">flowchart TD
+    S1[&quot;POST /assessment/{id}/submit&quot;] --&gt; S2{&quot;Sudah pernah submit?&quot;}
+    S2 --&gt;|&quot;Ya&quot;| S2a[&quot;400: 'sudah dikirim'&quot;]
+    S2 --&gt;|&quot;Baru&quot;| S3[&quot;Simpan AssessmentResult&lt;br/&gt;answer, tab_switches, copy_paste, time, keystroke_metrics, replay&quot;]
+    S3 --&gt; S4[&quot;status aplikasi = evaluated&quot;]
+    S4 --&gt; S5{&quot;USE_CELERY?&quot;}
+    S5 --&gt;|&quot;Ya&quot;| S6[&quot;Celery task evaluasi&quot;]
+    S5 --&gt;|&quot;Tidak&quot;| S7[&quot;Daemon thread evaluasi (inline)&quot;]
+    S6 --&gt; S8
+    S7 --&gt; S8[&quot;LLM evaluasi transcript + CV&quot;]
+    S8 --&gt; S9{&quot;Provider OK?&quot;}
+    S9 --&gt;|&quot;primary error&quot;| S9a[&quot;Fallback Groq&quot;]
+    S9a --&gt; S9b{&quot;Groq OK?&quot;}
+    S9b --&gt;|&quot;ok&quot;| S10
+    S9b --&gt;|&quot;gagal&quot;| S9c[&quot;Label = Error + feedback (tidak silent fail)&quot;]
+    S9 --&gt; S10[&quot;5 skor dimensi + label + pertanyaan interview + feedback&quot;]
+    S10 --&gt; S11[&quot;Telemetry override:&quot;]
+    S11 --&gt; S12{&quot;CPS &gt;30 &amp; chars&gt;200 ATAU&lt;br/&gt;paste&gt;0 &amp; time&lt;45s &amp; chars&gt;300&quot;}
+    S12 --&gt;|&quot;Ya&quot;| S13[&quot;Label = Likely Fabricated&lt;br/&gt;5 skor dimensi di-cap = 10&quot;]
+    S12 --&gt;|&quot;Tidak&quot;| S14[&quot;Pertahankan hasil LLM&quot;]
+    S13 --&gt; S15[&quot;Hitung overall (30/25/20/15/10)&quot;]
+    S14 --&gt; S15
+    S15 --&gt; S16[&quot;Fingerprint model: 6 dimensi + fallback heuristik&quot;]
+    S16 --&gt; S17[&quot;Persist + commit DB&quot;]
+    S17 --&gt; S18[&quot;Recruiter refresh -&gt; hasil muncul&quot;]</code></pre>
+<hr>
+<h2 id="diagram-5-alur-demo-final-muat-data-demo-1-klik">Diagram 5 — Alur Demo Final (Muat Data Demo, 1 Klik)</h2>
+<pre><code class="language-mermaid">flowchart TD
+    A[&quot;Recruiter klik 'Muat Data Demo'&quot;] --&gt; B[&quot;POST /seed/demo (auth recruiter/admin)&quot;]
+    B --&gt; C[&quot;get_or_create company / recruiter / job&lt;br/&gt;'Senior Product Engineer'&quot;]
+    C --&gt; D[&quot;5 kandidat ternilai lengkap: label, fingerprint, CV, replay&quot;]
+    D --&gt; E[&quot;Idempotent: klik ulang -&gt; job sama, tidak duplikat&quot;]
+    E --&gt; F[&quot;Toast sukses + redirect /recruiter/jobs/{job_id}&quot;]</code></pre>
+<hr>
+<h2 id="catatan-untuk-demo-live-17-okt">Catatan untuk demo live (17 Okt)</h2>
+<ol>
+<li><strong>Skenario yang paling meyakinkan bukan recruiter, tapi kandidat</strong>: buka magic link → apply → tes 4 turn → submit → muncul di dashboard recruiter. Ini belum disiapkan sebagai skenario demo.</li>
+<li><strong>Jangan demo fitur yang belum diimplementasi</strong> — juri bisa minta "tunjukkan sekarang".</li>
+<li>Data demo idempotent: tombol bisa diklik berkali-kali tanpa menggandakan data — aman untuk demo berulang.</li>
+</ol>
+
+        </body>
+        </html>

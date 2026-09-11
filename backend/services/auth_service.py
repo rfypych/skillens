@@ -62,7 +62,7 @@ def authenticate_user(db: Session, email: str, password: str):
     return {"access_token": access_token, "token_type": "bearer"}
 
 def update_current_user(db: Session, current_user: models.User, user_update: schemas.UserUpdate) -> models.User:
-    update_data = user_update.dict(exclude_unset=True)
+    update_data = user_update.model_dump(exclude_unset=True)
     
     if "full_name" in update_data:
         current_user.full_name = update_data["full_name"]
@@ -88,7 +88,7 @@ def update_current_user(db: Session, current_user: models.User, user_update: sch
             db.refresh(current_user)
 
         if current_user.profile:
-            profile_data = user_update.profile.dict(exclude_unset=True)
+            profile_data = user_update.profile.model_dump(exclude_unset=True)
             for key, value in profile_data.items():
                 setattr(current_user.profile, key, value)
             

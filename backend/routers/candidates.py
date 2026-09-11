@@ -29,6 +29,13 @@ async def upload_document(
     if current_user.role != "candidate":
         raise HTTPException(status_code=403, detail="Only candidates can upload documents")
 
+    # Selaraskan dengan flow apply: hanya PDF max 5MB
+    if not (file.filename or "").lower().endswith(".pdf") or file.content_type not in (
+        "application/pdf",
+        "application/octet-stream",
+    ):
+        raise HTTPException(status_code=400, detail="Only PDF resumes are supported")
+
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     # Sanitize filename to prevent path traversal / arbitrary file writes
     import uuid as _uuid
@@ -38,6 +45,11 @@ async def upload_document(
 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
+
+    # Enforce 5MB max (cek setelah tulis agar kompatibel UploadFile)
+    if os.path.getsize(file_path) > 5 * 1024 * 1024:
+        os.remove(file_path)
+        raise HTTPException(status_code=400, detail="File too large. Maximum size is 5MB.")
 
     file_url = f"/uploads/{safe_filename}"
 

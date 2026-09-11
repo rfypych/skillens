@@ -100,7 +100,7 @@ export default function MetricsDashboard() {
           trendData: trendArray
         });
       })
-      .catch(console.error)
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

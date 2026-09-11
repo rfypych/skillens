@@ -35,13 +35,18 @@ export default function CandidatesPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
+  const loadCandidates = () => {
+    setLoading(true);
     api.get('/applications')
       .then(data => {
         if (Array.isArray(data)) setApplications(data);
         setLoading(false);
       })
       .catch(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadCandidates();
   }, []);
 
   const filtered = applications.filter(app =>
@@ -96,6 +101,13 @@ export default function CandidatesPage() {
           />
         </div>
         <div className="flex items-center gap-3 w-full sm:w-auto">
+          <button
+            onClick={loadCandidates}
+            disabled={loading}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-full text-sm font-semibold hover:bg-[#F26522] disabled:opacity-60 transition-colors shadow-xs"
+          >
+            {loading ? 'Memuat...' : 'Refresh Daftar'}
+          </button>
           <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors shadow-xs">
             <Filter className="w-4 h-4 text-[#F26522]" />
             Filter Kandidat
