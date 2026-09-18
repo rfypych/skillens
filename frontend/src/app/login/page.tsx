@@ -19,11 +19,10 @@ export default function LoginPage() {
   const [error, setError] = useState('');
 
   // Default demo credentials (seeded in DB) — one-click fill for presentations.
+  // Only 2 roles exist: recruiter & candidate.
   const DEMO_ACCOUNTS = [
-    { label: 'Admin', email: 'admin', password: 'admin' },
     { label: 'Rekruter', email: 'recruiter@skillens.com', password: 'password123' },
     { label: 'Kandidat', email: 'kandidat@skillens.com', password: 'password123' },
-    { label: 'User', email: 'user', password: 'user' },
   ];
 
   const fillDemo = (email: string, password: string) => {
@@ -165,7 +164,7 @@ export default function LoginPage() {
 
               <div className="pt-1">
                 <p className="text-center text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Akun demo — ketuk untuk mengisi</p>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {DEMO_ACCOUNTS.map((acc) => (
                     <button
                       key={acc.label}
@@ -272,7 +271,7 @@ export default function LoginPage() {
 
               <div className="pt-1">
                 <p className="text-center text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Akun demo — klik untuk mengisi otomatis</p>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {DEMO_ACCOUNTS.map((acc) => (
                     <button
                       key={acc.label}
