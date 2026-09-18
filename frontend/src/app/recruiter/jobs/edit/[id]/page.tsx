@@ -1,14 +1,19 @@
 'use client';
-import { Archive, Lightning, Locked, MagicWand, Target } from '@carbon/icons-react';
-
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
+import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { toast, Toaster } from 'react-hot-toast';
 import { api } from '@/lib/api';
-import { ThinkingIndicator } from '@/components/ThinkingIndicator';
+import TextRollButton from '@/components/TextRollButton';
+
+const inputCls =
+  'block w-full px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400';
+const areaCls =
+  'block w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400 resize-none';
+const labelCls =
+  'block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider';
 
 export default function EditJob() {
   const router = useRouter();
@@ -25,7 +30,7 @@ export default function EditJob() {
         const data = await api.get(`/jobs/${id}`);
         setJob(data);
       } catch (err) {
-        toast.error("Error connecting to server.");
+        toast.error('Gagal terhubung ke server.');
       } finally {
         setLoading(false);
       }
@@ -50,7 +55,7 @@ export default function EditJob() {
       };
       await api.put(`/jobs/${id}`, formDataObj);
 
-      toast.success("Job updated successfully!");
+      toast.success('Posisi berhasil diperbarui!');
       setTimeout(() => router.push('/recruiter/jobs'), 1000);
     } catch (err: any) {
       toast.error(err.message);
@@ -60,147 +65,135 @@ export default function EditJob() {
   };
 
   if (loading) {
-    return <div className="p-10 text-center text-gray-500">Loading Job Details...</div>;
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#F26522] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
   if (!job) {
-    return <div className="p-10 text-center text-red-500">Job not found.</div>;
+    return <div className="p-10 text-center text-red-500 text-sm font-medium">Posisi tidak ditemukan.</div>;
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="w-full font-sans">
       <Toaster position="top-right" />
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
       >
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900 flex items-center gap-3 mb-2">
-          Edit Role Parameters
+        <Link href="/recruiter/jobs" className="text-xs font-semibold text-gray-500 hover:text-[#F26522] transition-colors">
+          &larr; Kembali ke Posisi Aktif
+        </Link>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900 mt-2">
+          Ubah Detail Posisi
         </h1>
-        <p className="text-gray-500 text-sm leading-relaxed">
-          Update the contextual parameters. Note: Changing these will not regenerate the AI assessment scenario.
+        <p className="text-gray-500 text-sm mt-1">
+          Perbarui parameter posisi. Catatan: perubahan ini tidak me-regenerasi skenario simulasi AI.
         </p>
       </motion.div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <motion.div 
+      <form onSubmit={handleSubmit} className="mt-6">
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="clean-card rounded-none p-8 space-y-6 bg-white"
+          className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-6 sm:p-8 space-y-5"
         >
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 gap-5">
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1.5">
-                <Archive className="w-4 h-4 text-gray-500" />
-                Job Title
-              </label>
-              <input 
+              <label className={labelCls}>Nama Posisi / Pekerjaan *</label>
+              <input
                 required
                 name="title"
-                type="text" 
+                type="text"
                 defaultValue={job.title}
-                className="w-full bg-white border border-gray-200 rounded-none px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm"
+                className={inputCls}
+                placeholder="Contoh: Senior Fullstack Engineer"
               />
             </div>
-            
+
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1.5">
-                Language
-              </label>
-              <select 
-                name="language"
-                defaultValue={job.language}
-                className="w-full bg-white border border-gray-200 rounded-none px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm"
-              >
+              <label className={labelCls}>Bahasa Wawancara AI *</label>
+              <select name="language" defaultValue={job.language} className={inputCls}>
                 <option value="English">English</option>
                 <option value="Indonesian">Indonesian</option>
               </select>
             </div>
           </div>
-          
-          <div className="grid grid-cols-3 gap-4">
+
+          <div className="grid sm:grid-cols-3 gap-5">
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1.5">Location</label>
-              <input required name="location" type="text" defaultValue={job.location} className="w-full bg-white border border-gray-200 rounded-none px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm" />
+              <label className={labelCls}>Lokasi Kerja *</label>
+              <input required name="location" type="text" defaultValue={job.location} className={inputCls} placeholder="Contoh: Jakarta (Hybrid / Remote)" />
             </div>
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1.5">Salary Range</label>
-              <input required name="salary_range" type="text" defaultValue={job.salary_range} className="w-full bg-white border border-gray-200 rounded-none px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm" />
+              <label className={labelCls}>Rentang Gaji *</label>
+              <input required name="salary_range" type="text" defaultValue={job.salary_range} className={inputCls} placeholder="Contoh: Rp 18–30 juta" />
             </div>
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1.5">Job Type</label>
-              <select name="job_type" defaultValue={job.job_type} className="w-full bg-white border border-gray-200 rounded-none px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all text-sm">
-                <option value="Full-time">Full-time</option>
-                <option value="Contract">Contract</option>
-                <option value="Internship">Internship</option>
+              <label className={labelCls}>Tipe Pekerjaan *</label>
+              <select name="job_type" defaultValue={job.job_type} className={inputCls}>
+                <option value="Full-time">Full-time (Penuh Waktu)</option>
+                <option value="Contract">Contract (Kontrak)</option>
+                <option value="Internship">Internship (Magang)</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1">
-              <Target className="w-4 h-4 text-gray-500" />
-              Expected Outcomes (6-12 Months)
-            </label>
-            <textarea 
+            <label className={labelCls}>Hasil yang Diharapkan (6–12 Bulan) *</label>
+            <textarea
               required name="expected_outcomes" rows={2}
               defaultValue={job.expected_outcomes}
-              className="w-full bg-white border border-gray-200 rounded-none px-4 py-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all resize-none text-sm"
+              className={areaCls}
+              placeholder="Contoh: Menghasilkan arsitektur solusi yang scalable dan maintainable..."
             />
           </div>
 
           <div>
-            <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1">
-              <Lightning className="w-4 h-4 text-gray-500" />
-              Non-Trainable Specific Skills
-            </label>
-            <textarea 
+            <label className={labelCls}>Keahlian Spesifik yang Dibutuhkan *</label>
+            <textarea
               required name="specific_skills" rows={2}
               defaultValue={job.specific_skills}
-              className="w-full bg-white border border-gray-200 rounded-none px-4 py-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all resize-none text-sm"
+              className={areaCls}
+              placeholder="Contoh: System Design, Python, React..."
             />
           </div>
 
           <div>
-            <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-1">
-              <Locked className="w-4 h-4 text-gray-500" />
-              Compliance & Non-Negotiables
-            </label>
-            <textarea 
-              required name="compliance_criteria" rows={2}
-              defaultValue={job.compliance_criteria}
-              className="w-full bg-white border border-gray-200 rounded-none px-4 py-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all resize-none text-sm"
+            <label className={labelCls}>Kriteria Kepatuhan & Non-Negosiable</label>
+            <textarea
+              name="compliance_criteria" rows={2}
+              defaultValue={job.compliance_criteria ?? ''}
+              className={areaCls}
+              placeholder="Contoh: Minimal 3 tahun pengalaman..."
             />
           </div>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="flex justify-end gap-3"
+          className="flex justify-end items-center gap-3 mt-6"
         >
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={() => router.back()}
-            className="px-5 py-2.5 rounded-none font-medium text-gray-600 hover:text-black hover:bg-gray-100 transition-colors text-sm"
+            className="px-5 py-3 text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors"
           >
-            Cancel
+            Batal
           </button>
-          <button 
-            type="submit" 
+          <TextRollButton
+            text={isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
+            variant="orange"
+            size="lg"
+            type="submit"
             disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-none font-medium bg-black hover:bg-gray-800 text-white shadow-none transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed text-sm"
-          >
-            {isSubmitting ? (
-              <ThinkingIndicator />
-            ) : (
-              <Archive className="w-4 h-4" />
-            )}
-            <span>Save Changes</span>
-          </button>
+            className="justify-between"
+          />
         </motion.div>
       </form>
     </div>

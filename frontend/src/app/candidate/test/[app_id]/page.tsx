@@ -54,6 +54,8 @@ export default function CandidateAssessment() {
   const userTurnsCount = messages.filter((m) => m.role === 'user').length;
   const isMaxTurnsReached = userTurnsCount >= 4;
 
+  const [promptError, setPromptError] = useState(false);
+
   useEffect(() => {
     api
       .get(`/assessment/${appId}/prompt`)
@@ -61,7 +63,9 @@ export default function CandidateAssessment() {
         setPromptData(data);
         setMessages([{ role: 'assistant', content: data.scenario_prompt }]);
       })
-      .catch(() => {});
+      .catch(() => {
+        setPromptError(true);
+      });
   }, [appId, router]);
 
   useEffect(() => {
@@ -223,6 +227,22 @@ export default function CandidateAssessment() {
             </button>
           </div>
         </motion.div>
+      </div>
+    );
+  }
+
+  if (promptError) {
+    return (
+      <div className="min-h-screen bg-[#EFEFEF] flex flex-col items-center justify-center gap-4 font-sans p-6 text-center">
+        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm px-8 py-10 max-w-md">
+          <h2 className="text-xl font-semibold text-gray-900 tracking-tight">Sesi Ujian Tidak Tersedia</h2>
+          <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+            Tautan ujian ini sudah dikumpulkan, kedaluwarsa, atau bukan milik akun Anda. Kembali ke dashboard untuk melihat status lamaran.
+          </p>
+          <div className="mt-6 flex justify-center">
+            <TextRollButton text="Kembali ke Dashboard" variant="orange" size="lg" onClick={() => router.push('/candidate/dashboard')} className="justify-between" />
+          </div>
+        </div>
       </div>
     );
   }
