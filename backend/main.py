@@ -17,39 +17,44 @@ def seed_demo_accounts():
     db = database.SessionLocal()
     try:
         from utils.auth import get_password_hash
-        hashed = get_password_hash("password123")
+        hashed_default = get_password_hash("password123")
+        hashed_admin = get_password_hash("admin")
+        hashed_user = get_password_hash("user")
         
-        # Candidate Demo Account
-        candidate = db.query(models.User).filter(models.User.email == "candidate@skillens.com").first()
-        if not candidate:
-            candidate = models.User(
-                email="candidate@skillens.com",
-                hashed_password=hashed,
-                role="candidate",
-                full_name="Candidate Demo"
-            )
-            db.add(candidate)
+        # Ensure company exists
+        company = db.query(models.Company).filter(models.Company.name == "Skillens Tech").first()
+        if not company:
+            company = models.Company(name="Skillens Tech")
+            db.add(company)
             db.commit()
-            db.refresh(candidate)
-            profile = models.CandidateProfile(user_id=candidate.id)
-            db.add(profile)
-            db.commit()
-        else:
-            candidate.hashed_password = hashed
-            db.commit()
+            db.refresh(company)
+
+        # Candidate Demo Account (candidate@skillens.com & kandidat@skillens.com)
+        for cand_email in ["candidate@skillens.com", "kandidat@skillens.com"]:
+            candidate = db.query(models.User).filter(models.User.email == cand_email).first()
+            if not candidate:
+                candidate = models.User(
+                    email=cand_email,
+                    hashed_password=hashed_default,
+                    role="candidate",
+                    full_name="Candidate Demo"
+                )
+                db.add(candidate)
+                db.commit()
+                db.refresh(candidate)
+                profile = models.CandidateProfile(user_id=candidate.id)
+                db.add(profile)
+                db.commit()
+            else:
+                candidate.hashed_password = hashed_default
+                db.commit()
             
-        # Recruiter Demo Account
+        # Recruiter Demo Account (recruiter@skillens.com)
         recruiter = db.query(models.User).filter(models.User.email == "recruiter@skillens.com").first()
         if not recruiter:
-            company = db.query(models.Company).filter(models.Company.name == "Skillens Tech").first()
-            if not company:
-                company = models.Company(name="Skillens Tech")
-                db.add(company)
-                db.commit()
-                db.refresh(company)
             recruiter = models.User(
                 email="recruiter@skillens.com",
-                hashed_password=hashed,
+                hashed_password=hashed_default,
                 role="recruiter",
                 full_name="Recruiter Demo",
                 company_id=company.id
@@ -57,10 +62,57 @@ def seed_demo_accounts():
             db.add(recruiter)
             db.commit()
         else:
-            recruiter.hashed_password = hashed
+            recruiter.hashed_password = hashed_default
+            recruiter.company_id = company.id
             db.commit()
+
+        # Admin Demo Accounts (admin / admin, admin@skillens.com / admin123, admin@admin.com / admin)
+        for adm_email, adm_pwd, adm_role in [
+            ("admin", hashed_admin, "admin"),
+            ("admin@skillens.com", get_password_hash("admin123"), "admin"),
+            ("admin@admin.com", hashed_admin, "admin"),
+        ]:
+            adm = db.query(models.User).filter(models.User.email == adm_email).first()
+            if not adm:
+                adm = models.User(
+                    email=adm_email,
+                    hashed_password=adm_pwd,
+                    role=adm_role,
+                    full_name="Administrator",
+                    company_id=company.id
+                )
+                db.add(adm)
+                db.commit()
+            else:
+                adm.hashed_password = adm_pwd
+                adm.company_id = company.id
+                db.commit()
+
+        # User Demo Accounts (user / user, user@skillens.com / user123, user@user.com / user)
+        for usr_email, usr_pwd in [
+            ("user", hashed_user),
+            ("user@skillens.com", get_password_hash("user123")),
+            ("user@user.com", hashed_user),
+        ]:
+            usr = db.query(models.User).filter(models.User.email == usr_email).first()
+            if not usr:
+                usr = models.User(
+                    email=usr_email,
+                    hashed_password=usr_pwd,
+                    role="candidate",
+                    full_name="User Demo"
+                )
+                db.add(usr)
+                db.commit()
+                db.refresh(usr)
+                p = models.CandidateProfile(user_id=usr.id)
+                db.add(p)
+                db.commit()
+            else:
+                usr.hashed_password = usr_pwd
+                db.commit()
             
-        logger.info("Successfully seeded & reset demo accounts (candidate@skillens.com & recruiter@skillens.com / password123)")
+        logger.info("Successfully seeded & verified demo accounts (admin, user, recruiter, candidate)")
     except Exception as e:
         logger.error(f"Error seeding demo accounts: {e}")
     finally:

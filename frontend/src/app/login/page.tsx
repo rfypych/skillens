@@ -18,6 +18,20 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Default demo credentials (seeded in DB) — one-click fill for presentations.
+  const DEMO_ACCOUNTS = [
+    { label: 'Admin', email: 'admin', password: 'admin' },
+    { label: 'Rekruter', email: 'recruiter@skillens.com', password: 'password123' },
+    { label: 'Kandidat', email: 'kandidat@skillens.com', password: 'password123' },
+    { label: 'User', email: 'user', password: 'user' },
+  ];
+
+  const fillDemo = (email: string, password: string) => {
+    setEmail(email);
+    setPassword(password);
+    setError('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -35,7 +49,7 @@ export default function LoginPage() {
       });
       
       const me = await api.get('/auth/me');
-      const targetUrl = me.role === 'recruiter' ? '/recruiter' : '/candidate/dashboard';
+      const targetUrl = (me.role === 'recruiter' || me.role === 'admin') ? '/recruiter' : '/candidate/dashboard';
       window.location.href = targetUrl;
     } catch (err: any) {
       setError(err.message || 'Kredensial tidak valid. Silakan coba lagi.');
@@ -99,12 +113,12 @@ export default function LoginPage() {
                 <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 tracking-wide uppercase">Email Address</label>
                 <div className="relative">
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     className="block w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
-                    placeholder="nicholas@ergemla.com"
+                    placeholder="email atau admin / user"
                   />
                 </div>
               </div>
@@ -147,6 +161,22 @@ export default function LoginPage() {
                   disabled={loading}
                   className="w-full justify-between rounded-2xl"
                 />
+              </div>
+
+              <div className="pt-1">
+                <p className="text-center text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Akun demo — ketuk untuk mengisi</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {DEMO_ACCOUNTS.map((acc) => (
+                    <button
+                      key={acc.label}
+                      type="button"
+                      onClick={() => fillDemo(acc.email, acc.password)}
+                      className={`px-2 py-2 rounded-xl border text-[11px] font-semibold transition-colors ${email === acc.email ? 'border-[#F26522] bg-[#F26522]/10 text-[#F26522]' : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300 hover:bg-gray-100'}`}
+                    >
+                      {acc.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </form>
 
@@ -194,12 +224,12 @@ export default function LoginPage() {
                     <Email className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     className="block w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] transition-colors bg-white text-sm text-gray-900"
-                    placeholder="you@company.com"
+                    placeholder="you@company.com atau admin / user"
                   />
                 </div>
               </div>
@@ -238,6 +268,26 @@ export default function LoginPage() {
                   disabled={loading}
                   className="w-full justify-between"
                 />
+              </div>
+
+              <div className="pt-1">
+                <p className="text-center text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Akun demo — klik untuk mengisi otomatis</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {DEMO_ACCOUNTS.map((acc) => (
+                    <button
+                      key={acc.label}
+                      type="button"
+                      onClick={() => fillDemo(acc.email, acc.password)}
+                      title={`${acc.email} / ${acc.password}`}
+                      className={`px-2 py-2 rounded-full border text-[11px] font-semibold transition-colors ${email === acc.email ? 'border-[#F26522] bg-[#F26522]/10 text-[#F26522]' : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300 hover:bg-gray-100'}`}
+                    >
+                      {acc.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-center text-[11px] text-gray-400 mt-2 font-mono">
+                  {email ? `${email} / ${password.replace(/./g, '•')}` : 'Pilih salah satu akun di atas'}
+                </p>
               </div>
             </form>
 
