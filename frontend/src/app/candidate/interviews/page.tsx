@@ -56,7 +56,7 @@ export default function CandidateInterviewsPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 font-sans">
+    <div className="max-w-5xl mx-auto space-y-8 font-sans">
       <Toaster position="top-right" />
 
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>

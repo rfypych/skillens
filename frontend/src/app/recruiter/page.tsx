@@ -136,7 +136,7 @@ export default function RecruiterDashboard() {
             <button
               onClick={loadDemo}
               disabled={demoLoading}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#F26522] to-[#FF8A4C] text-white text-sm font-semibold shadow-lg hover:shadow-xl hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-wait"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#F26522] hover:bg-[#e05a1a] text-white text-sm font-semibold transition-colors disabled:opacity-60 disabled:cursor-wait"
             >
               <MagicWand className={`w-4 h-4 ${demoLoading ? 'animate-spin' : ''}`} />
               {demoLoading ? 'Memuat Data Demo...' : 'Muat Data Demo (1 Klik)'}

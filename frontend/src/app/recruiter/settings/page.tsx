@@ -46,7 +46,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 font-sans">
+    <div className="w-full space-y-8 font-sans">
       <Toaster position="top-right" />
       <motion.div 
         initial={{ opacity: 0, y: -20 }}

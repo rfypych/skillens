@@ -102,7 +102,7 @@ export default function RecruiterInterviewsPage() {
   const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10 font-sans">
+    <div className="w-full space-y-10 font-sans">
       <Toaster position="top-right" />
 
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>

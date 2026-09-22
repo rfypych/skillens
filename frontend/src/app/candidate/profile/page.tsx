@@ -71,14 +71,14 @@ export default function CandidateProfile() {
   };
 
   if (loading) return (
-    <div className="max-w-4xl mx-auto space-y-10 pb-12 font-sans">
+    <div className="max-w-5xl mx-auto space-y-10 pb-12 font-sans">
       <div className="h-20 bg-gray-100 animate-pulse rounded-2xl" />
       <div className="bg-white p-8 border border-gray-200/80 rounded-2xl h-96 animate-pulse" />
     </div>
   );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10 pb-12 font-sans">
+    <div className="max-w-5xl mx-auto space-y-10 pb-12 font-sans">
       <Toaster position="top-right" />
       
       <div>
