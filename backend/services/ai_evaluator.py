@@ -137,7 +137,17 @@ async def evaluate_candidate_answer_task(application_id: int, result_id: int):
         )
         
         trap_word = app.hidden_prompt or "mentimun"
-        
+        archetype = (getattr(job, "archetype", None) or "teknis").lower()
+
+        if archetype == "lapangan":
+            archetype_ctx = """Role Archetype: LAPANGAN (field operations).
+Score dimensions adapted: score_problem_understanding = grasp of field situation; score_solution_approach = quality & safety-priority of DECISIONS under pressure; score_logic_execution = concrete action sequencing (not theory); score_communication = clarity with warga/rekan/atasan; score_response_quality = hazard-spotting completeness + K3 compliance. Reward decisiveness with safety reasoning; penalize generic office-style answers."""
+        elif archetype == "kreatif":
+            archetype_ctx = """Role Archetype: KREATIF (creative).
+Score dimensions adapted: score_problem_understanding = grasp of the brief & audience; score_solution_approach = originality + taste of direction; score_logic_execution = process depth (why behind choices); score_communication = articulation of design rationale; score_response_quality = consistency between portfolio claims and answers. Reward specific process detail; penalize generic "agar menarik" statements."""
+        else:
+            archetype_ctx = "Role Archetype: TEKNIS (technical/analytical). Score dimensions as named."
+
         # Build the system prompt
         system_prompt = f"""You are an expert technical interviewer and AI anti-cheat detector.
 Your job is to evaluate a candidate's performance in a Micro-Interview (a multi-turn chat transcript) for a specific job role. Ensure that you evaluate in {job.language}.
@@ -145,6 +155,7 @@ Your job is to evaluate a candidate's performance in a Micro-Interview (a multi-
 Job Title: {job.title}
 Job Outcomes (Expectations): {job.expected_outcomes}
 Specific Skills Required: {job.specific_skills}
+{archetype_ctx}
 
 Anti-Cheat & Telemetry Rules (CRITICAL):
 You will be provided with the chat transcript of the candidate's interview, and their telemetry data (tab switches, copy-paste attempts, time taken).
@@ -191,7 +202,22 @@ Do NOT output markdown (like ```json), just the raw JSON object.
         except Exception:
             formatted_transcript = result.candidate_answer
 
-        user_prompt = f"Candidate Resume/CV Content:\n{resume_text}\n\nTelemetry Data:\n- Tab Switches: {result.tab_switches}\n- Copy-Paste Attempts: {result.copy_paste_attempts}\n- Time Taken: {result.time_taken_seconds} seconds\n\nCandidate Chat Transcript:\n{formatted_transcript}"
+        # Decision telemetry derived from the keystroke replay history:
+        # how long the candidate deliberated and how often they revised.
+        decision_telemetry = "No replay data."
+        try:
+            replay = json.loads(result.replay_history) if result.replay_history else []
+            if isinstance(replay, list) and len(replay) >= 2:
+                times = [s.get("time", 0) for s in replay if isinstance(s, dict) and s.get("time")]
+                span_s = round((max(times) - min(times)) / 1000, 1) if len(times) >= 2 else 0
+                decision_telemetry = (
+                    f"Deliberation span: {span_s}s across {len(replay)} recorded revisions. "
+                    "Short span + few revisions = decisive; very long span with many revisions = hesitant."
+                )
+        except Exception:
+            pass
+
+        user_prompt = f"Candidate Resume/CV Content:\n{resume_text}\n\nTelemetry Data:\n- Tab Switches: {result.tab_switches}\n- Copy-Paste Attempts: {result.copy_paste_attempts}\n- Time Taken: {result.time_taken_seconds} seconds\n- Decision Telemetry: {decision_telemetry}\n\nCandidate Chat Transcript:\n{formatted_transcript}"
 
         response = await client.chat.completions.create(
             model=model_name,

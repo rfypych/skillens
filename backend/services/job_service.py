@@ -24,6 +24,7 @@ def create_job(db: Session, job: schemas.JobCreate, current_user: models.User) -
         salary_range=job.salary_range,
         job_type=job.job_type,
         max_questions=job.max_questions,
+        archetype=(job.archetype or "teknis").lower(),
         kkm_score=job.kkm_score,
         deadline=job.deadline,
         status="open",

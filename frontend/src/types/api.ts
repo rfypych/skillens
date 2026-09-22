@@ -16,6 +16,7 @@ export interface Job {
   salary_range?: string;
   job_type?: string;
   max_questions?: number;
+  archetype?: 'teknis' | 'lapangan' | 'kreatif' | string;
   kkm_score?: number;
   candidate_count?: number;
   status: 'open' | 'closed';

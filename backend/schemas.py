@@ -97,6 +97,7 @@ class JobBase(BaseModel):
     salary_range: Optional[str] = None
     job_type: str = "Full-time"
     max_questions: Optional[int] = 5
+    archetype: Optional[str] = "teknis"
     kkm_score: Optional[float] = 0.0
     deadline: Optional[datetime] = None
 
@@ -114,6 +115,7 @@ class JobUpdate(BaseModel):
     salary_range: Optional[str] = None
     job_type: Optional[str] = None
     max_questions: Optional[int] = None
+    archetype: Optional[str] = None
     kkm_score: Optional[float] = None
     status: Optional[str] = None
     deadline: Optional[datetime] = None

@@ -155,6 +155,12 @@ export default function NewJobWizard() {
     localStorage.setItem('hasSeenNewJobTour', 'true');
   };
 
+  const ARCHETYPES = [
+    { value: 'teknis', label: 'Teknis / Analitis', desc: 'Simulasi studi kasus + forensik ketikan. Untuk engineer, analis, staf kantor.', icon: Target },
+    { value: 'lapangan', label: 'Lapangan / Operasional', desc: 'Situational judgment + identifikasi bahaya K3 + telemetri keputusan. Untuk teknisi, sales, kurir.', icon: Security },
+    { value: 'kreatif', label: 'Kreatif / Portofolio', desc: 'Interogasi portofolio + uji rasa. Untuk desainer, konten kreator, marketing.', icon: Idea },
+  ];
+
   const [formData, setFormData] = useState({
     title: '',
     language: 'English',
@@ -163,6 +169,7 @@ export default function NewJobWizard() {
     job_type: 'Full-time',
     description: '',
     max_questions: 5,
+    archetype: 'teknis',
     kkm_score: 70,
     deadline: '',
   });
@@ -403,6 +410,32 @@ export default function NewJobWizard() {
                 onChange={handleChange}
                 className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
               />
+            </div>
+          </div>
+
+          {/* Archetype Picker */}
+          <div className="pt-4 border-t border-gray-100">
+            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Arketipe Pekerjaan *</label>
+            <p className="text-xs text-gray-500 mb-3">Menentukan format simulasi AI dan jenis bukti yang dinilai. Inti penilaian tetap sama: bukti, bukan klaim.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {ARCHETYPES.map((a) => {
+                const Icon = a.icon;
+                const active = formData.archetype === a.value;
+                return (
+                  <button
+                    key={a.value}
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, archetype: a.value }))}
+                    className={`text-left p-4 rounded-2xl border transition-colors ${active ? 'border-[#F26522] bg-[#F26522]/5' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+                  >
+                    <span className={`inline-flex w-9 h-9 rounded-full items-center justify-center mb-2 ${active ? 'bg-[#F26522] text-white' : 'bg-gray-100 text-gray-500'}`}>
+                      <Icon className="w-4 h-4" />
+                    </span>
+                    <span className={`block text-sm font-semibold ${active ? 'text-gray-900' : 'text-gray-700'}`}>{a.label}</span>
+                    <span className="block text-xs text-gray-500 mt-1 leading-relaxed">{a.desc}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

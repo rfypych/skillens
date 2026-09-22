@@ -326,6 +326,9 @@ export default function JobAssessmentReview() {
             <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border ${job?.status === 'closed' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
               {job?.status === 'closed' ? 'Tutup' : 'Aktif'}
             </span>
+            <span className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border bg-gray-900 text-white border-gray-900">
+              {job?.archetype === 'lapangan' ? 'Lapangan' : job?.archetype === 'kreatif' ? 'Kreatif' : 'Teknis'}
+            </span>
           </div>
           
           <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 font-medium pt-1">

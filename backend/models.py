@@ -77,6 +77,7 @@ class Job(Base):
     salary_range = Column(String, nullable=True)
     job_type = Column(String, default="Full-time")
     max_questions = Column(Integer, default=5)
+    archetype = Column(String, default="teknis")  # "teknis" | "lapangan" | "kreatif"
     kkm_score = Column(Float, default=0.0)
     status = Column(String, default="open") # "open", "closed"
     deadline = Column(DateTime(timezone=True), nullable=True)

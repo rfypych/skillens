@@ -25,8 +25,38 @@ def generate_assessment_for_job_sync(job_id: int):
             return
 
         auto_generate = job.description == "AUTO_GENERATE"
+        archetype = (getattr(job, "archetype", None) or "teknis").lower()
+        if archetype not in ("teknis", "lapangan", "kreatif"):
+            archetype = "teknis"
 
-        system_prompt = f"""You are an expert HR and Lead Engineer.
+        job_desc_line = job.description if not auto_generate else 'Please generate a detailed and professional Job Description based on the outcomes and skills.'
+        json_keys = "TWO keys: 'scenario' and 'job_description'" if auto_generate else "a single key 'scenario'"
+        json_rule = """VERY IMPORTANT JSON RULE:
+DO NOT use the markdown headings as JSON keys.
+All of the markdown text MUST be combined into a SINGLE long string value assigned to the "scenario" key.
+Do NOT output markdown code blocks (like ```json) for the JSON envelope, just return the raw JSON object."""
+
+        if archetype == "lapangan":
+            system_prompt = f"""You are a field-operations supervisor. Generate a FIELD incident simulation (Situational Judgment Test), NOT a requirement list. Concrete details only: site, time pressure, people, equipment, K3 safety stakes. Language: {job.language}
+Job: {job.title} | Desc: {job_desc_line} | Outcomes: {job.expected_outcomes} | Skills: {job.specific_skills}
+Reply ONLY raw JSON with {json_keys}. Scenario = ONE markdown string with H3 headers:
+'### Brief Lapangan': role, site, shift, tools, who is present (2-3 lines).
+'### Situasi 1': urgent field problem; end asking the candidate's FIRST action + why.
+'### Situasi 2': complication (angry customer / unsafe shortcut / broken tool); tests safety priority.
+'### Misi Bahaya': describe a site scene with exactly 3 concrete K3 hazards; ask to name all 3 + fix for each.
+Keep total scenario under 300 words. Decision-focused, never trivia.
+{json_rule}"""
+        elif archetype == "kreatif":
+            system_prompt = f"""You are a creative director. Generate a portfolio-driven creative assessment, NOT a requirement list. Language: {job.language}
+Job: {job.title} | Desc: {job_desc_line} | Outcomes: {job.expected_outcomes} | Skills: {job.specific_skills}
+Reply ONLY raw JSON with {json_keys}. Scenario = ONE markdown string with H3 headers:
+'### Latar Proyek': realistic brief (client, audience, constraint, deadline, 2-3 lines).
+'### Tugas Rasa': ask candidate to critique a common approach + propose own direction in 3 concrete points (tests taste).
+'### Interogasi Portofolio': warn that follow-ups probe their OWN uploaded CV/portfolio work; shallow answers signal fabrication.
+Keep total scenario under 300 words. Process over polish.
+{json_rule}"""
+        else:
+            system_prompt = f"""You are an expert HR and Lead Engineer.
 Your task is to generate a highly complex, immersive, and realistic case study scenario for a job application.
 DO NOT just list the job requirements as tasks. Instead, create a real-world, problematic situation (a "day-in-the-life" crisis or project) that the candidate must solve through an interactive chat.
 The scenario must present specific context, constraints, and mock data/logs if applicable.
@@ -38,18 +68,18 @@ Expected Outcome: {job.expected_outcomes}
 Specific Skills: {job.specific_skills}
 
 Output Format: You MUST reply ONLY in raw JSON format with {"TWO keys: 'scenario' and 'job_description'" if auto_generate else "a single key 'scenario'"}.
-CRITICAL INSTRUCTION FOR SCENARIO CONTENT: 
-The scenario text must be beautifully formatted in Markdown. 
-Use clear H3 headers (###) and bullet points. 
+CRITICAL INSTRUCTION FOR SCENARIO CONTENT:
+The scenario text must be beautifully formatted in Markdown.
+Use clear H3 headers (###) and bullet points.
 Include sections for:
 1. '### Background Context': Set the scene (e.g., "You are joining us on a day when our core database is experiencing 100% CPU spikes...").
 2. '### The Challenge': Detail the specific technical or business problem.
 3. '### Your Mission': Clearly list 3-4 specific questions or actions the candidate needs to answer or perform in this interview.
 Make it immersive, professional, and challenging!
 
-VERY IMPORTANT JSON RULE: 
-DO NOT use the markdown headings as JSON keys. 
-All of the markdown text MUST be combined into a SINGLE long string value assigned to the "scenario" key. 
+VERY IMPORTANT JSON RULE:
+DO NOT use the markdown headings as JSON keys.
+All of the markdown text MUST be combined into a SINGLE long string value assigned to the "scenario" key.
 Do NOT output markdown code blocks (like ```json) for the JSON envelope, just return the raw JSON object.
 """
 

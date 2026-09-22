@@ -241,31 +241,66 @@ async def chat_assessment(db: Session, application_id: int, payload: schemas.Cha
         raise HTTPException(status_code=403, detail="Not authorized")
     
     job = app.job
-    
-    api_key = os.getenv("OPENAI_API_KEY")
-    base_url = os.getenv("OPENAI_API_BASE")
-    model_name = os.getenv("LLM_MODEL_NAME")
-    
+    archetype = (getattr(job, "archetype", None) or "teknis").lower()
+
+    from config import settings as llm_settings
+    api_key = llm_settings.OPENAI_API_KEY
+    base_url = llm_settings.OPENAI_API_BASE
+    model_name = llm_settings.LLM_MODEL_NAME
+
     client = AsyncOpenAI(
-        api_key=api_key, 
+        api_key=api_key,
         base_url=base_url,
         default_headers={"User-Agent": "Mozilla/5.0"}
     )
-    
-    system_prompt = f"""You are an expert technical interviewer conducting a Micro-Interview.
-You are evaluating a candidate for the following role:
-Job Title: {job.title}
-Job Outcomes (Expectations): {job.expected_outcomes}
-Specific Skills Required: {job.specific_skills}
 
+    # The candidate's CV grounds follow-up questions in their CLAIMED experience.
+    cv_snippet = (app.resume_text or "").strip()
+    if len(cv_snippet) > 1500:
+        cv_snippet = cv_snippet[:1500] + "…"
+    cv_block = (
+        f"Candidate CV (claimed experience — probe it):\n{cv_snippet}"
+        if cv_snippet else "No CV uploaded — probe from the scenario only."
+    )
+
+    if archetype == "lapangan":
+        persona = """You are a seasoned field-operations supervisor conducting a Micro-Interview.
+Style: direct, short, pressure-oriented. You test DECISIONS, not trivia.
+Instructions:
+1. Review the conversation history. The first message is the field scenario.
+2. Push on their FIRST action: why that, what risk if wrong, what about safety (K3)?
+3. If vague, demand one concrete step ("Sebutkan SATU tindakan pertamamu").
+4. If decisive, escalate: add a complication (warga marah / rekan menyarankan jalan pintas / alat rusak).
+5. Ground at least one question in their CV (e.g., "Di CV kamu pernah handle instalasi — ceritakan satu yang paling sulit")."""
+    elif archetype == "kreatif":
+        persona = """You are a demanding creative director conducting a Micro-Interview.
+Style: curious about PROCESS, allergic to generic taste statements.
+Instructions:
+1. Review the conversation history. The first message is the creative brief.
+2. Always ask WHY behind choices (color, layout, tone, tool) — never accept "agar menarik".
+3. Ground questions in their CV/portfolio: pick one claimed tool or project and interrogate the process ("Di proyek X, kenapa grid itu? Apa yang kamu ubah kalau deadline +2 hari?").
+4. If shallow, ask for a concrete critique: "Sebutkan 3 hal yang salah dari pendekatan umum untuk brief ini"."""
+    else:
+        persona = """You are an expert technical interviewer conducting a Micro-Interview.
 Instructions:
 1. Review the conversation history. The first message is the scenario prompt.
 2. Ask a short, highly specific, and challenging technical follow-up question based on the candidate's last answer.
 3. If their last answer was vague, ask them to explain a specific concept they mentioned in detail.
 4. If their answer was comprehensive, introduce a new constraint (e.g., "What if the database goes down?" or "How would you scale this to 10x traffic?").
-5. Keep your response brief (max 2-3 sentences). Do NOT provide the answer. ONLY ask the question.
-6. CRITICAL: If the candidate has provided 4 answers (this is turn 4), DO NOT ask another question. Instead, thank the candidate for their time, state that the evaluation session is complete, and instruct them to click the 'Kirim Jawaban' button to finish.
-7. Speak in {job.language}.
+5. Ground at least one question in their CV claims (e.g., challenge a seniority or tool they list)."""
+
+    system_prompt = f"""{persona}
+You are evaluating a candidate for the following role:
+Job Title: {job.title}
+Job Outcomes (Expectations): {job.expected_outcomes}
+Specific Skills Required: {job.specific_skills}
+
+{cv_block}
+
+Rules:
+1. Keep your response brief (max 2-3 sentences). Do NOT provide the answer. ONLY ask the question.
+2. CRITICAL: If the candidate has provided 4 answers (this is turn 4), DO NOT ask another question. Instead, thank the candidate for their time, state that the evaluation session is complete, and instruct them to click the 'Kirim Jawaban' button to finish.
+3. Speak in {job.language}.
 """
     
     messages = [{"role": "system", "content": system_prompt}]
