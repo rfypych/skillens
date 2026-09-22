@@ -73,6 +73,7 @@ D:\projects\JHIC-rev/          <- Git Root Repository
 Every agent session MUST load and obey the following skills/MCP servers for the matching task type. This section exists so context survives across sessions: **read it, load the skill via the `skill` tool (`skill: <name>`), and follow it — do not rely on memory.**
 
 ### Installed global skills (verified in `C:/Users/rfkl/.agents/skills/`)
+> **Antigravity mirror**: all 26 global skills are junctioned (mklink /J) into `C:/Users/rfkl/.gemini/antigravity/skills/` so Antigravity sees the same set. Junctions auto-sync — but after `npx skills update` or adding a new skill, re-run the linker (`link_skills.py` logic) for the new folder. Workspace skills in this repo's `.agents/skills/` are picked up by Antigravity automatically when the folder is open.
 | Skill | Load when... |
 |---|---|
 | `code-review` | BEFORE every `git commit`/`push` — review the full diff as a push gate. |
