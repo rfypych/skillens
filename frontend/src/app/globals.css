@@ -180,3 +180,29 @@ html.lenis, html.lenis body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* ── Skillens browser surfaces (brand application) ── */
+::selection {
+  background: #F26522;
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid #F26522;
+  outline-offset: 2px;
+}
+
+/* Tabular numerals for scores, rankings, and telemetry data (opt-in via .tnum) */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+input, textarea {
+  caret-color: #F26522;
+}
+
+/* Readable placeholders on white (contrast floor) */
+input::placeholder, textarea::placeholder {
+  color: #6b7280;
+  opacity: 1;
+}

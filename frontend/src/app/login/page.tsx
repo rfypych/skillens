@@ -116,7 +116,7 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="block w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                    className="block w-full px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
                     placeholder="email atau admin / user"
                   />
                 </div>
@@ -130,7 +130,7 @@ export default function LoginPage() {
                     required
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    className="block w-full pl-4 pr-12 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                    className="block w-full pl-4 pr-12 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
                     placeholder="••••••••••••"
                   />
                   <button
@@ -170,7 +170,7 @@ export default function LoginPage() {
                       key={acc.label}
                       type="button"
                       onClick={() => fillDemo(acc.email, acc.password)}
-                      className={`px-2 py-2 rounded-xl border text-[11px] font-semibold transition-colors ${email === acc.email ? 'border-[#F26522] bg-[#F26522]/10 text-[#F26522]' : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300 hover:bg-gray-100'}`}
+                      className={`px-2 py-2 rounded-full border text-[11px] font-semibold transition-colors ${email === acc.email ? 'border-[#F26522] bg-[#F26522]/10 text-[#F26522]' : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300 hover:bg-gray-100'}`}
                     >
                       {acc.label}
                     </button>

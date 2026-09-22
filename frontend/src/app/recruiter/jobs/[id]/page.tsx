@@ -841,7 +841,7 @@ export default function JobAssessmentReview() {
                     onClick={() => setViewMode('edit')}
                     className={`flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full transition-all ${viewMode === 'edit' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-600 hover:text-gray-900'}`}
                   >
-                    <Edit className="w-3.5 h-3.5" /> Edit Prompt
+                    <Edit className="w-3.5 h-3.5" /> Ubah Prompt
                   </button>
                   <button
                     onClick={() => setViewMode('preview')}

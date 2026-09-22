@@ -106,9 +106,9 @@ export default function Signup() {
             </div>
 
             {/* Role Toggle */}
-            <div className="relative flex bg-gray-100 p-1.5 rounded-2xl mb-6 border border-gray-200">
+            <div className="relative flex bg-gray-100 p-1.5 rounded-full mb-6 border border-gray-200">
               <motion.div 
-                className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-gray-900 rounded-xl z-0"
+                className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-gray-900 rounded-full z-0"
                 animate={{ x: role === 'candidate' ? 0 : '100%' }}
                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
               />
@@ -117,7 +117,7 @@ export default function Signup() {
                   key={r}
                   type="button"
                   onClick={() => setRole(r)}
-                  className={`relative flex-1 py-2 text-xs font-semibold rounded-xl transition-colors uppercase tracking-wider z-10 ${
+                  className={`relative flex-1 py-2 text-xs font-semibold rounded-full transition-colors uppercase tracking-wider z-10 ${
                     role === r ? 'text-white' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
@@ -147,7 +147,7 @@ export default function Signup() {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="block w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                    className="block w-full px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
                     placeholder="nicholas@ergemla.com"
                   />
                 </div>
@@ -162,7 +162,7 @@ export default function Signup() {
                     required
                     value={formData.full_name}
                     onChange={handleChange}
-                    className="block w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                    className="block w-full px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
                     placeholder="Nicholas Ergemla"
                   />
                 </div>
@@ -184,7 +184,7 @@ export default function Signup() {
                         required={role === 'recruiter'}
                         value={formData.company_name}
                         onChange={handleChange}
-                        className="block w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                        className="block w-full px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
                         placeholder="Acme Corp"
                       />
                     </div>
@@ -201,7 +201,7 @@ export default function Signup() {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="block w-full pl-4 pr-12 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
+                    className="block w-full pl-4 pr-12 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400"
                     placeholder="••••••••••••"
                   />
                   <button
@@ -221,7 +221,7 @@ export default function Signup() {
                   size="lg"
                   type="submit"
                   disabled={loading}
-                  className="w-full justify-between rounded-2xl"
+                  className="w-full justify-between rounded-full"
                 />
               </div>
             </form>

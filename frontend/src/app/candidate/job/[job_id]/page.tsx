@@ -56,7 +56,7 @@ export default function JobDetail() {
       const app = await api.post(`/assessment/${numericId}/apply`, formData);
       router.push(`/candidate/instructions/${app.id}`);
     } catch (e: any) {
-      setError(e.message || 'Something went wrong. Try again.');
+      setError(e.message || 'Terjadi kesalahan. Coba lagi.');
       setApplying(false);
     }
   };
@@ -83,9 +83,9 @@ export default function JobDetail() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">Job not found.</p>
+          <p className="text-gray-400 mb-4">Posisi tidak ditemukan.</p>
           <Link href="/candidate/dashboard" className="text-sm underline text-black">
-            Back to jobs
+            Kembali ke daftar posisi
           </Link>
         </div>
       </div>
@@ -104,7 +104,7 @@ export default function JobDetail() {
             href="/candidate/dashboard"
             className="text-xs text-gray-400 hover:text-black transition-colors flex items-center gap-1.5"
           >
-            ← Back to jobs
+            ← Kembali ke daftar posisi
           </Link>
         </div>
       </header>
