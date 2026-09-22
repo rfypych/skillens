@@ -30,6 +30,8 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    /* Record video on first retry (official docs: videos.md). */
+    video: 'on-first-retry',
     
     // Add extra headers to bypass the IP-based rate limiter since we run tests in parallel locally
     extraHTTPHeaders: {
@@ -37,11 +39,19 @@ export default defineConfig({
     }
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects for major browsers.
+     `setup` holds auth-setup specs (official pattern) and runs ONLY when
+     explicitly selected (--project=setup), so routine runs never burn the
+     5/min login rate budget. */
   projects: [
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: /.*\.setup\.ts/,
     },
 
     // {

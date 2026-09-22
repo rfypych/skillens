@@ -1,7 +1,11 @@
-import { test } from '@playwright/test';
+import { test as setup } from '@playwright/test';
 
-// One-time login per role — saves storageState so the audit makes zero
-// further /auth/login calls (5/min rate limit).
+// Auth setup project (official Playwright pattern: setup file + storageState).
+// One-time login per role — saves storageState so dependent specs make zero
+// further /auth/login calls (5/min rate limit). Run explicitly:
+//   npx playwright test tests/auth.setup.ts --project=chromium
+// NOT wired as a global project dependency on purpose: auto-running setup on
+// every invocation would burn the login rate budget.
 async function loginAndSave(page: any, username: string, password: string, statePath: string, expectUrl: RegExp) {
   await page.goto('/login');
   await page.locator('input[placeholder*="admin"]:visible').fill(username);
@@ -11,10 +15,10 @@ async function loginAndSave(page: any, username: string, password: string, state
   await page.context().storageState({ path: statePath });
 }
 
-test('save recruiter state', async ({ page }) => {
+setup('save recruiter state', async ({ page }) => {
   await loginAndSave(page, 'recruiter@skillens.com', 'password123', 'e2e-state-recruiter.json', /\/recruiter/);
 });
 
-test('save candidate state', async ({ page }) => {
+setup('save candidate state', async ({ page }) => {
   await loginAndSave(page, 'kandidat@skillens.com', 'password123', 'e2e-state-candidate.json', /\/candidate\/dashboard/);
 });

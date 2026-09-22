@@ -96,7 +96,8 @@ Every agent session MUST load and obey the following skills/MCP servers for the 
 |---|---|
 | `needmcp` → `design-craft` (`fetch-ui {resource: "craft"}`) | MUST be called BEFORE generating/writing/editing any UI code. The Refuse list is binding. |
 | `context7` (`resolve-library-id` → `query-docs`) | MUST be used when touching any library/framework API (FastAPI, Next.js, SQLAlchemy, Tailwind, etc.) — docs beat training data. |
-| Playwright MCP / `e2e/` specs | EVERY behavior change must be proven by a Playwright run (`presentation-check.spec.ts`, `demo-buttons.spec.ts`, or a new spec) before push. |
+| Playwright MCP / `e2e/` specs | EVERY behavior change must be proven by a Playwright run (`presentation-check.spec.ts`, `demo-buttons.spec.ts`, or a new spec) before push. NOTE (verified 2026-09-23): this agent env exposes NO Playwright-MCP browser tools — `npx playwright` CLI is the sanctioned substitute (same Chromium engine). Auth follows the official setup-project pattern (`tests/auth.setup.ts`, `--project=setup`); never auto-wire setup as a dependency (5/min login limit). `video: on-first-retry` is on. |
+| `cloudflare` skills | For tunnel/deploy/WAF work only. NOTE: `cloudflare_execute` token is INVALID in this env (error 1000) — use `cloudflared`/Wrangler CLI + `cloudflare_docs` instead. Quick tunnels (`--url`) for demos; named tunnels need account+zone. |
 | `cloudflare-docs` / `cloudflare` skills | For tunnel/deploy/WAF work only. |
 
 ### Explicitly NOT used (documented so future agents don't re-add)
