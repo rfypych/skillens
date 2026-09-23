@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Skillens — Sitemap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #FAFAF8; color: #111; padding: 26px 28px 24px; position: relative; }
+  /* Landing-hero diagonal beams, whisper-quiet for print */
+  body::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(900px 320px at 50% -80px, rgba(242,101,34,.10), transparent 70%),
+      repeating-linear-gradient(115deg, transparent 0 90px, rgba(242,101,34,.045) 90px 150px, transparent 150px 250px, rgba(17,17,17,.025) 250px 290px, transparent 290px 400px);
+  }
+  .sheet { position: relative; }
+  .sheet { max-width: 1560px; margin: 0 auto; }
+  .hero { background: #0c1222; border-radius: 22px; padding: 34px 30px 30px; text-align: center; position: relative; overflow: hidden; margin-bottom: 18px;
+    background-image: radial-gradient(700px 260px at 50% -60px, rgba(242,101,34,.35), transparent 70%), radial-gradient(500px 200px at 85% 120%, rgba(242,101,34,.14), transparent 70%); }
+  .hero .eyebrow { font-size: 10.5px; font-weight: 800; letter-spacing: .28em; text-transform: uppercase; color: #fff; }
+  .hero .eyebrow b { color: #F26522; }
+  .hero h1 { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-weight: 600; font-size: 52px; letter-spacing: -0.01em; color: #fff; line-height: 1.05; margin-top: 6px; }
+  .hero h1 span { font-family: 'Inter', system-ui, sans-serif; font-style: normal; font-weight: 800; color: #F26522; }
+  .hero p { font-size: 12px; color: #b8c0cc; margin-top: 10px; }
+  .hero p .mono { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #e2e8f0; }
+  .hero .cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; background: #fff; color: #111; border-radius: 999px; padding: 6px 6px 6px 18px; font-size: 12px; font-weight: 800; }
+  .hero .cta i { width: 26px; height: 26px; border-radius: 50%; background: #F26522; color: #fff; font-style: normal; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+  .tree { display: flex; flex-direction: column; align-items: center; margin-top: 12px; }
+  .root { background: #111; color: #fff; border-radius: 14px; padding: 9px 26px; text-align: center; box-shadow: 0 4px 14px rgba(17,17,17,.18); }
+  .root .r { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: .22em; color: #F26522; }
+  .root .t { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 19px; font-weight: 600; letter-spacing: .02em; }
+  .vline { width: 3px; height: 18px; background: #F26522; }
+  .branches { display: flex; gap: 18px; align-items: flex-start; justify-content: center; width: 100%; position: relative; }
+  .branches::before { content: ''; position: absolute; top: 0; left: 5%; right: 5%; height: 3px; background: #F26522; border-radius: 2px; }
+  .branch { display: flex; flex-direction: column; align-items: center; flex: 1; max-width: 360px; }
+  .branch::before { content: ''; width: 3px; height: 16px; background: #F26522; }
+  .area { border-radius: 999px; padding: 6px 15px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; color: #111; background: #fff; border: 1px solid #e0e0e0; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+  .area i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; vertical-align: baseline; }
+  .area.pub i { background: #F26522; } .area.rec i { background: #111; } .area.can i { background: #0f766e; } .area.sys i { background: #94a3b8; }
+  .pages { display: flex; flex-direction: column; gap: 9px; width: 100%; position: relative; }
+  .pages::before { content: ''; position: absolute; left: 50%; top: -12px; bottom: 6px; width: 3px; background: #F26522; opacity: .35; }
+  .pnode { position: relative; background: #fff; border: 1px solid #e4e4e4; border-radius: 12px; padding: 7px; display: flex; gap: 8px; align-items: flex-start; break-inside: avoid; box-shadow: 0 1px 3px rgba(17,17,17,.06); }
+  .pnode::before { content: ''; position: absolute; left: -10px; top: 50%; width: 10px; height: 3px; background: #F26522; opacity: .35; }
+  .thumb { width: 92px; min-width: 92px; height: 66px; border: 1px solid #d7dde3; border-radius: 6px; background: #f4f6f8; padding: 4px; display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+  .tbar { display: flex; gap: 3px; align-items: center; }
+  .tdot { width: 5px; height: 5px; border-radius: 50%; background: #c3ccd4; }
+  .tdot.o { background: #F26522; }
+  .tline { border-radius: 2px; background: #dde3e9; }
+  .tline.o { background: #F26522; } .tline.d { background: #1f2937; } .tline.g { background: #a7f3d0; } .tline.b { background: #bfdbfe; } .tline.r { background: #fecaca; }
+  .trow { display: flex; gap: 3px; } .trow > div { flex: 1; }
+  .tside { display: flex; gap: 3px; flex: 1; } .tside .rail { width: 12px; border-radius: 2px; background: #1f2937; }
+  .tcol { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+  .tbub { border-radius: 4px; padding: 2px 4px; font-size: 5px; line-height: 1.2; }
+  .tbub.r { background: #e8edf1; align-self: flex-start; max-width: 80%; } .tbub.s { background: #F26522; color: #fff; align-self: flex-end; max-width: 70%; }
+  .tbtn { background: #F26522; border-radius: 999px; height: 8px; }
+  .tfield { border: 1px solid #c9d1d9; border-radius: 999px; height: 8px; background: #fff; }
+  .tcard { border: 1px solid #d7dde3; border-radius: 4px; background: #fff; flex: 1; }
+  .tbig { font-size: 12px; font-weight: 800; color: #1f2937; text-align: center; line-height: 1; }
+  .meta { flex: 1; min-width: 0; }
+  .route { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; color: #fff; background: #1f2937; border-radius: 4px; padding: 2px 6px; display: inline-block; margin-bottom: 2px; word-break: break-all; }
+  .ptitle { font-size: 11px; font-weight: 800; color: #111; line-height: 1.25; }
+  .pdesc { font-size: 9px; color: #68727d; line-height: 1.4; margin-top: 1px; }
+  .legend { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .legend span { background: #fff; border: 1px solid #e2e2e2; border-radius: 999px; font-size: 10px; font-weight: 600; padding: 5px 13px; color: #444; }
+  .legend b { color: #F26522; }
+  .foot { text-align: center; color: #888; font-size: 10px; margin-top: 8px; }
+  .foot .mono { font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="hero">
+    <div class="eyebrow">SKILLENS <b>/</b> EVIDENCE-BASED HIRING</div>
+    <h1>Peta Situs <span>Aplikasi.</span></h1>
+    <p>24 halaman dalam 4 area</p>
+    <div class="cta">24 Halaman <i>→</i></div>
+  </div>
+
+  <div class="tree">
+    <div class="root"><div class="r">skillens.id</div><div class="t">SKILLENS</div></div>
+    <div class="vline"></div>
+    <div class="branches">
+
+      <div class="branch">
+        <div class="area pub"><i></i>Area Publik / 3</div>
+        <div class="pages">
+          <div class="pnode"><div class="thumb"><div class="tbar"><div class="tdot o"></div><div class="tdot"></div><div class="tdot"></div></div><div class="tline d" style="height:10px"></div><div class="trow"><div class="tline" style="height:7px"></div><div class="tline" style="height:7px"></div><div class="tline" style="height:7px"></div></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/</span><div class="ptitle">Landing Page</div><div class="pdesc">Hero editorial + CTA evaluasi.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:8px;width:60%"></div><div class="tfield"></div><div class="tfield"></div><div class="tbtn"></div></div><div class="meta"><span class="route">/login</span><div class="ptitle">Masuk Akun</div><div class="pdesc">Login + tombol demo 1 ketuk.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:8px;width:60%"></div><div class="tfield"></div><div class="tfield"></div><div class="tfield"></div><div class="tbtn"></div></div><div class="meta"><span class="route">/signup</span><div class="ptitle">Daftar Akun</div><div class="pdesc">Pilih peran + registrasi.</div></div></div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="area rec"><i></i>Area Rekruter / 11</div>
+        <div class="pages">
+          <div class="pnode"><div class="thumb"><div class="tside"><div class="rail"></div><div class="tcol"><div class="trow"><div class="tline o" style="height:8px"></div><div class="tline" style="height:8px"></div><div class="tline" style="height:8px"></div></div><div class="tline" style="height:13px"></div></div></div></div><div class="meta"><span class="route">/recruiter</span><div class="ptitle">Pusat Komando</div><div class="pdesc">Metrik + evaluasi terbaru.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:7px;width:55%"></div><div class="trow"><div class="tcard" style="height:18px"></div><div class="tcard" style="height:18px"></div></div><div class="trow"><div class="tcard" style="height:18px"></div><div class="tcard" style="height:18px"></div></div></div><div class="meta"><span class="route">/recruiter/jobs</span><div class="ptitle">Posisi Aktif</div><div class="pdesc">Kartu lowongan + magic-link.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="trow"><div class="tline o" style="height:6px"></div><div class="tline" style="height:6px"></div><div class="tline" style="height:6px"></div></div><div class="tfield"></div><div class="tfield"></div><div class="tbtn" style="width:55%"></div></div><div class="meta"><span class="route">/recruiter/jobs/new</span><div class="ptitle">Buat Posisi</div><div class="pdesc">Wizard + arketipe T/L/K.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:7px;width:70%"></div><div class="tline" style="height:5px"></div><div class="tline g" style="height:5px"></div><div class="tline o" style="height:5px;width:60%"></div></div><div class="meta"><span class="route">/recruiter/jobs/[id]</span><div class="ptitle">Ranking</div><div class="pdesc">Tabel sortable + rekomendasi.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tfield"></div><div class="tfield"></div><div class="tline" style="height:10px"></div><div class="tbtn" style="width:50%"></div></div><div class="meta"><span class="route">/recruiter/jobs/edit/[id]</span><div class="ptitle">Ubah Posisi</div><div class="pdesc">Edit parameter peran.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline" style="height:5px"></div><div class="trow"><div class="tline b" style="height:8px"></div><div class="tline g" style="height:8px"></div></div><div class="tline r" style="height:5px;width:70%"></div></div><div class="meta"><span class="route">/recruiter/candidates</span><div class="ptitle">Daftar Kandidat</div><div class="pdesc">Bukti otentik + filter.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:8px;width:50%"></div><div class="tline o" style="height:4px"></div><div class="trow"><div class="tline g" style="height:7px"></div><div class="tline b" style="height:7px"></div></div><div class="tline" style="height:7px"></div></div><div class="meta"><span class="route">/recruiter/candidates/[app_id]</span><div class="ptitle">Detail Kandidat</div><div class="pdesc">Skor 5 dimensi + replay.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tfield"></div><div class="tfield"></div><div class="tline" style="height:8px"></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/recruiter/interviews</span><div class="ptitle">Wawancara</div><div class="pdesc">Jadwal + nilai sesi.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="trow"><div class="tline o" style="height:12px"></div><div class="tline" style="height:12px"></div><div class="tline r" style="height:12px"></div></div><div class="tline d" style="height:4px"></div><div class="tline" style="height:4px"></div></div><div class="meta"><span class="route">/recruiter/metrics</span><div class="ptitle">Analitik</div><div class="pdesc">KPI + delta + volume.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tfield"></div><div class="tfield"></div><div class="tbtn" style="width:40%"></div></div><div class="meta"><span class="route">/recruiter/settings</span><div class="ptitle">Pengaturan</div><div class="pdesc">Profil + bahasa.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="trow"><div class="tline" style="height:9px"></div><div class="tline" style="height:9px"></div></div><div class="tline" style="height:9px"></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/recruiter/settings/team</span><div class="ptitle">Tim</div><div class="pdesc">Undang sub-akun.</div></div></div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="area can"><i></i>Area Kandidat / 7</div>
+        <div class="pages">
+          <div class="pnode"><div class="thumb"><div class="tside"><div class="rail"></div><div class="tcol"><div class="tline o" style="height:7px"></div><div class="tline" style="height:10px"></div><div class="tbtn" style="width:50%"></div></div></div></div><div class="meta"><span class="route">/candidate/dashboard</span><div class="ptitle">Pusat Penilaian</div><div class="pdesc">Lamaran + report bukti.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:9px;width:65%"></div><div class="tline" style="height:13px"></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/candidate/job/[job_id]</span><div class="ptitle">Detail Lowongan</div><div class="pdesc">Deskripsi + lamar.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:7px;width:60%"></div><div class="tfield"></div><div class="tline o" style="height:7px"></div><div class="tbtn" style="width:55%"></div></div><div class="meta"><span class="route">/candidate/apply/[job_id]</span><div class="ptitle">Portal Magic-Link</div><div class="pdesc">Tanpa login + CV PDF.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline" style="height:6px"></div><div class="tline" style="height:6px"></div><div class="tline" style="height:6px"></div><div class="tbtn" style="width:40%"></div></div><div class="meta"><span class="route">/candidate/instructions/[id]</span><div class="ptitle">Panduan Tes</div><div class="pdesc">Tata cara 3 tahap.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tbub r">Skenario…</div><div class="tbub s">Jawaban…</div><div class="tbub r">Follow-up…</div><div class="tfield" style="height:7px"></div></div><div class="meta"><span class="route">/candidate/test/[app_id]</span><div class="ptitle">Ruang Ujian AI</div><div class="pdesc">Chat 4 turn + telemetri.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline" style="height:7px"></div><div class="trow"><div class="tline g" style="height:9px"></div><div class="tline" style="height:9px"></div></div><div class="tbtn" style="width:40%"></div></div><div class="meta"><span class="route">/candidate/interviews</span><div class="ptitle">Undangan</div><div class="pdesc">Jadwal + catatan.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:7px;width:45%"></div><div class="tfield"></div><div class="tline" style="height:9px"></div></div><div class="meta"><span class="route">/candidate/profile</span><div class="ptitle">Profil &amp; CV</div><div class="pdesc">Bio + unggah CV.</div></div></div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="area sys"><i></i>Sistem / 3</div>
+        <div class="pages">
+          <div class="pnode"><div class="thumb"><div class="tbig">404</div><div class="tbtn" style="width:55%;margin:0 auto"></div></div><div class="meta"><span class="route">/… (404)</span><div class="ptitle">Tidak Ditemukan</div><div class="pdesc">Kartu 404 + kembali.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline r" style="height:9px;width:45%;margin:0 auto"></div><div class="tline" style="height:6px"></div><div class="tbtn" style="width:50%;margin:0 auto"></div></div><div class="meta"><span class="route">error boundary</span><div class="ptitle">Kesalahan</div><div class="pdesc">Pesan + coba lagi.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline" style="height:7px;width:60%;margin:auto"></div><div class="tline o" style="height:4px;width:40%;margin:auto"></div></div><div class="meta"><span class="route">loading</span><div class="ptitle">Memuat…</div><div class="pdesc">Indikator thinking.</div></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><b>24</b> halaman</span><span><b>—</b> garis = hierarki navigasi</span><span>oranye = <b>brand #F26522</b></span><span>demo: <b>recruiter@skillens.com</b> / <b>kandidat@skillens.com</b> / sandi <b>password123</b></span>
+  </div>
+  <div class="foot">Skillens / Evidence-Based Hiring</div>
+</div>
+</body>
+</html>

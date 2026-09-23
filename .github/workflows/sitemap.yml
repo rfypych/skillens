@@ -1,0 +1,49 @@
+# Generates sitemap.xml for servable static files via
+# cicirello/generate-sitemap (GitHub Marketplace) and commits it back.
+# Scope: frontend/public (served live by Next.js/Vercel), so every URL in
+# the sitemap is real. App routes are JS-rendered and intentionally NOT
+# covered by this action — see frontend/public/sitemap.xml (hand-written).
+name: Sitemap
+
+on:
+  push:
+    branches: [preview]
+    paths:
+      - 'frontend/public/**'
+      - 'documentation/**'
+      - '.github/workflows/sitemap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sitemap_job:
+    # Prevent push-loop from our own auto-commit below.
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    name: Generate sitemap.xml
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate the sitemap
+        id: sitemap
+        uses: cicirello/generate-sitemap@v1
+        with:
+          base-url-path: https://skillens-app.vercel.app/
+          path-to-root: frontend/public
+
+      - name: Output stats
+        run: |
+          echo "sitemap-path = ${{ steps.sitemap.outputs.sitemap-path }}"
+          echo "url-count = ${{ steps.sitemap.outputs.url-count }}"
+          echo "excluded-count = ${{ steps.sitemap.outputs.excluded-count }}"
+
+      - name: Commit sitemap back
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: regenerate sitemap.xml [skip ci]'
+          file_pattern: frontend/public/sitemap.xml
