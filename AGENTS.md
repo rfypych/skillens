@@ -92,7 +92,7 @@ Every agent session MUST load and obey the following skills/MCP servers for the 
 | `ui-ux-pro-max`, `design-system` | For layout/typography/color decisions and component specs. |
 
 ### Connected MCP servers (already configured — use them, do not re-add)
-> **Antigravity mirror**: the same 8 servers (5× cloudflare, needmcp, context7, playwright) are merged into `C:/Users/rfkl/.gemini/config/mcp_config.json` (pre-existing entries untouched; context7 was already there). OAuth servers (cloudflare-*) will prompt for auth inside Antigravity on first use. After editing MCP config, use *Manage MCP Servers → Refresh* in the IDE.
+> **Antigravity mirror**: the same servers (5× cloudflare, needmcp, context7, playwright, figma) are merged into `C:/Users/rfkl/.gemini/config/mcp_config.json` (pre-existing entries untouched; context7 was already there). OAuth servers (cloudflare-*, figma) will prompt for auth inside Antigravity on first use. After editing MCP config, use *Manage MCP Servers → Refresh* in the IDE.
 | MCP | Mandatory usage |
 |---|---|
 | `needmcp` → `design-craft` (`fetch-ui {resource: "craft"}`) | MUST be called BEFORE generating/writing/editing any UI code. The Refuse list is binding. |
