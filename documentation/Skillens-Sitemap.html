@@ -15,13 +15,16 @@
   }
   .sheet { position: relative; }
   .sheet { max-width: 1560px; margin: 0 auto; }
-  .title { text-align: center; margin-bottom: 2px; }
-  .eyebrow { font-size: 10.5px; font-weight: 800; letter-spacing: .28em; text-transform: uppercase; color: #111; }
-  .eyebrow b { color: #F26522; }
-  .title h1 { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-weight: 600; font-size: 42px; letter-spacing: -0.01em; color: #111; line-height: 1.05; margin-top: 2px; }
-  .title h1 span { font-family: 'Inter', system-ui, sans-serif; font-style: normal; background: #F26522; color: #fff; border-radius: 999px; padding: 2px 14px; font-size: 13px; font-weight: 800; vertical-align: middle; letter-spacing: .04em; }
-  .title p { font-size: 11.5px; color: #666; margin-top: 6px; }
-  .title p .mono { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; }
+  .hero { background: #0c1222; border-radius: 22px; padding: 34px 30px 30px; text-align: center; position: relative; overflow: hidden; margin-bottom: 18px;
+    background-image: radial-gradient(700px 260px at 50% -60px, rgba(242,101,34,.35), transparent 70%), radial-gradient(500px 200px at 85% 120%, rgba(242,101,34,.14), transparent 70%); }
+  .hero .eyebrow { font-size: 10.5px; font-weight: 800; letter-spacing: .28em; text-transform: uppercase; color: #fff; }
+  .hero .eyebrow b { color: #F26522; }
+  .hero h1 { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-weight: 600; font-size: 52px; letter-spacing: -0.01em; color: #fff; line-height: 1.05; margin-top: 6px; }
+  .hero h1 span { font-family: 'Inter', system-ui, sans-serif; font-style: normal; font-weight: 800; color: #F26522; }
+  .hero p { font-size: 12px; color: #b8c0cc; margin-top: 10px; }
+  .hero p .mono { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #e2e8f0; }
+  .hero .cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; background: #fff; color: #111; border-radius: 999px; padding: 6px 6px 6px 18px; font-size: 12px; font-weight: 800; }
+  .hero .cta i { width: 26px; height: 26px; border-radius: 50%; background: #F26522; color: #fff; font-style: normal; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
   .tree { display: flex; flex-direction: column; align-items: center; margin-top: 12px; }
   .root { background: #111; color: #fff; border-radius: 14px; padding: 9px 26px; text-align: center; box-shadow: 0 4px 14px rgba(17,17,17,.18); }
   .root .r { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: .22em; color: #F26522; }
@@ -66,10 +69,11 @@
 </head>
 <body>
 <div class="sheet">
-  <div class="title">
+  <div class="hero">
     <div class="eyebrow">SKILLENS <b>·</b> EVIDENCE-BASED HIRING</div>
-    <h1>Peta Situs <span>24 HALAMAN</span></h1>
-    <p>Next.js 16 + FastAPI + Groq AI · <span class="mono">26 Sep 2026</span></p>
+    <h1>Peta Situs <span>Aplikasi.</span></h1>
+    <p>24 halaman dalam 4 area · Next.js 16 + FastAPI + Groq AI · <span class="mono">26 Sep 2026</span></p>
+    <div class="cta">24 Halaman <i>→</i></div>
   </div>
 
   <div class="tree">
