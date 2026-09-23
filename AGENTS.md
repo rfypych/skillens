@@ -41,6 +41,7 @@ Skillens adopts a **Sharp Minimalist / Editorial** aesthetic for high-stakes nat
 4. **Excessive Em-Dashes (`—`)**: Do not litter Indonesian copy with em-dashes. Use natural periods (`.`) or commas.
 5. **Gratuitous Glassmorphism**: Avoid `backdrop-blur-md` with transparent borders on interactive buttons unless explicitly specified.
 6. **Soft Drop Shadows & Nested Cards**: Never stack gray cards inside gray cards with thick soft shadows. Use whitespace, clean 1px borders (`border-gray-200/60`), and clear contrast.
+7. **Middle Dot (`·`)**: Never use `·` anywhere in UI copy or docs. Use `/` or `-` as separators.
 
 ---
 
