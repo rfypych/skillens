@@ -1,0 +1,35 @@
+/* BoardUI table primitives — extracted subset of styles/globals.css.
+ * Only the .bui-table rules (React Aria collection components are re-exported
+ * untouched; styling lives here, scoped to .bui-table). The rest of BoardUI's
+ * globals (dark machinery, base resets, chat animations) is intentionally NOT
+ * imported to avoid fighting this app's own globals.css. */
+.bui-table {
+  @apply w-full border-collapse text-left;
+}
+/* Header background + border-y live on the cells: with border-collapse the
+ * browser doesn't paint backgrounds/borders set on the <thead> row group. */
+.bui-table th {
+  @apply px-3 py-2.5 text-left align-middle text-body-medium text-text-tertiary whitespace-nowrap outline-none;
+  background-color: var(--color-background-secondary-default);
+  border-top: 1px solid var(--color-separator-border);
+  border-bottom: 1px solid var(--color-separator-border);
+  transition: padding 200ms ease, font-size 200ms ease;
+}
+.bui-table td {
+  @apply px-3 py-2.5 align-middle text-body-medium text-text-primary outline-none;
+  transition: padding 200ms ease, font-size 200ms ease;
+}
+/* Separators sit *between* rows only. */
+.bui-table tbody tr:not(:last-child) {
+  border-bottom: 1px solid var(--color-separator-border);
+}
+.bui-table tbody tr {
+  @apply transition-colors duration-150;
+}
+.bui-table tbody tr[data-focus-visible] {
+  @apply ring-2 ring-inset ring-border-focus-ring;
+}
+.bui-table.bui-table-sm th,
+.bui-table.bui-table-sm td {
+  @apply px-2.5 py-1.5 text-body-2-medium;
+}

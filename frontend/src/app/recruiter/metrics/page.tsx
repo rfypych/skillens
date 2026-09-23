@@ -4,14 +4,22 @@ import { Activity, Calendar, ChartBar, ChartLineData, Group, Idea, Security, Tar
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { api } from '@/lib/api';
+import { StatCards } from '@/components/application/dashboard/stat-cards';
 
 export default function MetricsDashboard() {
   const [loading, setLoading] = useState(true);
+  type Delta = { text: string; color: 'lime' | 'rose' | 'neutral' };
   const [metrics, setMetrics] = useState({
     totalProcessed: 0,
     fraudCount: 0,
     hiddenGems: 0,
     averageScore: 0,
+    deltas: {
+      total: { text: '—', color: 'neutral' } as Delta,
+      fraud: { text: '—', color: 'neutral' } as Delta,
+      gems: { text: '—', color: 'neutral' } as Delta,
+      avg: { text: '—', color: 'neutral' } as Delta,
+    },
     labels: {
       'Sangat Valid': 0,
       'Cocok Solid': 0,
@@ -55,20 +63,24 @@ export default function MetricsDashboard() {
           trendArray.push(trendMap.get(dateStr));
         }
 
+        let scoredCount = 0;
         if (Array.isArray(data)) {
           data.forEach(app => {
             const results = app.assessment_results || [];
             if (results.length > 0) {
               const latest = results[results.length - 1];
               total++;
-              
+
               const isCheat = latest.ai_cheating_detected;
               const label = latest.claim_vs_evidence_label;
               const score = latest.overall_score || 0;
 
               if (isCheat) fraud++;
               if (label === 'Hidden Gem') gems++;
-              if (!isCheat && score > 0) scoreSum += score;
+              if (!isCheat && score > 0) {
+                scoreSum += score;
+                scoredCount++;
+              }
 
               const displayLabel = isCheat ? 'Terindikasi Palsu' : (label === 'Highly Validated' ? 'Sangat Valid' : label === 'Solid Match' || label === 'Validated' ? 'Cocok Solid' : 'Menunggu');
               if (labels[displayLabel as keyof typeof labels] !== undefined) {
@@ -89,13 +101,58 @@ export default function MetricsDashboard() {
           });
         }
 
-        const validScoreCount = total - fraud - labels['Menunggu'];
-        
+        // Honest week-over-week deltas from the same payload (no fabrication):
+        // evaluated apps created in the last 7 days vs the 7 days before.
+        const now = Date.now();
+        const inWeek = (iso: string, back: number) => {
+          const t = new Date(iso).getTime();
+          return t >= now - back * 86400000 && t < now - (back - 7) * 86400000;
+        };
+        const week = { total: 0, fraud: 0, gems: 0, sum: 0, n: 0 };
+        const prev = { total: 0, fraud: 0, gems: 0, sum: 0, n: 0 };
+        if (Array.isArray(data)) {
+          data.forEach(app => {
+            const latest = (app.assessment_results || [])[(app.assessment_results || []).length - 1];
+            if (!latest || !app.created_at) return;
+            const bucket = inWeek(app.created_at, 7) ? week : inWeek(app.created_at, 14) ? prev : null;
+            if (!bucket) return;
+            bucket.total++;
+            if (latest.ai_cheating_detected) bucket.fraud++;
+            if (latest.claim_vs_evidence_label === 'Hidden Gem') bucket.gems++;
+            if (!latest.ai_cheating_detected && (latest.overall_score || 0) > 0) {
+              bucket.sum += latest.overall_score;
+              bucket.n++;
+            }
+          });
+        }
+        const pct = (c: number, p: number): Delta => {
+          if (p <= 0) return { text: c > 0 ? 'minggu ini' : '—', color: 'neutral' };
+          const d = Math.round(((c - p) / p) * 100);
+          if (d === 0) return { text: 'stabil', color: 'neutral' };
+          return { text: `${d > 0 ? '+' : ''}${d}%`, color: 'lime' };
+        };
+        const fraudDelta = ((): Delta => {
+          if (prev.fraud <= 0) return { text: week.fraud > 0 ? 'minggu ini' : '—', color: 'neutral' };
+          const d = week.fraud - prev.fraud;
+          if (d === 0) return { text: 'stabil', color: 'neutral' };
+          // For fraud, DOWN is good (lime), UP is bad (rose).
+          return { text: `${d > 0 ? '+' : ''}${d}`, color: d < 0 ? 'lime' : 'rose' };
+        })();
+        const avgDelta = ((): Delta => {
+          const a = week.n > 0 ? week.sum / week.n : 0;
+          const b = prev.n > 0 ? prev.sum / prev.n : 0;
+          if (b <= 0) return { text: a > 0 ? 'minggu ini' : '—', color: 'neutral' };
+          const d = Math.round(a - b);
+          if (d === 0) return { text: 'stabil', color: 'neutral' };
+          return { text: `${d > 0 ? '+' : ''}${d} pts`, color: d > 0 ? 'lime' : 'rose' };
+        })();
+
         setMetrics({
           totalProcessed: total,
           fraudCount: fraud,
           hiddenGems: gems,
-          averageScore: validScoreCount > 0 ? Math.round(scoreSum / validScoreCount) : 0,
+          averageScore: scoredCount > 0 ? Math.round(scoreSum / scoredCount) : 0,
+          deltas: { total: pct(week.total, prev.total), fraud: fraudDelta, gems: pct(week.gems, prev.gems), avg: avgDelta },
           labels,
           trendData: trendArray
         });
@@ -108,11 +165,11 @@ export default function MetricsDashboard() {
     ? Math.round((metrics.fraudCount / metrics.totalProcessed) * 100) 
     : 0;
 
-  const kpis = [
-    { name: 'Total Evaluasi', value: loading ? '...' : metrics.totalProcessed, icon: Group, color: 'text-[#F26522]', bg: 'bg-orange-50' },
-    { name: 'Rata-rata Skor Bukti', value: loading ? '...' : metrics.averageScore, icon: Target, color: 'text-gray-900', bg: 'bg-gray-100' },
-    { name: 'Tingkat Pencegahan Kecurangan', value: loading ? '...' : `${fraudRate}%`, icon: Security, color: 'text-red-700', bg: 'bg-red-50' },
-    { name: 'Kandidat Tersembunyi (Gem)', value: loading ? '...' : metrics.hiddenGems, icon: Idea, color: 'text-emerald-700', bg: 'bg-emerald-50' },
+  const stats = [
+    { icon: Group, label: 'Total Evaluasi', value: loading ? '…' : String(metrics.totalProcessed), delta: loading ? '—' : metrics.deltas.total.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.total.color },
+    { icon: Target, label: 'Rata-rata Skor Bukti', value: loading ? '…' : String(metrics.averageScore), delta: loading ? '—' : metrics.deltas.avg.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.avg.color },
+    { icon: Security, label: 'Tingkat Pencegahan Kecurangan', value: loading ? '…' : `${fraudRate}%`, delta: loading ? '—' : metrics.deltas.fraud.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.fraud.color },
+    { icon: Idea, label: 'Kandidat Tersembunyi (Gem)', value: loading ? '…' : String(metrics.hiddenGems), delta: loading ? '—' : metrics.deltas.gems.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.gems.color },
   ];
 
   return (
@@ -125,26 +182,13 @@ export default function MetricsDashboard() {
         <p className="text-gray-600 text-base font-normal">Telemetri alur kerja perekrutan dan performa evaluasi AI.</p>
       </div>
 
-      {/* KPI Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {kpis.map((kpi, idx) => (
-          <motion.div
-            key={kpi.name}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md transition-all duration-300"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-full ${kpi.bg}`}>
-                <kpi.icon className={`w-6 h-6 ${kpi.color}`} />
-              </div>
-            </div>
-            <h3 className="text-4xl font-semibold text-gray-900 mb-1 tracking-tight">{kpi.value}</h3>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{kpi.name}</p>
-          </motion.div>
-        ))}
-      </div>
+      {/* KPI Grid — BoardUI StatCards with honest week-over-week deltas */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <StatCards variant="plain" stats={stats} />
+      </motion.div>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

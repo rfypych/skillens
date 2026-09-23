@@ -1,0 +1,20 @@
+/* Skillens accent override for BoardUI semantic tokens.
+ * Re-tints --color-accent-* (default blue) to the Skillens orange ramp
+ * anchored at #F26522. All accent-derived semantic tokens
+ * (focus ring, selected states, badges) follow automatically.
+ * Light theme only — this app does not use .dark.
+ * Flat fills only: BoardUI gradient button utilities are intentionally
+ * NOT used (committed flat-pill world, AGENTS.md anti-slop). */
+:root {
+  --color-accent-50: #fff3ec;
+  --color-accent-100: #ffe4d3;
+  --color-accent-200: #fdc9a6;
+  --color-accent-300: #faa874;
+  --color-accent-400: #f67e40;
+  --color-accent-500: #f26522;
+  --color-accent-600: #e14e0f;
+  --color-accent-700: #bb3c0d;
+  --color-accent-800: #943112;
+  --color-accent-900: #772a12;
+  --color-accent-950: #421305;
+}

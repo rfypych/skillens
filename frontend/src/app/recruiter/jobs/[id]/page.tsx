@@ -17,17 +17,16 @@ import {
   TextItalic, 
   Time, 
   UserFollow, 
-  StarFilled, 
-  Warning, 
-  Calendar, 
-  View, 
-  ChevronRight,
+  StarFilled,
+  Calendar,
+  View,
   Copy,
   ArrowRight
 } from '@carbon/icons-react';
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import RankingTable from '@/components/RankingTable';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import ReactMarkdown from 'react-markdown';
@@ -306,11 +305,7 @@ export default function JobAssessmentReview() {
 
   const kkmScore = job?.kkm_score ?? 70;
   
-  const sortedApps = [...applications].sort((a, b) => {
-    const scoreA = a.assessment_results?.[0]?.overall_score ?? 0;
-    const scoreB = b.assessment_results?.[0]?.overall_score ?? 0;
-    return scoreB - scoreA;
-  });
+
 
   return (
     <div className="w-full space-y-8 pb-12 font-sans">
@@ -428,7 +423,7 @@ export default function JobAssessmentReview() {
               <span className="text-xs text-gray-500 font-mono bg-gray-100 px-3 py-1.5 rounded-full font-medium">Format: Anonim untuk Pelamar</span>
             </div>
 
-            {sortedApps.length === 0 ? (
+            {applications.length === 0 ? (
               <div className="bg-white p-12 text-center border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center shadow-xs">
                 <UserFollow className="w-12 h-12 text-gray-400 mb-3" />
                 <h3 className="text-lg font-bold text-gray-900 mb-1">Belum Ada Pelamar</h3>
@@ -438,105 +433,7 @@ export default function JobAssessmentReview() {
                 </button>
               </div>
             ) : (
-              <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-xs">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm text-gray-900">
-                    <thead className="bg-gray-50/80 text-gray-700 text-xs font-bold uppercase tracking-wider border-b border-gray-100">
-                      <tr>
-                        <th className="py-4 px-5">Peringkat</th>
-                        <th className="py-4 px-5">Pelamar / Kandidat</th>
-                        <th className="py-4 px-5">Status Pendaftaran</th>
-                        <th className="py-4 px-5">Skor AI (KKM: {kkmScore})</th>
-                        <th className="py-4 px-5">Status KKM</th>
-                        <th className="py-4 px-5">Deteksi Kecurangan</th>
-                        <th className="py-4 px-5 text-right">Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {sortedApps.map((app, idx) => {
-                        const score = app.assessment_results?.[0]?.overall_score ?? null;
-                        const passedKkm = score !== null && score >= kkmScore;
-                        const result = app.assessment_results?.[0];
-                        const cheating = result?.ai_cheating_detected || (result?.tab_switches > 3);
-                        
-                        return (
-                          <tr key={app.id} className="hover:bg-gray-50/60 transition-colors">
-                            <td className="py-4 px-5 font-bold font-mono text-gray-900">
-                              #{idx + 1}
-                            </td>
-                            <td className="py-4 px-5">
-                              <div className="font-bold text-gray-900">{app.user?.full_name || 'Kandidat (Pelamar)'}</div>
-                              <div className="text-xs text-gray-500">{app.user?.email || 'email@kandidat.com'}</div>
-                            </td>
-                            <td className="py-4 px-5">
-                              <span className={`inline-flex px-3 py-1 text-[11px] font-bold uppercase tracking-wider rounded-full ${
-                                app.status === 'interview' ? 'bg-purple-50 text-purple-700 border border-purple-200' :
-                                app.status === 'hired' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                                app.status === 'rejected' ? 'bg-red-50 text-red-700 border border-red-200' :
-                                app.status === 'evaluated' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-gray-100 text-gray-700 border border-gray-200'
-                              }`}>
-                                {app.status === 'evaluated' ? 'Tes Selesai' : app.status}
-                              </span>
-                            </td>
-                            <td className="py-4 px-5">
-                              {score !== null ? (
-                                <span className={`text-base font-bold font-mono ${passedKkm ? 'text-emerald-700' : 'text-red-600'}`}>
-                                  {score} / 100
-                                </span>
-                              ) : (
-                                <span className="text-xs text-gray-400 font-normal">Belum Mengikuti Tes</span>
-                              )}
-                            </td>
-                            <td className="py-4 px-5">
-                              {score !== null ? (
-                                <span className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
-                                  passedKkm ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-red-50 text-red-800 border border-red-200'
-                                }`}>
-                                  {passedKkm ? <Checkmark className="w-3.5 h-3.5" /> : <Warning className="w-3.5 h-3.5" />}
-                                  {passedKkm ? 'LULUS KKM' : 'DI BAWAH KKM'}
-                                </span>
-                              ) : (
-                                <span className="text-xs text-gray-400">-</span>
-                              )}
-                            </td>
-                            <td className="py-4 px-5">
-                              {cheating ? (
-                                <span className="inline-flex items-center gap-1 text-xs font-bold text-red-700 bg-red-50 px-2.5 py-1 border border-red-200 rounded-full">
-                                  <Warning className="w-3.5 h-3.5" /> Terdeteksi ({result?.tab_switches} Pindah Tab)
-                                </span>
-                              ) : result ? (
-                                <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1">
-                                  <Checkmark className="w-3.5 h-3.5 text-emerald-600" /> Bersih / Jujur
-                                </span>
-                              ) : (
-                                <span className="text-xs text-gray-400">-</span>
-                              )}
-                            </td>
-                            <td className="py-4 px-5 text-right">
-                              <div className="flex items-center justify-end gap-2">
-                                {passedKkm && app.status !== 'interview' && (
-                                  <button
-                                    onClick={() => setSchedulingAppId(app.id)}
-                                    className="px-4 py-2 bg-[#F26522] hover:bg-[#e05a1a] text-white text-xs font-bold uppercase tracking-wider rounded-full transition-colors shadow-xs"
-                                  >
-                                    Undang Wawancara
-                                  </button>
-                                )}
-                                <Link
-                                  href={`/recruiter/candidates/${app.id}`}
-                                  className="px-4 py-2 bg-white border border-gray-200 text-gray-900 text-xs font-bold uppercase tracking-wider rounded-full hover:border-[#F26522] transition-colors flex items-center gap-1 shadow-xs"
-                                >
-                                  Detail <ChevronRight className="w-3.5 h-3.5" />
-                                </Link>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <RankingTable apps={applications} kkmScore={kkmScore} onInvite={(id) => setSchedulingAppId(id)} />
             )}
           </motion.div>
         )}

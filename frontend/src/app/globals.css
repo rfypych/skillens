@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "../styles/theme.css";
+@import "../styles/typography.css";
+@import "../styles/accent.css";
+@import "../styles/boardui-table.css";
 @plugin "@tailwindcss/typography";
 
 @font-face {
