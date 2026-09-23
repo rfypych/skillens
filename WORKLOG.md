@@ -181,6 +181,24 @@ D:\projects\JHIC-rev\
 - **Handoff Notes for Next Session**: Railway backend still dead (platform 404) — public Vercel login blocked; local prod-mode + tunnel + demo video are the working demo paths. Next: Kreatif demo job + proxy.ts httpOnly-cookie auth (audit fix #4). Re-run `link_skills.py`/`merge_mcp.py` logic after adding new skills/servers.
 - **Commits**: `5ea8815` (archetype), `1f64131`, `e91926c`, `83cce5e`, `67dc7fe`, `8014107` on `preview`.
 
+### Session: 2026-09-23 — BoardUI Adoption (tokens + ranking table + stat-cards)
+- **Goal / User Request**: Apply BoardUI style (boardui.com) using MCP/skills maximally; hallmark `study` → DNA diagnosis → scoped adoption (tokens + data-table + stat-cards, NO button gradients per committed flat world).
+- **Changes Made**:
+  - Vendored via `boardui add theme typography data-table stat-cards` (source-owned); deps: react-aria-components, @remixicon/react, @tanstack/react-table (pinned v8 — v9 broke getCoreRowModel API).
+  - `styles/accent.css`: orange 50–950 ramp anchored #F26522 overriding BoardUI blue accent; `boardui-table.css`: extracted `.bui-table` subset (BoardUI globals NOT imported).
+  - New `components/RankingTable.tsx`: BoardUI Table primitives + TanStack sorting/search/pagination, stable score-desc rank, our pills/buttons kept; wired into job detail (old table removed).
+  - Metrics KPIs via BoardUI `StatCards` with honest WoW deltas; fixed pre-existing inflated average (142!) by counting only scored apps.
+  - E2E config: official setup-project pattern + video on-first-retry.
+- **Affected Files**:
+  - `[NEW]` `frontend/src/components/RankingTable.tsx`, `frontend/src/styles/accent.css`, `frontend/src/styles/boardui-table.css` + ~30 vendored BoardUI files, `e2e/tests/deployed.spec.ts`
+  - `[MODIFY]` `frontend/src/app/recruiter/jobs/[id]/page.tsx`, `frontend/src/app/recruiter/metrics/page.tsx`, `frontend/src/app/globals.css`, `frontend/package.json`, `e2e/playwright.config.ts`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` clean; `npm run build` green; Playwright 7/7; ranking sort/search + metrics screenshots verified.
+  - Code-review 2-axis gate: standards pass; fixed rank semantics + avg bug found via screenshots.
+  - Incidents: `pip install semgrep` upgraded starlette 1.6.0 breaking fastapi 0.115 (fixed: pin starlette<0.47); backend background processes die between shell sessions (restart before demos).
+- **Handoff Notes for Next Session**: Unused BoardUI kit parts (dropdown/select/avatar/etc.) kept vendored (tree-shaken); Pro HR template needs paid license. Quick tunnels expire on restart.
+- **Commits**: `8779ab6` on `preview`.
+
 ### Session: 2026-09-23 — Frontend Code Quality Audit (read-only)
 - **Goal / User Request**: Strict senior review of Next.js 16 frontend: config, api interceptor, auth, guards, proxy, state, i18n, styling, perf, secrets.
 - **Changes Made**:
