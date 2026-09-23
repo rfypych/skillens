@@ -6,52 +6,50 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Inter', system-ui, sans-serif; background: #0f766e; background: linear-gradient(180deg, #14b8a6 0%, #0d9488 100%); color: #111; padding: 28px 30px 30px; min-height: 100vh; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #EFEFEF; color: #111; padding: 26px 28px 24px; }
   .sheet { max-width: 1560px; margin: 0 auto; }
-  .title { text-align: center; color: #fff; margin-bottom: 4px; }
-  .title h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
-  .title h1 span { color: #F26522; background: #fff; border-radius: 999px; padding: 1px 12px; font-size: 15px; vertical-align: middle; letter-spacing: 0; }
-  .title p { font-size: 12px; opacity: .9; margin-top: 4px; }
-  /* Tree */
-  .tree { display: flex; flex-direction: column; align-items: center; margin-top: 14px; }
-  .root { background: #111; color: #fff; border-radius: 12px; padding: 10px 26px; text-align: center; border: 2px solid #fff; }
-  .root .r { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; }
-  .root .t { font-size: 15px; font-weight: 800; }
-  .root .t em { font-style: normal; color: #F26522; }
-  .vline { width: 3px; height: 22px; background: #fff; opacity: .85; }
-  .branches { display: flex; gap: 22px; align-items: flex-start; justify-content: center; width: 100%; position: relative; }
-  .branches::before { content: ''; position: absolute; top: 0; left: 6%; right: 6%; height: 3px; background: #fff; opacity: .85; border-radius: 2px; }
+  .title { text-align: center; margin-bottom: 2px; }
+  .title h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #111; }
+  .title h1 span { background: #F26522; color: #fff; border-radius: 999px; padding: 1px 12px; font-size: 14px; vertical-align: middle; letter-spacing: 0; }
+  .title p { font-size: 11.5px; color: #666; margin-top: 4px; }
+  .tree { display: flex; flex-direction: column; align-items: center; margin-top: 12px; }
+  .root { background: #111; color: #fff; border-radius: 12px; padding: 8px 24px; text-align: center; }
+  .root .r { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: #F26522; }
+  .root .t { font-size: 15px; font-weight: 800; letter-spacing: .04em; }
+  .vline { width: 3px; height: 18px; background: #F26522; }
+  .branches { display: flex; gap: 18px; align-items: flex-start; justify-content: center; width: 100%; position: relative; }
+  .branches::before { content: ''; position: absolute; top: 0; left: 5%; right: 5%; height: 3px; background: #F26522; border-radius: 2px; }
   .branch { display: flex; flex-direction: column; align-items: center; flex: 1; max-width: 360px; }
-  .branch::before { content: ''; width: 3px; height: 20px; background: #fff; opacity: .85; }
-  .area { border-radius: 10px; padding: 7px 16px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px; border: 2px solid #fff; color: #fff; }
+  .branch::before { content: ''; width: 3px; height: 16px; background: #F26522; }
+  .area { border-radius: 999px; padding: 6px 15px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; color: #fff; }
   .area.pub { background: #F26522; } .area.rec { background: #111; } .area.can { background: #0f766e; } .area.sys { background: #64748b; }
-  .pages { display: flex; flex-direction: column; gap: 12px; width: 100%; position: relative; }
-  .pages::before { content: ''; position: absolute; left: 50%; top: -14px; bottom: 8px; width: 3px; background: #fff; opacity: .55; }
-  .pnode { position: relative; background: #fff; border-radius: 10px; padding: 8px; display: flex; gap: 9px; align-items: flex-start; box-shadow: 0 2px 0 rgba(0,0,0,.18); }
-  .pnode::before { content: ''; position: absolute; left: -11px; top: 50%; width: 11px; height: 3px; background: #fff; opacity: .55; }
-  .thumb { width: 104px; min-width: 104px; height: 78px; border: 1px solid #d7dde3; border-radius: 6px; background: #f4f6f8; padding: 5px; display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+  .pages { display: flex; flex-direction: column; gap: 9px; width: 100%; position: relative; }
+  .pages::before { content: ''; position: absolute; left: 50%; top: -12px; bottom: 6px; width: 3px; background: #F26522; opacity: .35; }
+  .pnode { position: relative; background: #fff; border: 1px solid #e2e2e2; border-radius: 10px; padding: 7px; display: flex; gap: 8px; align-items: flex-start; break-inside: avoid; }
+  .pnode::before { content: ''; position: absolute; left: -10px; top: 50%; width: 10px; height: 3px; background: #F26522; opacity: .35; }
+  .thumb { width: 92px; min-width: 92px; height: 66px; border: 1px solid #d7dde3; border-radius: 6px; background: #f4f6f8; padding: 4px; display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
   .tbar { display: flex; gap: 3px; align-items: center; }
   .tdot { width: 5px; height: 5px; border-radius: 50%; background: #c3ccd4; }
   .tdot.o { background: #F26522; }
   .tline { border-radius: 2px; background: #dde3e9; }
   .tline.o { background: #F26522; } .tline.d { background: #1f2937; } .tline.g { background: #a7f3d0; } .tline.b { background: #bfdbfe; } .tline.r { background: #fecaca; }
   .trow { display: flex; gap: 3px; } .trow > div { flex: 1; }
-  .tside { display: flex; gap: 3px; flex: 1; } .tside .rail { width: 14px; border-radius: 2px; background: #1f2937; }
+  .tside { display: flex; gap: 3px; flex: 1; } .tside .rail { width: 12px; border-radius: 2px; background: #1f2937; }
   .tcol { flex: 1; display: flex; flex-direction: column; gap: 3px; }
   .tbub { border-radius: 4px; padding: 2px 4px; font-size: 5px; line-height: 1.2; }
   .tbub.r { background: #e8edf1; align-self: flex-start; max-width: 80%; } .tbub.s { background: #F26522; color: #fff; align-self: flex-end; max-width: 70%; }
-  .tbtn { background: #F26522; border-radius: 999px; height: 9px; }
-  .tfield { border: 1px solid #c9d1d9; border-radius: 999px; height: 9px; background: #fff; }
+  .tbtn { background: #F26522; border-radius: 999px; height: 8px; }
+  .tfield { border: 1px solid #c9d1d9; border-radius: 999px; height: 8px; background: #fff; }
   .tcard { border: 1px solid #d7dde3; border-radius: 4px; background: #fff; flex: 1; }
-  .tbig { font-size: 13px; font-weight: 800; color: #1f2937; text-align: center; line-height: 1; }
+  .tbig { font-size: 12px; font-weight: 800; color: #1f2937; text-align: center; line-height: 1; }
   .meta { flex: 1; min-width: 0; }
-  .route { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 700; color: #fff; background: #1f2937; border-radius: 4px; padding: 2px 6px; display: inline-block; margin-bottom: 3px; word-break: break-all; }
-  .ptitle { font-size: 11.5px; font-weight: 800; color: #111; line-height: 1.25; }
-  .pdesc { font-size: 9.5px; color: #68727d; line-height: 1.4; margin-top: 2px; }
-  .legend { display: flex; gap: 8px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
-  .legend span { background: rgba(255,255,255,.92); border-radius: 999px; font-size: 10.5px; font-weight: 600; padding: 5px 13px; color: #333; }
+  .route { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; color: #fff; background: #1f2937; border-radius: 4px; padding: 2px 6px; display: inline-block; margin-bottom: 2px; word-break: break-all; }
+  .ptitle { font-size: 11px; font-weight: 800; color: #111; line-height: 1.25; }
+  .pdesc { font-size: 9px; color: #68727d; line-height: 1.4; margin-top: 1px; }
+  .legend { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .legend span { background: #fff; border: 1px solid #e2e2e2; border-radius: 999px; font-size: 10px; font-weight: 600; padding: 5px 13px; color: #444; }
   .legend b { color: #F26522; }
-  .foot { text-align: center; color: rgba(255,255,255,.85); font-size: 10.5px; margin-top: 10px; }
+  .foot { text-align: center; color: #888; font-size: 10px; margin-top: 8px; }
   .foot .mono { font-family: 'JetBrains Mono', monospace; }
 </style>
 </head>
@@ -63,46 +61,46 @@
   </div>
 
   <div class="tree">
-    <div class="root"><div class="r">skillens.id</div><div class="t">SKILL<em>E</em>NS</div></div>
+    <div class="root"><div class="r">skillens.id</div><div class="t">SKILLENS</div></div>
     <div class="vline"></div>
     <div class="branches">
 
       <div class="branch">
         <div class="area pub">Area Publik · 3</div>
         <div class="pages">
-          <div class="pnode"><div class="thumb"><div class="tbar"><div class="tdot o"></div><div class="tdot"></div><div class="tdot"></div></div><div class="tline d" style="height:12px"></div><div class="trow"><div class="tline" style="height:8px"></div><div class="tline" style="height:8px"></div><div class="tline" style="height:8px"></div></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/</span><div class="ptitle">Landing Page</div><div class="pdesc">Hero editorial + CTA evaluasi.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline d" style="height:9px;width:60%"></div><div class="tfield"></div><div class="tfield"></div><div class="tbtn"></div></div><div class="meta"><span class="route">/login</span><div class="ptitle">Masuk Akun</div><div class="pdesc">Login + tombol demo 1 ketuk.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline d" style="height:9px;width:60%"></div><div class="tfield"></div><div class="tfield"></div><div class="tfield"></div><div class="tbtn"></div></div><div class="meta"><span class="route">/signup</span><div class="ptitle">Daftar Akun</div><div class="pdesc">Pilih peran + registrasi.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tbar"><div class="tdot o"></div><div class="tdot"></div><div class="tdot"></div></div><div class="tline d" style="height:10px"></div><div class="trow"><div class="tline" style="height:7px"></div><div class="tline" style="height:7px"></div><div class="tline" style="height:7px"></div></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/</span><div class="ptitle">Landing Page</div><div class="pdesc">Hero editorial + CTA evaluasi.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:8px;width:60%"></div><div class="tfield"></div><div class="tfield"></div><div class="tbtn"></div></div><div class="meta"><span class="route">/login</span><div class="ptitle">Masuk Akun</div><div class="pdesc">Login + tombol demo 1 ketuk.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:8px;width:60%"></div><div class="tfield"></div><div class="tfield"></div><div class="tfield"></div><div class="tbtn"></div></div><div class="meta"><span class="route">/signup</span><div class="ptitle">Daftar Akun</div><div class="pdesc">Pilih peran + registrasi.</div></div></div>
         </div>
       </div>
 
       <div class="branch">
         <div class="area rec">Area Rekruter · 11</div>
         <div class="pages">
-          <div class="pnode"><div class="thumb"><div class="tside"><div class="rail"></div><div class="tcol"><div class="trow"><div class="tline o" style="height:10px"></div><div class="tline" style="height:10px"></div><div class="tline" style="height:10px"></div></div><div class="tline" style="height:16px"></div></div></div></div><div class="meta"><span class="route">/recruiter</span><div class="ptitle">Pusat Komando</div><div class="pdesc">Metrik + evaluasi terbaru.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline d" style="height:8px;width:55%"></div><div class="trow"><div class="tcard" style="height:22px"></div><div class="tcard" style="height:22px"></div></div><div class="trow"><div class="tcard" style="height:22px"></div><div class="tcard" style="height:22px"></div></div></div><div class="meta"><span class="route">/recruiter/jobs</span><div class="ptitle">Posisi Aktif</div><div class="pdesc">Kartu lowongan + magic-link.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="trow"><div class="tline o" style="height:7px"></div><div class="tline" style="height:7px"></div><div class="tline" style="height:7px"></div></div><div class="tfield"></div><div class="tfield"></div><div class="tbtn" style="width:55%"></div></div><div class="meta"><span class="route">/recruiter/jobs/new</span><div class="ptitle">Buat Posisi</div><div class="pdesc">Wizard + arketipe T/L/K.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline d" style="height:8px;width:70%"></div><div class="tline" style="height:6px"></div><div class="tline g" style="height:6px"></div><div class="tline" style="height:6px"></div><div class="tline o" style="height:6px;width:60%"></div></div><div class="meta"><span class="route">/recruiter/jobs/[id]</span><div class="ptitle">Ranking</div><div class="pdesc">Tabel sortable + rekomendasi.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tfield"></div><div class="tfield"></div><div class="tline" style="height:12px"></div><div class="tbtn" style="width:50%"></div></div><div class="meta"><span class="route">/recruiter/jobs/edit/[id]</span><div class="ptitle">Ubah Posisi</div><div class="pdesc">Edit parameter peran.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline" style="height:6px"></div><div class="trow"><div class="tline b" style="height:9px"></div><div class="tline g" style="height:9px"></div></div><div class="tline" style="height:6px"></div><div class="tline r" style="height:6px;width:70%"></div></div><div class="meta"><span class="route">/recruiter/candidates</span><div class="ptitle">Daftar Kandidat</div><div class="pdesc">Bukti otentik + filter.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline d" style="height:9px;width:50%"></div><div class="tline o" style="height:5px"></div><div class="trow"><div class="tline g" style="height:8px"></div><div class="tline b" style="height:8px"></div></div><div class="tline" style="height:8px"></div></div><div class="meta"><span class="route">/recruiter/candidates/[app_id]</span><div class="ptitle">Detail Kandidat</div><div class="pdesc">Skor 5 dimensi + replay.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tfield"></div><div class="tfield"></div><div class="tline" style="height:10px"></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/recruiter/interviews</span><div class="ptitle">Wawancara</div><div class="pdesc">Jadwal + nilai sesi.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="trow"><div class="tline o" style="height:14px"></div><div class="tline" style="height:14px"></div><div class="tline r" style="height:14px"></div></div><div class="tline d" style="height:5px"></div><div class="tline" style="height:5px"></div></div><div class="meta"><span class="route">/recruiter/metrics</span><div class="ptitle">Analitik</div><div class="pdesc">KPI + delta + volume.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tside"><div class="rail"></div><div class="tcol"><div class="trow"><div class="tline o" style="height:8px"></div><div class="tline" style="height:8px"></div><div class="tline" style="height:8px"></div></div><div class="tline" style="height:13px"></div></div></div></div><div class="meta"><span class="route">/recruiter</span><div class="ptitle">Pusat Komando</div><div class="pdesc">Metrik + evaluasi terbaru.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:7px;width:55%"></div><div class="trow"><div class="tcard" style="height:18px"></div><div class="tcard" style="height:18px"></div></div><div class="trow"><div class="tcard" style="height:18px"></div><div class="tcard" style="height:18px"></div></div></div><div class="meta"><span class="route">/recruiter/jobs</span><div class="ptitle">Posisi Aktif</div><div class="pdesc">Kartu lowongan + magic-link.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="trow"><div class="tline o" style="height:6px"></div><div class="tline" style="height:6px"></div><div class="tline" style="height:6px"></div></div><div class="tfield"></div><div class="tfield"></div><div class="tbtn" style="width:55%"></div></div><div class="meta"><span class="route">/recruiter/jobs/new</span><div class="ptitle">Buat Posisi</div><div class="pdesc">Wizard + arketipe T/L/K.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:7px;width:70%"></div><div class="tline" style="height:5px"></div><div class="tline g" style="height:5px"></div><div class="tline o" style="height:5px;width:60%"></div></div><div class="meta"><span class="route">/recruiter/jobs/[id]</span><div class="ptitle">Ranking</div><div class="pdesc">Tabel sortable + rekomendasi.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tfield"></div><div class="tfield"></div><div class="tline" style="height:10px"></div><div class="tbtn" style="width:50%"></div></div><div class="meta"><span class="route">/recruiter/jobs/edit/[id]</span><div class="ptitle">Ubah Posisi</div><div class="pdesc">Edit parameter peran.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline" style="height:5px"></div><div class="trow"><div class="tline b" style="height:8px"></div><div class="tline g" style="height:8px"></div></div><div class="tline r" style="height:5px;width:70%"></div></div><div class="meta"><span class="route">/recruiter/candidates</span><div class="ptitle">Daftar Kandidat</div><div class="pdesc">Bukti otentik + filter.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:8px;width:50%"></div><div class="tline o" style="height:4px"></div><div class="trow"><div class="tline g" style="height:7px"></div><div class="tline b" style="height:7px"></div></div><div class="tline" style="height:7px"></div></div><div class="meta"><span class="route">/recruiter/candidates/[app_id]</span><div class="ptitle">Detail Kandidat</div><div class="pdesc">Skor 5 dimensi + replay.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tfield"></div><div class="tfield"></div><div class="tline" style="height:8px"></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/recruiter/interviews</span><div class="ptitle">Wawancara</div><div class="pdesc">Jadwal + nilai sesi.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="trow"><div class="tline o" style="height:12px"></div><div class="tline" style="height:12px"></div><div class="tline r" style="height:12px"></div></div><div class="tline d" style="height:4px"></div><div class="tline" style="height:4px"></div></div><div class="meta"><span class="route">/recruiter/metrics</span><div class="ptitle">Analitik</div><div class="pdesc">KPI + delta + volume.</div></div></div>
           <div class="pnode"><div class="thumb"><div class="tfield"></div><div class="tfield"></div><div class="tbtn" style="width:40%"></div></div><div class="meta"><span class="route">/recruiter/settings</span><div class="ptitle">Pengaturan</div><div class="pdesc">Profil + bahasa.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="trow"><div class="tline" style="height:10px"></div><div class="tline" style="height:10px"></div></div><div class="tline" style="height:10px"></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/recruiter/settings/team</span><div class="ptitle">Tim</div><div class="pdesc">Undang sub-akun.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="trow"><div class="tline" style="height:9px"></div><div class="tline" style="height:9px"></div></div><div class="tline" style="height:9px"></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/recruiter/settings/team</span><div class="ptitle">Tim</div><div class="pdesc">Undang sub-akun.</div></div></div>
         </div>
       </div>
 
       <div class="branch">
         <div class="area can">Area Kandidat · 7</div>
         <div class="pages">
-          <div class="pnode"><div class="thumb"><div class="tside"><div class="rail"></div><div class="tcol"><div class="tline o" style="height:8px"></div><div class="tline" style="height:12px"></div><div class="tbtn" style="width:50%"></div></div></div></div><div class="meta"><span class="route">/candidate/dashboard</span><div class="ptitle">Pusat Penilaian</div><div class="pdesc">Lamaran + report bukti.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline d" style="height:10px;width:65%"></div><div class="tline" style="height:16px"></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/candidate/job/[job_id]</span><div class="ptitle">Detail Lowongan</div><div class="pdesc">Deskripsi + lamar.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline d" style="height:8px;width:60%"></div><div class="tfield"></div><div class="tline o" style="height:8px"></div><div class="tbtn" style="width:55%"></div></div><div class="meta"><span class="route">/candidate/apply/[job_id]</span><div class="ptitle">Portal Magic-Link</div><div class="pdesc">Tanpa login + CV PDF.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline" style="height:7px"></div><div class="tline" style="height:7px"></div><div class="tline" style="height:7px"></div><div class="tbtn" style="width:40%"></div></div><div class="meta"><span class="route">/candidate/instructions/[id]</span><div class="ptitle">Panduan Tes</div><div class="pdesc">Tata cara 3 tahap.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tbub r">Skenario…</div><div class="tbub s">Jawaban…</div><div class="tbub r">Follow-up…</div><div class="tfield" style="height:8px"></div></div><div class="meta"><span class="route">/candidate/test/[app_id]</span><div class="ptitle">Ruang Ujian AI</div><div class="pdesc">Chat 4 turn + telemetri.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline" style="height:8px"></div><div class="trow"><div class="tline g" style="height:10px"></div><div class="tline" style="height:10px"></div></div><div class="tbtn" style="width:40%"></div></div><div class="meta"><span class="route">/candidate/interviews</span><div class="ptitle">Undangan</div><div class="pdesc">Jadwal + catatan.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline d" style="height:8px;width:45%"></div><div class="tfield"></div><div class="tline" style="height:10px"></div></div><div class="meta"><span class="route">/candidate/profile</span><div class="ptitle">Profil &amp; CV</div><div class="pdesc">Bio + unggah CV.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tside"><div class="rail"></div><div class="tcol"><div class="tline o" style="height:7px"></div><div class="tline" style="height:10px"></div><div class="tbtn" style="width:50%"></div></div></div></div><div class="meta"><span class="route">/candidate/dashboard</span><div class="ptitle">Pusat Penilaian</div><div class="pdesc">Lamaran + report bukti.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:9px;width:65%"></div><div class="tline" style="height:13px"></div><div class="tbtn" style="width:45%"></div></div><div class="meta"><span class="route">/candidate/job/[job_id]</span><div class="ptitle">Detail Lowongan</div><div class="pdesc">Deskripsi + lamar.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:7px;width:60%"></div><div class="tfield"></div><div class="tline o" style="height:7px"></div><div class="tbtn" style="width:55%"></div></div><div class="meta"><span class="route">/candidate/apply/[job_id]</span><div class="ptitle">Portal Magic-Link</div><div class="pdesc">Tanpa login + CV PDF.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline" style="height:6px"></div><div class="tline" style="height:6px"></div><div class="tline" style="height:6px"></div><div class="tbtn" style="width:40%"></div></div><div class="meta"><span class="route">/candidate/instructions/[id]</span><div class="ptitle">Panduan Tes</div><div class="pdesc">Tata cara 3 tahap.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tbub r">Skenario…</div><div class="tbub s">Jawaban…</div><div class="tbub r">Follow-up…</div><div class="tfield" style="height:7px"></div></div><div class="meta"><span class="route">/candidate/test/[app_id]</span><div class="ptitle">Ruang Ujian AI</div><div class="pdesc">Chat 4 turn + telemetri.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline" style="height:7px"></div><div class="trow"><div class="tline g" style="height:9px"></div><div class="tline" style="height:9px"></div></div><div class="tbtn" style="width:40%"></div></div><div class="meta"><span class="route">/candidate/interviews</span><div class="ptitle">Undangan</div><div class="pdesc">Jadwal + catatan.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline d" style="height:7px;width:45%"></div><div class="tfield"></div><div class="tline" style="height:9px"></div></div><div class="meta"><span class="route">/candidate/profile</span><div class="ptitle">Profil &amp; CV</div><div class="pdesc">Bio + unggah CV.</div></div></div>
         </div>
       </div>
 
@@ -110,8 +108,8 @@
         <div class="area sys">Sistem · 3</div>
         <div class="pages">
           <div class="pnode"><div class="thumb"><div class="tbig">404</div><div class="tbtn" style="width:55%;margin:0 auto"></div></div><div class="meta"><span class="route">/… (404)</span><div class="ptitle">Tidak Ditemukan</div><div class="pdesc">Kartu 404 + kembali.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline r" style="height:10px;width:45%;margin:0 auto"></div><div class="tline" style="height:7px"></div><div class="tbtn" style="width:50%;margin:0 auto"></div></div><div class="meta"><span class="route">error boundary</span><div class="ptitle">Kesalahan</div><div class="pdesc">Pesan + coba lagi.</div></div></div>
-          <div class="pnode"><div class="thumb"><div class="tline" style="height:8px;width:60%;margin:auto"></div><div class="tline o" style="height:5px;width:40%;margin:auto"></div></div><div class="meta"><span class="route">loading</span><div class="ptitle">Memuat…</div><div class="pdesc">Indikator thinking.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline r" style="height:9px;width:45%;margin:0 auto"></div><div class="tline" style="height:6px"></div><div class="tbtn" style="width:50%;margin:0 auto"></div></div><div class="meta"><span class="route">error boundary</span><div class="ptitle">Kesalahan</div><div class="pdesc">Pesan + coba lagi.</div></div></div>
+          <div class="pnode"><div class="thumb"><div class="tline" style="height:7px;width:60%;margin:auto"></div><div class="tline o" style="height:4px;width:40%;margin:auto"></div></div><div class="meta"><span class="route">loading</span><div class="ptitle">Memuat…</div><div class="pdesc">Indikator thinking.</div></div></div>
         </div>
       </div>
 
