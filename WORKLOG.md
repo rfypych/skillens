@@ -261,6 +261,21 @@ D:\projects\JHIC-rev\
 - **Handoff Notes for Next Session**: True vision needs a provider with vision models (Groq key upgrade or OpenAI key) — then wire `resume_images` into a vision call inside analyze path. Tunnel dead (needs restart for public URL).
 - **Commits**: `f443e6e` on `preview`.
 
+### Session: 2026-09-24 — Vision Akal-akalan: verdict + Gemini backend
+- **Goal / User Request**: "Akalin model vision yang bisa baca gambar (orang bekerja di CV)".
+- **Changes Made**:
+  - Provider matrix tested live: Groq key = 11 text/audio models, llama-4-scout/maverick 404; pollinations = hallucinated office from panel sketch; Moondream2 CPU = OOM-kills 12GB server (fp32 ~7GB, fp16 still too big alongside API); SmolVLM-256M = garbage output ("Kasus di kawin."). Also fixed env: stale HF OAuth token broke anonymous hub downloads (huggingface-cli logout); pinned starlette<0.47 again after pip sidegrade.
+  - `services/vision.py`: Gemini 2.0 Flash backend (OpenAI-compatible endpoint), `GOOGLE_API_KEY` in config + `.env.example`, graceful 503 without key; background-thread job stores findings on application.
+  - Gallery UI copy updated (neutral key requirement); evaluator already consumes visual summary when present.
+- **Affected Files**:
+  - `[NEW]` `backend/services/vision.py`
+  - `[MODIFY]` `backend/config.py`, `backend/.env.example`, `backend/routers/biosphere.py`, `frontend/src/app/recruiter/candidates/[app_id]/page.tsx`
+- **Verification & Testing**:
+  - Endpoint without key → 503 + photo-presence 400 paths verified live. Gemini path itself untested (no key in env).
+  - Semgrep 0 findings; tsc clean; build green.
+- **Handoff Notes for Next Session**: USER ACTION: create free key at https://aistudio.google.com/apikey → add `GOOGLE_API_KEY=<key>` to backend/.env → restart backend → click "Analisis Visual AI" on any photo app. Then verify quality before claiming to jury.
+- **Commits**: `e6f9069` on `preview`.
+
 ### Session: 2026-09-23 — Frontend Code Quality Audit (read-only)
 - **Goal / User Request**: Strict senior review of Next.js 16 frontend: config, api interceptor, auth, guards, proxy, state, i18n, styling, perf, secrets.
 - **Changes Made**:
