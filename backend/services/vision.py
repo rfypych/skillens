@@ -21,7 +21,7 @@ import threading
 logger = logging.getLogger(__name__)
 
 GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai/"
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MODEL = "gemini-3.5-flash-lite"
 
 
 def _settings():
@@ -108,7 +108,7 @@ def analyze_application_photos(app_id: int, photo_urls: list, upload_dir: str = 
             import datetime
             app.resume_visual_analysis = json.dumps({
                 "analyzed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                "engine": "gemini-2.0-flash",
+                "engine": GEMINI_MODEL,
                 "findings": findings,
             })
             db.commit()
