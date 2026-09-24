@@ -217,7 +217,16 @@ Do NOT output markdown (like ```json), just the raw JSON object.
         except Exception:
             pass
 
-        user_prompt = f"Candidate Resume/CV Content:\n{resume_text}\n\nTelemetry Data:\n- Tab Switches: {result.tab_switches}\n- Copy-Paste Attempts: {result.copy_paste_attempts}\n- Time Taken: {result.time_taken_seconds} seconds\n- Decision Telemetry: {decision_telemetry}\n\nCandidate Chat Transcript:\n{formatted_transcript}"
+        try:
+            import json as _json2
+            n_photos = len(_json2.loads(app.resume_images)) if app.resume_images else 0
+        except Exception:
+            n_photos = 0
+        photo_line = (
+            f"\n- Portfolio Photos Attached: {n_photos} (evidence documentation, content not machine-readable)"
+            if n_photos else ""
+        )
+        user_prompt = f"Candidate Resume/CV Content:\n{resume_text}\n\nTelemetry Data:\n- Tab Switches: {result.tab_switches}\n- Copy-Paste Attempts: {result.copy_paste_attempts}\n- Time Taken: {result.time_taken_seconds} seconds\n- Decision Telemetry: {decision_telemetry}{photo_line}\n\nCandidate Chat Transcript:\n{formatted_transcript}"
 
         response = await client.chat.completions.create(
             model=model_name,

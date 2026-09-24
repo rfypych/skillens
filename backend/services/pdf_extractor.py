@@ -121,6 +121,52 @@ def _extract_with_ocr(file_path: str) -> str:
             pass
 
 
+MAX_PORTFOLIO_IMAGES = 6
+
+
+def extract_pdf_images(file_path: str, max_images: int = MAX_PORTFOLIO_IMAGES, min_px: int = 200) -> list:
+    """Return PNG bytes of embedded raster images (portfolio documentation
+    photos). Skips tiny icons/logos. Returns [] when PyMuPDF is unavailable.
+    NOTE: no AI interpretation here — pixel-level analysis requires a vision
+    model, which our current LLM provider does not expose. The images are
+    preserved as human-verifiable evidence for recruiters."""
+    fitz = _get_fitz()
+    if not fitz:
+        return []
+    try:
+        doc = fitz.open(file_path)
+    except Exception as e:
+        logger.warning(f"PyMuPDF could not open {file_path}: {e}")
+        return []
+    try:
+        out = []
+        for page in doc:
+            for img in page.get_images(full=True):
+                if len(out) >= max_images:
+                    break
+                try:
+                    xref = img[0]
+                    pix = fitz.Pixmap(doc, xref)
+                    if pix.width < min_px or pix.height < min_px:
+                        continue
+                    if pix.n - pix.alpha > 3:  # CMYK → RGB
+                        pix = fitz.Pixmap(fitz.csRGB, pix)
+                    out.append(pix.tobytes("png"))
+                except Exception:
+                    continue
+            if len(out) >= max_images:
+                break
+        return out
+    except Exception as e:
+        logger.warning(f"Image extraction failed for {file_path}: {e}")
+        return []
+    finally:
+        try:
+            doc.close()
+        except Exception:
+            pass
+
+
 def extract_pdf_text_from_bytes(file_bytes: bytes) -> str:
     """Extract text from raw PDF bytes (used when no temp file is available)."""
     import tempfile

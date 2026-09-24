@@ -18,7 +18,7 @@ import os
 from fastapi import UploadFile
 from typing import Optional
 from utils.auth import create_access_token
-from services.pdf_extractor import extract_pdf_text
+from services.pdf_extractor import extract_pdf_text, extract_pdf_images
 
 def apply_for_job(
     db: Session, 
@@ -60,6 +60,7 @@ def apply_for_job(
 
     resume_url = None
     resume_text = None
+    resume_images = None
 
     if file and file.filename:
         if file.content_type != "application/pdf" or not file.filename.lower().endswith(".pdf"):
@@ -87,7 +88,21 @@ def apply_for_job(
             
             # Extract text using pypdf, falling back to OCR for scanned PDFs
             resume_text = extract_pdf_text(file_path)
-            
+
+            # Preserve embedded portfolio documentation photos as evidence
+            try:
+                import json as _json
+                photo_urls = []
+                for i, png in enumerate(extract_pdf_images(file_path)):
+                    photo_name = f"{uuid.uuid4()}_p{i}.png"
+                    with open(os.path.join(upload_dir, photo_name), "wb") as pf:
+                        pf.write(png)
+                    photo_urls.append(f"/uploads/{photo_name}")
+                if photo_urls:
+                    resume_images = _json.dumps(photo_urls)
+            except Exception as photo_e:
+                logger.warning(f"Portfolio photo extraction failed (non-fatal): {photo_e}")
+
         except Exception as e:
             if os.path.exists(file_path):
                 os.remove(file_path)
@@ -112,7 +127,8 @@ def apply_for_job(
         hidden_prompt=hidden_prompt,
         status="testing",
         resume_url=resume_url,
-        resume_text=resume_text
+        resume_text=resume_text,
+        resume_images=resume_images
     )
     db.add(new_app)
     db.commit()
@@ -258,9 +274,20 @@ async def chat_assessment(db: Session, application_id: int, payload: schemas.Cha
     cv_snippet = (app.resume_text or "").strip()
     if len(cv_snippet) > 1500:
         cv_snippet = cv_snippet[:1500] + "…"
+    try:
+        import json as _json
+        photo_urls = _json.loads(app.resume_images) if app.resume_images else []
+    except Exception:
+        photo_urls = []
+    photo_note = (
+        f"\nPortfolio documentation: {len(photo_urls)} worksite photo(s) attached "
+        "(pixel content NOT machine-readable — no vision model available; "
+        "ask the candidate to narrate what a specific photo proves)."
+        if photo_urls else ""
+    )
     cv_block = (
-        f"Candidate CV (claimed experience — probe it):\n{cv_snippet}"
-        if cv_snippet else "No CV uploaded — probe from the scenario only."
+        f"Candidate CV (claimed experience — probe it):\n{cv_snippet}{photo_note}"
+        if cv_snippet else f"No CV uploaded — probe from the scenario only.{photo_note}"
     )
 
     if archetype == "lapangan":
