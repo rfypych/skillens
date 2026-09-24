@@ -107,6 +107,54 @@ export default function CandidateForensicReport() {
     }
   };
 
+  const [visualAnalysis, setVisualAnalysis] = useState<any>(null);
+  const [visualLoading, setVisualLoading] = useState(false);
+  const [visualError, setVisualError] = useState<string | null>(null);
+
+  const refreshVisual = async () => {
+    try {
+      const data = await api.get(`/applications/${appId}`);
+      if (data?.resume_visual_analysis) {
+        setVisualAnalysis(JSON.parse(data.resume_visual_analysis));
+        setApp(data);
+        return true;
+      }
+    } catch { /* ignore */ }
+    return false;
+  };
+
+  const handleAnalyzePhotos = async () => {
+    setVisualLoading(true);
+    setVisualError(null);
+    try {
+      const res = await api.post(`/biosphere/analyze-photos/${appId}`);
+      if (res?.status === 'ready') {
+        setVisualAnalysis(res.visual_analysis);
+        setVisualLoading(false);
+        return;
+      }
+      // Background job (±1-3 mnt/foto, CPU lokal): poll sampai hasil tersimpan.
+      for (let i = 0; i < 40; i++) {
+        await new Promise((r) => setTimeout(r, 15000));
+        if (await refreshVisual()) break;
+      }
+      if (!visualAnalysis) {
+        const done = await refreshVisual();
+        if (!done) setVisualError('Analisis masih berjalan — muat ulang halaman ini sebentar lagi.');
+      }
+    } catch (e: unknown) {
+      setVisualError(e instanceof Error ? e.message : 'Analisis visual gagal.');
+    } finally {
+      setVisualLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    try {
+      if (app?.resume_visual_analysis) setVisualAnalysis(JSON.parse(app.resume_visual_analysis));
+    } catch { /* ignore */ }
+  }, [app?.resume_visual_analysis]);
+
   useEffect(() => {
     const fetchApp = async () => {
       try {
@@ -313,10 +361,10 @@ export default function CandidateForensicReport() {
                 Dokumentasi Visual Portofolio
               </h3>
               <p className="text-body-small text-text-tertiary mb-4">
-                {photos.length} foto bukti kerja terlampir di CV — diverifikasi manusia, bukan AI
-                (isi piksel belum dibaca mesin).
+                {photos.length} foto bukti kerja terlampir di CV — klik untuk melihat penuh,
+                atau jalankan analisis visual AI (butuh kunci API Gemini gratis di server).
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
                 {photos.map((src, i) => (
                   <a key={i} href={`${apiBase}${src}`} target="_blank" rel="noopener noreferrer"
                     className="block rounded-2xl overflow-hidden border border-border-button-default hover:border-accent-500 transition-colors">
@@ -326,6 +374,30 @@ export default function CandidateForensicReport() {
                   </a>
                 ))}
               </div>
+              {!visualAnalysis ? (
+                <div>
+                  <button onClick={handleAnalyzePhotos} disabled={visualLoading}
+                    className="px-4 py-2 bg-gray-900 hover:bg-[#F26522] text-white text-xs font-bold uppercase tracking-wider rounded-full transition-colors disabled:opacity-60">
+                    {visualLoading ? 'Menganalisis foto…' : 'Analisis Visual AI'}
+                  </button>
+                  {visualError && <p className="text-xs text-red-600 mt-2">{visualError}</p>}
+                  {visualLoading && (
+                    <p className="text-xs text-gray-500 mt-2">AI membaca foto (±1 menit/foto). Boleh tinggalkan halaman ini.</p>
+                  )}
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+                  <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                    Hasil analisis visual · {visualAnalysis.engine || 'local'} · {visualAnalysis.analyzed_at?.slice(0, 10) || ''}
+                  </p>
+                  {(visualAnalysis.findings || []).map((f: any, i: number) => (
+                    <div key={i} className="text-sm text-gray-800 leading-relaxed">
+                      <span className="font-mono text-xs text-gray-500">Foto {i + 1}: </span>
+                      {f.analysis}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           );
         })()}

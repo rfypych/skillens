@@ -363,6 +363,47 @@ Hasilkan JSON dengan format TEPAT berikut:
     }
 
 
+@router.post("/analyze-photos/{app_id}")
+async def analyze_photos(
+    app_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user),
+):
+    """
+    Vision analysis of portfolio documentation photos (Gemini free tier).
+    Runs in a background thread; the recruiter polls GET /applications/{id}
+    until resume_visual_analysis appears. Requires GOOGLE_API_KEY, else 503.
+    Honest by design: describes observable content only, never invents identity.
+    """
+    from services import vision as vision_service
+
+    app = db.query(models.Application).filter(models.Application.id == app_id).first()
+    if not app or not _can_access_app(db, app, current_user):
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    if app.resume_visual_analysis:
+        import json as _json
+        return {"status": "ready", "visual_analysis": _json.loads(app.resume_visual_analysis)}
+
+    try:
+        import json as _json
+        photo_urls = _json.loads(app.resume_images) if app.resume_images else []
+    except Exception:
+        photo_urls = []
+    if not photo_urls:
+        raise HTTPException(status_code=400, detail="No portfolio photos attached to this application")
+    if not vision_service.is_available():
+        raise HTTPException(status_code=503, detail="Local vision engine unavailable on this server")
+
+    import threading
+    threading.Thread(
+        target=vision_service.analyze_application_photos,
+        args=(app_id, photo_urls),
+        daemon=True,
+    ).start()
+    return {"status": "started", "detail": "Analisis visual berjalan di latar (±1-3 menit/foto). Muat ulang detail kandidat."}
+
+
 @router.get("/team/{job_id}")
 async def get_team_fingerprints(
     job_id: int,

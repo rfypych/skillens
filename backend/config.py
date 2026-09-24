@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     LLM_MODEL_NAME: str = "qwen/qwen3.8-27b"
     GROQ_API_KEY: str = ""
     LLM_FALLBACK_MODEL: str = "openai/gpt-oss-120b"
+    # Free key at https://aistudio.google.com/apikey — enables portfolio
+    # photo vision (services/vision.py). Empty = vision endpoint returns 503.
+    GOOGLE_API_KEY: str = ""
     
     @field_validator("JWT_SECRET_KEY")
     @classmethod
