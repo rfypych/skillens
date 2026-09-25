@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     # When false (default), evaluations run inline in a background task so results
     # are always produced even without Redis/worker infrastructure.
     USE_CELERY: bool = False
+    # Production domain(s) for CORS, comma-separated (e.g. https://skillens.id)
+    FRONTEND_URL: str = ""
     # LLM contract: primary via OPENAI_* (OpenAI-compatible, default Groq),
     # fallback via GROQ_API_KEY (or reuse OPENAI_API_KEY) + LLM_FALLBACK_MODEL.
     OPENAI_API_KEY: str = ""

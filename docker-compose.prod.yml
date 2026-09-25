@@ -1,0 +1,59 @@
+# Skillens PRODUCTION stack (VPS with root + Docker).
+# Differences from docker-compose.yml (local dev):
+# - No local postgres/redis: production uses Neon (DATABASE_URL) + Upstash (REDIS_URL).
+# - No celery worker (USE_CELERY=false; evaluations run inline in background).
+# - Caddy terminates HTTPS and proxies everything to the frontend;
+#   /api/* is rewritten server-side to the backend (never exposed directly).
+# - Secrets come from backend/.env (NEVER commit it).
+#
+# Usage on the VPS:
+#   DOMAIN=skillens.example.com docker compose -f docker-compose.prod.yml up -d --build
+# Caddy obtains HTTPS automatically once DNS points DOMAIN to the VPS.
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: skillens_backend
+    restart: always
+    expose:
+      - "8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - ENVIRONMENT=production
+      - USE_CELERY=false
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BACKEND_INTERNAL_URL: http://backend:8000
+    container_name: skillens_frontend
+    restart: always
+    expose:
+      - "3000"
+    environment:
+      - BACKEND_INTERNAL_URL=http://backend:8000
+    depends_on:
+      - backend
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: skillens_caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+
+volumes:
+  caddy_data:
+  caddy_config:

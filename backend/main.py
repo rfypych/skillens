@@ -126,7 +126,9 @@ app = FastAPI(
     version="0.1.0"
 )
 
-# CORS configuration
+# CORS configuration (FRONTEND_URL env adds the VPS/production domain)
+from config import settings as _cors_settings
+_extra_origins = [o.strip() for o in (_cors_settings.FRONTEND_URL or "").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -135,7 +137,8 @@ app.add_middleware(
         "https://skillens.com",
         "https://skillens-app.vercel.app",
         "https://skillens-ai.vercel.app",
-        "https://frontend-lime-alpha-rlgfjp477n.vercel.app"
+        "https://frontend-lime-alpha-rlgfjp477n.vercel.app",
+        *_extra_origins,
     ],
 
     allow_origin_regex=r"https://.*\.vercel\.app",

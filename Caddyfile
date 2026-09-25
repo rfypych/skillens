@@ -1,0 +1,7 @@
+# Skillens reverse proxy. Set domain via env: DOMAIN=... compose up.
+# Default (no DOMAIN): plain HTTP on :80 for local smoke tests.
+# - HTTPS automatic (Let's Encrypt) once a real DOMAIN's DNS points here.
+# - Everything goes to Next.js; /api/* is rewritten server-side to FastAPI.
+{$DOMAIN:localhost} {
+  reverse_proxy frontend:3000
+}
