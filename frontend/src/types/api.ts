@@ -70,6 +70,7 @@ export interface ApplicationDetail extends ApplicationSummary {
   resume_url?: string | null;
   resume_text?: string | null;
   resume_images?: string | null;
+  resume_visual_analysis?: string | null;
   assessment_results?: AssessmentResultDetail[];
   job?: { id?: number; title?: string } | null;
 }
