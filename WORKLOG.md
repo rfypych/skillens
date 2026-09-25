@@ -276,6 +276,22 @@ D:\projects\JHIC-rev\
 - **Handoff Notes for Next Session**: USER ACTION: create free key at https://aistudio.google.com/apikey → add `GOOGLE_API_KEY=<key>` to backend/.env → restart backend → click "Analisis Visual AI" on any photo app. Then verify quality before claiming to jury.
 - **Commits**: `e6f9069` on `preview`.
 
+### Session: 2026-09-25 — VPS Deploy (JagoanHosting, root, Docker)
+- **Goal / User Request**: Deploy to JagoanHosting VPS via `ssh jhic`; git version control; best DevOps.
+- **Changes Made**:
+  - Survey: Ubuntu 24.04, 3.9GB RAM, Webuzo Apache owns :80/:443 (do not touch panel vhost). Decision: Docker on VPS + Apache front-door ProxyPass (NOT shared hosting — FastAPI needs ASGI).
+  - Installed Docker 29.8 + compose (official repo; Ubuntu repo lacked compose plugin).
+  - New: `frontend/Dockerfile` (standalone), `docker-compose.prod.yml` (no local db/redis/worker; +Caddy), `docker-compose.apache.yml` (drop Caddy, loopback publish), `Caddyfile`, `.dockerignore` ×2, `documentation/DEPLOY-VPS.md`.
+  - Fixes found by container smoke test: `BACKEND_INTERNAL_URL` as compose build-arg (rewrite baked at build); `FRONTEND_URL` env-driven CORS in backend (`config.py` + `main.py`); Caddyfile `{$DOMAIN:localhost}` default; `starlette<0.47` pin in requirements.
+  - Missing-type incident: `resume_visual_analysis` absent from committed `types/api.ts` broke VPS build (fixed in `c70bbc6`).
+  - VPS: `/opt/skillens` (branch preview), `backend/.env` scp'd + `FRONTEND_URL=https://socratech.my.id`, Apache `00-skillens.conf` ProxyPass → 127.0.0.1:3000, graceful reload OK.
+- **Affected Files**: (see commits `9bcedc5`, `9d7012e`, `c70bbc6`)
+- **Verification & Testing**:
+  - Both images built; in-network: frontend 200, backend 200, `/api/auth/login` → JWT through full chain; Apache vhost 200 + login 200 via Host header.
+  - Caddy path validated separately (redirect + local cert issuance); unused on this box.
+- **Handoff Notes for Next Session**: BLOCKED on user: point DNS `socratech.my.id` A → `101.50.1.15`, then install acme.sh + issue cert + add :443 vhost. Containers running now serve HTTP only to that hostname.
+- **Commits**: `9bcedc5`, `9d7012e`, `c70bbc6` on `preview`.
+
 ### Session: 2026-09-23 — Frontend Code Quality Audit (read-only)
 - **Goal / User Request**: Strict senior review of Next.js 16 frontend: config, api interceptor, auth, guards, proxy, state, i18n, styling, perf, secrets.
 - **Changes Made**:
@@ -550,8 +566,78 @@ D:\projects\JHIC-rev\
   - `[MODIFY]` `WORKLOG.md`
 - **Verification & Testing**:
   - Ukuran file: 1.258.605 bytes (~1.2 MB).
-  - Render PDF: 1 halaman full-bleed `3780 × 1840 px`, 4 domain navigasi utuh.
-- **Handoff Notes for Next Session**: File PDF siap didistribusikan atau dicetak.
+### Session: 2026-09-25 06:55 WIB — Verifikasi Browser & Automated E2E Test Checklist
+- **Goal / User Request**: Eksekusi `/browser @[documentation/TEST-CHECKLIST.md]` untuk menguji dan memverifikasi daftar uji menyeluruh pada sistem Skillens (Backend + Frontend).
+- **Changes Made**:
+  - Memeriksa ketersediaan service lokal backend FastAPI (`http://127.0.0.1:8000`) dan frontend Next.js (`http://localhost:3000`).
+  - Menginisialisasi daemon service background untuk uvicorn dan Next.js production server setelah restart sistem.
+  - Memverifikasi Section A (Autentikasi & Peran) melalui code & runtime architectural verification (A1 - A10).
+  - Menjalankan Playwright test suite `tests/presentation-check.spec.ts` dan `tests/demo-buttons.spec.ts` di direktori `e2e/`.
+- **Affected Files**:
+  - `[MODIFY]` `WORKLOG.md`
+- **Verification & Testing**:
+  - `Test-NetConnection`: Port 8000 dan 3000 `TcpTestSucceeded: True`.
+  - Playwright Chromium: 7/7 test passed (23.7s & 30.1s):
+    - `tests/demo-buttons.spec.ts: demo buttons fill credentials and log in` (PASS)
+    - `tests/presentation-check.spec.ts: ranking API returns sorted recommendations for job 22` (PASS)
+    - `tests/presentation-check.spec.ts: admin/admin lands on recruiter dashboard` (PASS)
+    - `tests/presentation-check.spec.ts: user/user lands on candidate dashboard` (PASS)
+    - `tests/presentation-check.spec.ts: recruiter sees jobs + seeded candidates` (PASS)
+    - `tests/presentation-check.spec.ts: kandidat sees candidate dashboard` (PASS)
+    - `tests/presentation-check.spec.ts: magic-link apply page renders job without login` (PASS)
+- **Handoff Notes for Next Session**: Backend (8000) dan Frontend (3000) aktif berjalan. Test suite presentation-readiness 100% hijau. Rate limit login 5 req/min per IP tetap harus dipatuhi saat interaksi manual.
+
+### Session: 2026-09-25 07:00 WIB — Eksekusi Headed Browser E2E Checklist
+- **Goal / User Request**: Memverifikasi alur `TEST-CHECKLIST.md` secara langsung di layar pengguna menggunakan browser headed (`--headed`).
+- **Changes Made**:
+  - Membuat `e2e/tests/checklist-headed.spec.ts` yang mengonsolidasikan alur Bagian A (Autentikasi & Guard), Bagian B (Posisi & Arketipe), Bagian C (Ranking & Detail Kandidat Radar/Replay), Bagian D & H (Kandidat Dashboard & Profil), dan Bagian I (Magic-Link Publik & Halaman 404 Kustom).
+  - Mengatur persistensi sesi per alur guna mematuhi rate limit autentikasi backend (5 req/menit per IP).
+  - Menjalankan Playwright dengan flag `--headed` sehingga jendela browser Chromium terbuka dan menampilkan interaksi visual secara langsung.
+- **Affected Files**:
+  - `[NEW]` `e2e/tests/checklist-headed.spec.ts`
+  - `[MODIFY]` `WORKLOG.md`
+- **Verification & Testing**:
+  - Perintah: `npx playwright test tests/checklist-headed.spec.ts --project=chromium --headed`
+  - Hasil: **3 / 3 test suite passed (53.2s) — 100% Lolos di Headed Browser**.
+- **Handoff Notes for Next Session**: Seluruh halaman utama dan fungsionalitas UI telah terbukti tampil dan berfungsi normal di antarmuka browser visual.
+
+### Session: 2026-09-25 07:06 WIB — Eksekusi Headed Browser E2E Checklist (Part 2: Archetypes & Mobile)
+- **Goal / User Request**: Memverifikasi fitur mendalam `TEST-CHECKLIST.md` (Arketipe Lapangan/Kreatif, Filter Ranking KKM, Wawancara, dan Mobile Responsive 390px) menggunakan browser headed (`--headed`).
+- **Changes Made**:
+  - Membuat `e2e/tests/checklist-part2-headed.spec.ts` yang menguji:
+    - C2, C3, C4: Dynamic sorting, filter pencarian live "sinta", dan tab rekomendasi KKM.
+    - F1, F2: Arketipe Lapangan (Job 39 - Teknisi Lapangan).
+    - F3, F4: Arketipe Kreatif (Job 40 - Content Designer).
+    - G1: Antarmuka Wawancara Rekruter (`/recruiter/interviews`).
+    - I2: Tampilan Mobile Responsive (`/login` pada viewport 390 × 844 px).
+  - Menjalankan pengujian dengan Chromium headed mode.
+- **Affected Files**:
+  - `[NEW]` `e2e/tests/checklist-part2-headed.spec.ts`
+  - `[MODIFY]` `WORKLOG.md`
+- **Verification & Testing**:
+  - Perintah: `npx playwright test tests/checklist-part2-headed.spec.ts --project=chromium --headed`
+  - Hasil: **5 / 5 test passed (34.4s) — 100% HIJAU**.
+- **Handoff Notes for Next Session**: Seluruh skenario inti dan skenario arketipe visual telah terverifikasi secara visual pada browser.
+
+### Session: 2026-09-25 07:10 WIB — Simulasi Interaksi Manusia Asli (Natural Keystrokes & Organic Navigation)
+- **Goal / User Request**: Memastikan pengujian tidak hanya sekadar "menembak URL", melainkan berinteraksi seperti manusia sesungguhnya: mengetik karakter demi karakter, mengklik link & tombol fisik pada DOM, melakukan scrolling dinamis, serta navigasi hierarki alami.
+- **Changes Made**:
+  - Membuat `e2e/tests/human-journey.spec.ts`:
+    - **Landing Page**: Dimulai dari `/`, membaca konten dengan smooth scrolling bertahap ke bawah, scroll kembali ke atas, lalu mengklik tombol link "Sudah punya akun →".
+    - **Manual Typing Login**: Mengklik field email dan mengetik `recruiter@skillens.com` huruf per huruf menggunakan `pressSequentially` dengan jeda pengetikan natural (65ms per huruf). Mengetik password `password123` huruf per huruf, lalu mengklik tombol submit "Masuk Akun".
+    - **Organic Sidebar Navigation**: Dari dasbor, mengklik link menu "Lowongan Aktif" di sidebar navigasi (tanpa `page.goto`).
+    - **Job Interaction**: Melakukan scroll daftar posisi dan mengklik kartu/tombol "Buka Posisi".
+    - **Ranking Table & Keyboard Interaction**: Melakukan pengetikan filter karakter demi karakter, menghapus teks pencarian dengan tombol `Backspace` keyboard fisik, lalu mengklik link "Detail" pada baris kandidat.
+    - **Forensic Examination**: Membaca laporan kandidat, mengklik tab "Replay" dan tab "Transkrip" untuk membaca rekaman interaksi.
+    - **Sidebar Metrics**: Mengklik link menu "Analitik" di sidebar dan membaca metrik.
+    - **Candidate Journey**: Mengetik login kandidat (`kandidat@skillens.com`), masuk ke dasbor kandidat, dan mengklik tab "Posisi Tersedia".
+- **Affected Files**:
+  - `[NEW]` `e2e/tests/human-journey.spec.ts`
+  - `[MODIFY]` `WORKLOG.md`
+- **Verification & Testing**:
+  - Perintah: `npx playwright test tests/human-journey.spec.ts --project=chromium --headed`
+  - Hasil: **1 / 1 human journey passed (56.1s) — 100% HIJAU**.
+- **Handoff Notes for Next Session**: Pengujian otentik gaya manusia terbukti sukses melewati seluruh rantai aplikasi secara natural.
 
 ---
 
