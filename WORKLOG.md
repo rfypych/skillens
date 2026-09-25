@@ -292,6 +292,19 @@ D:\projects\JHIC-rev\
 - **Handoff Notes for Next Session**: BLOCKED on user: point DNS `socratech.my.id` A → `101.50.1.15`, then install acme.sh + issue cert + add :443 vhost. Containers running now serve HTTP only to that hostname.
 - **Commits**: `9bcedc5`, `9d7012e`, `c70bbc6` on `preview`.
 
+### Session: 2026-09-25 — Native mentor-flow deploy (no Docker, no tunnel dependency)
+- **Goal / User Request**: Replicate mentor's Webuzo flow: Node plugin + clone to project path + bind domain. (No Node plugin installed; Node absent → replicated natively.)
+- **Changes Made** (all on VPS, repo already had the code):
+  - Installed Node 20 LTS (nodesource); cloned `-b preview` to `/home/skillens/skillens` (owned by `skillens` user created earlier via panel).
+  - Python venv `/home/skillens/venv` + requirements; frontend `npm ci` + prod build (`BACKEND_INTERNAL_URL=http://127.0.0.1:8000` baked).
+  - systemd units `skillens-backend` (uvicorn :8000) + `skillens-frontend` (standalone :3000), enabled; Docker stack stopped (frees ~1GB RAM on 3.9GB box).
+  - Existing Apache `00-skillens.conf` ProxyPass + tunnel target unchanged (both point at 127.0.0.1:3000).
+- **Affected Files**: VPS-only (`/etc/systemd/system/skillens-*.service`); repo: none (no commit needed).
+- **Verification & Testing**:
+  - backend 200, frontend 200, Apache vhost 200, login→JWT through full chain, tunnel URL 200.
+- **Handoff Notes for Next Session**: Public 80/443 still shared-infra (unchanged). To update app: `cd /home/skillens/skillens && git pull && rebuild frontend + systemctl restart skillens-*`.
+- **Commits**: none (ops only).
+
 ### Session: 2026-09-23 — Frontend Code Quality Audit (read-only)
 - **Goal / User Request**: Strict senior review of Next.js 16 frontend: config, api interceptor, auth, guards, proxy, state, i18n, styling, perf, secrets.
 - **Changes Made**:
