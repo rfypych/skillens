@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Skillens — Peta Visual Alur</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,500;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #FAFAF8; color: #111; padding: 28px 30px; position: relative; }
+  body::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(900px 300px at 50% -80px, rgba(242,101,34,.10), transparent 70%),
+      repeating-linear-gradient(115deg, transparent 0 90px, rgba(242,101,34,.04) 90px 150px, transparent 150px 250px); }
+  .sheet { max-width: 1560px; margin: 0 auto; position: relative; }
+  .hero { background: #0c1222; border-radius: 22px; padding: 30px; text-align: center; position: relative; overflow: hidden; margin-bottom: 20px;
+    background-image: radial-gradient(700px 260px at 50% -60px, rgba(242,101,34,.35), transparent 70%); }
+  .hero .eyebrow { font-size: 10.5px; font-weight: 800; letter-spacing: .28em; text-transform: uppercase; color: #fff; }
+  .hero .eyebrow b { color: #F26522; }
+  .hero h1 { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-weight: 600; font-size: 46px; color: #fff; margin-top: 4px; }
+  .hero h1 span { font-family: 'Inter', sans-serif; font-style: normal; font-weight: 800; color: #F26522; }
+  .hero p { font-size: 12px; color: #b8c0cc; margin-top: 8px; }
+  .hero .badges { margin-top: 14px; display: flex; gap: 8px; justify-content: center; }
+  .hero .badges span { border-radius: 999px; padding: 5px 14px; font-size: 11px; font-weight: 800; }
+  .hero .badges .m { background: #0f766e; color: #fff; } .hero .badges .d { background: #F26522; color: #fff; }
+  h2.flow-title { font-size: 19px; font-weight: 800; letter-spacing: -0.01em; margin: 22px 0 4px; display: flex; align-items: center; gap: 10px; }
+  h2.flow-title .tag { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #fff; border-radius: 999px; padding: 4px 12px; }
+  h2.flow-title .tag.m { background: #0f766e; } h2.flow-title .tag.d { background: #F26522; }
+  p.flow-desc { font-size: 12px; color: #666; margin-bottom: 14px; }
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step { display: flex; gap: 16px; align-items: flex-start; }
+  .rail { display: flex; flex-direction: column; align-items: center; min-width: 34px; }
+  .num { width: 30px; height: 30px; border-radius: 50%; background: #111; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step:last-child .conn { display: none; }
+  .conn { width: 3px; flex: 1; min-height: 26px; background: #F26522; opacity: .45; border-radius: 2px; margin: 6px 0; }
+  .card { flex: 1; background: #fff; border: 1px solid #e4e4e4; border-radius: 14px; padding: 14px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(17,17,17,.06); display: flex; gap: 16px; }
+  .shot { flex-shrink: 0; border: 1px solid #d7dde3; border-radius: 10px; overflow: hidden; background: #f4f6f8; }
+  .shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .shot.phone { width: 200px; height: 300px; border-radius: 22px; border-width: 3px; border-color: #111; }
+  .shot.desktop { width: 560px; height: 300px; }
+  .info { flex: 1; min-width: 0; }
+  .route { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; color: #fff; background: #1f2937; border-radius: 5px; padding: 3px 8px; display: inline-block; margin-bottom: 6px; }
+  .info h3 { font-size: 15px; font-weight: 800; color: #111; }
+  .info p { font-size: 11.5px; color: #555; line-height: 1.55; margin-top: 4px; }
+  .info p b { color: #111; }
+  .foot { text-align: center; color: #888; font-size: 10.5px; margin-top: 10px; padding-top: 12px; border-top: 1px solid #e0e0e0; }
+  .foot .mono { font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="hero">
+    <div class="eyebrow">SKILLENS <b>/</b> EVIDENCE-BASED HIRING</div>
+    <h1>Peta Visual <span>Alur.</span></h1>
+    <p>Screenshot asli per halaman mengikuti alur pengguna · <span style="font-family:'JetBrains Mono',monospace">26 Sep 2026</span></p>
+    <div class="badges"><span class="m">KANDIDAT / MOBILE 390PX</span><span class="d">REKRUTER / DESKTOP 1440PX</span></div>
+  </div>
+
+  <h2 class="flow-title"><span class="tag m">Kandidat · Mobile</span> Membuktikan, bukan mengklaim</h2>
+  <p class="flow-desc">7 langkah dari dashboard hingga profil, direkam di viewport ponsel 390px.</p>
+  <div class="steps">
+    <div class="step"><div class="rail"><div class="num">1</div><div class="conn"></div></div><div class="card"><div class="shot phone"><img src="visual/map-c-dashboard.png"></div><div class="info"><span class="route">/candidate/dashboard</span><h3>Pusat Penilaian</h3><p> <b>Start alur kandidat.</b> Lamaran saya, posisi terbuka, tombol Lamar, unduh report bukti. Modal setup profil menyapa pengguna baru.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">2</div><div class="conn"></div></div><div class="card"><div class="shot phone"><img src="visual/map-c-job.png"></div><div class="info"><span class="route">/candidate/job/[job_id]</span><h3>Detail Lowongan</h3><p>Deskripsi peran + tombol ajukan lamaran. Titik masuk sebelum portal evaluasi.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">3</div><div class="conn"></div></div><div class="card"><div class="shot phone"><img src="visual/map-c-apply.png"></div><div class="info"><span class="route">/candidate/apply/[job_id]</span><h3>Portal Magic-Link</h3><p> <b>Tanpa login.</b> Isi nama + email + unggah CV PDF (maks 5MB). Di sinilah <b>CV mulai diproses AI</b>: teks diekstrak, foto dokumentasi disimpan.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">4</div><div class="conn"></div></div><div class="card"><div class="shot phone"><img src="visual/map-c-instructions.png"></div><div class="info"><span class="route">/candidate/instructions/[id]</span><h3>Panduan Assessment</h3><p>Modal 3 tahap + persetujuan telemetri (tab, paste, ketikan) sebelum timer 15 menit berjalan.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">5</div><div class="conn"></div></div><div class="card"><div class="shot phone"><img src="visual/map-c-test.png"></div><div class="info"><span class="route">/candidate/test/[app_id]</span><h3>Ruang Ujian AI</h3><p> <b>Jantung sistem.</b> Chat 4 turn dengan pewawancara AI yang <b>membaca CV</b> (terbukti: menantang klaim vs isi CV), timer,composer jawaban, pelacakan telemetri real-time.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">6</div><div class="conn"></div></div><div class="card"><div class="shot phone"><img src="visual/map-c-interviews.png"></div><div class="info"><span class="route">/candidate/interviews</span><h3>Undangan Wawancara</h3><p>Jadwal dari rekruter + catatan persiapan. Jembatan bukti-digital ke tatap muka.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">7</div><div class="conn"></div></div><div class="card"><div class="shot phone"><img src="visual/map-c-profile.png"></div><div class="info"><span class="route">/candidate/profile</span><h3>Profil &amp; CV</h3><p>Bio, pengalaman, CV tersimpan (dipakai otomatis saat apply berikutnya), bahasa platform.</p></div></div></div>
+  </div>
+
+  <h2 class="flow-title"><span class="tag d">Rekruter · Desktop</span> Memutuskan berbasis bukti</h2>
+  <p class="flow-desc">10 langkah pusat komando, direkam di desktop 1440px.</p>
+  <div class="steps">
+    <div class="step"><div class="rail"><div class="num">1</div><div class="conn"></div></div><div class="card"><div class="shot desktop"><img src="visual/map-r-home.png"></div><div class="info"><span class="route">/recruiter</span><h3>Pusat Komando</h3><p>Hero metrik, statistik evaluasi, <b>Evaluasi Terbaru</b>, tombol Muat Data Demo. Pandangan pertama juri.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">2</div><div class="conn"></div></div><div class="card"><div class="shot desktop"><img src="visual/map-r-jobs.png"></div><div class="info"><span class="route">/recruiter/jobs</span><h3>Posisi Aktif</h3><p>Kartu lowongan (Teknis/Lapangan), jumlah kandidat, <b>salin magic-link</b>, buka posisi.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">3</div><div class="conn"></div></div><div class="card"><div class="shot desktop"><img src="visual/map-r-new.png"></div><div class="info"><span class="route">/recruiter/jobs/new</span><h3>Buat Posisi (Wizard)</h3><p> <b>Pemilih arketipe Teknis/Lapangan/Kreatif</b> menentukan format simulasi AI + JD debiasing + KKM. Jawaban atas feedback juri.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">4</div><div class="conn"></div></div><div class="card"><div class="shot desktop"><img src="visual/map-r-ranking.png"></div><div class="info"><span class="route">/recruiter/jobs/[id]</span><h3>Ranking + Rekomendasi</h3><p> <b>Tabel sortable + search</b> (BoardUI), peringkat stabil, pill KKM/kecurangan, tombol Undang Wawancara, tab Rekomendasi AI.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">5</div><div class="conn"></div></div><div class="card"><div class="shot desktop"><img src="visual/map-r-candidates.png"></div><div class="info"><span class="route">/recruiter/candidates</span><h3>Daftar Kandidat</h3><p>Semua pelamar lintas posisi: label AI, skor bukti bar, telemetri peringatan, tombol Laporan per baris.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">6</div><div class="conn"></div></div><div class="card"><div class="shot desktop"><img src="visual/map-r-detail.png"></div><div class="info"><span class="route">/recruiter/candidates/[app_id]</span><h3>Detail Kandidat</h3><p> <b>Ringkasan AI, 5 dimensi + radar, replay ketikan, transkrip, analisis CV, galeri foto + analisis visual AI.</b> Bukti paling lengkap.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">7</div><div class="conn"></div></div><div class="card"><div class="shot desktop"><img src="visual/map-r-interviews.png"></div><div class="info"><span class="route">/recruiter/interviews</span><h3>Wawancara</h3><p>Jadwalkan sesi (ID lamaran + waktu + meet) + daftar terjadwal + nilai pasca-wawancara.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">8</div><div class="conn"></div></div><div class="card"><div class="shot desktop"><img src="visual/map-r-metrics.png"></div><div class="info"><span class="route">/recruiter/metrics</span><h3>Analitik</h3><p>KPI + <b>delta jujur</b>, distribusi keselarasan, nilai efisiensi AI, volume 7 hari.</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">9</div><div class="conn"></div></div><div class="card"><div class="shot desktop"><img src="visual/map-r-settings.png"></div><div class="info"><span class="route">/recruiter/settings</span><h3>Pengaturan</h3><p>Profil, perusahaan, bahasa platform (ID/EN).</p></div></div></div>
+    <div class="step"><div class="rail"><div class="num">10</div><div class="conn"></div></div><div class="card"><div class="shot desktop"><img src="visual/map-r-team.png"></div><div class="info"><span class="route">/recruiter/settings/team</span><h3>Tim</h3><p>Undang sub-akun rekruter, daftar anggota, scope perusahaan.</p></div></div></div>
+  </div>
+
+  <div class="foot">Skillens / Evidence-Based Hiring · screenshot asli Chromium · <span class="mono">26 Sep 2026</span> · demo: <span class="mono">recruiter@skillens.com / kandidat@skillens.com / password123</span></div>
+</div>
+</body>
+</html>
