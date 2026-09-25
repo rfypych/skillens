@@ -188,6 +188,10 @@ def get_assessment_prompt(db: Session, application_id: int, current_user: models
         raise HTTPException(status_code=404, detail="Application not found")
     if app.user_id != current_user.id and current_user.role not in ["recruiter", "admin"]:
         raise HTTPException(status_code=403, detail="Not authorized")
+    # Candidates may only enter an active (testing) session; evaluated apps
+    # show the friendly "Sesi Ujian Tidak Tersedia" error card instead.
+    if current_user.role == "candidate" and app.status != "testing":
+        raise HTTPException(status_code=403, detail="Assessment already submitted")
     assessment = db.query(models.Assessment).filter(models.Assessment.job_id == app.job_id).first()
     if not assessment:
         raise HTTPException(status_code=404, detail="Assessment not ready")
