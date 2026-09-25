@@ -1,0 +1,15 @@
+# Skillens on shared Apache front-door (e.g. Webuzo/cPanel boxes where
+# Apache owns :80/:443). Apache vhost does ProxyPass to 127.0.0.1:3000.
+# No Caddy here. Secrets from backend/.env (NEVER commit it).
+#
+# Usage on the VPS:
+#   docker compose -f docker-compose.prod.yml -f docker-compose.apache.yml up -d --build
+# The second file overrides: drops caddy, publishes frontend on loopback only.
+
+services:
+  frontend:
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  caddy:
+    profiles: ["disabled"]
