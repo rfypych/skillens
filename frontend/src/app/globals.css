@@ -5,17 +5,6 @@
 @import "../styles/boardui-table.css";
 @plugin "@tailwindcss/typography";
 
-@font-face {
-  font-family: "Helvetica Regular";
-  src: url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.eot");
-  src: url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.eot?#iefix") format("embedded-opentype"),
-       url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.woff2") format("woff2"),
-       url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.woff") format("woff"),
-       url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.ttf") format("truetype"),
-       url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.svg#Helvetica Regular") format("svg");
-  font-display: swap;
-}
-
 .font-playfair {
   font-family: 'Playfair Display', Georgia, serif;
 }
@@ -33,13 +22,15 @@
   --color-brand-white: #FEFEFE;
 
   --font-helvetica: "Helvetica Regular", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-helvetica);
-  --font-display: var(--font-helvetica);
+  /* Body + display use self-hosted Inter (next/font): zero slow external
+     font downloads on first paint. Helvetica stack kept as fallback only. */
+  --font-sans: var(--font-inter), "Helvetica Regular", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-inter), "Helvetica Regular", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono);
 }
 
 :root {
-  font-family: var(--font-helvetica);
+  font-family: var(--font-sans);
   background-color: #f0f0f0;
   color: #070707;
   scroll-behavior: smooth;
@@ -199,6 +190,13 @@ html.lenis, html.lenis body {
 /* Tabular numerals for scores, rankings, and telemetry data (opt-in via .tnum) */
 .tnum {
   font-variant-numeric: tabular-nums;
+}
+
+/* BoardUI app surfaces (everything except the landing page) render in Inter,
+ * matching BoardUI's --font-sans chain. Apply on shell/page roots; the
+ * landing page keeps the brand Helvetica stack via font-sans. */
+.font-boardui {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 input, textarea {
