@@ -2,9 +2,12 @@
 
 import Link from 'next/link';
 import { HeroSection } from '@/components/landing/HeroSection';
+import { PreviewSection } from '@/components/landing/PreviewSection';
+import { LogoCloudSection } from '@/components/landing/LogoCloudSection';
 import { SolusiSection } from '@/components/landing/SolusiSection';
 import { MetricsSection } from '@/components/landing/MetricsSection';
 import { FeaturesSection } from '@/components/landing/FeaturesSection';
+import { StepsSection } from '@/components/landing/StepsSection';
 import { CTASection } from '@/components/landing/CTASection';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
 
@@ -16,19 +19,28 @@ export default function LandingPage() {
         {/* 1. Hero */}
         <HeroSection />
 
-        {/* 2. Solusi Section */}
+        {/* 2. Pratinjau produk ala BoardUI */}
+        <PreviewSection />
+
+        {/* 3. Logo cloud */}
+        <LogoCloudSection />
+
+        {/* 4. Solusi Section */}
         <SolusiSection />
 
-        {/* 3. Metrics Section */}
+        {/* 5. Metrics Section */}
         <MetricsSection />
 
-        {/* 4. Features Section */}
+        {/* 6. Features Section */}
         <FeaturesSection />
 
-        {/* 5. CTA Section */}
+        {/* 7. Cara kerja */}
+        <StepsSection />
+
+        {/* 8. CTA Section */}
         <CTASection />
 
-        {/* 6. Footer */}
+        {/* 9. Footer */}
         <footer className="w-full max-w-[1760px] mx-auto px-5 md:px-10 py-12 md:py-16 border-t border-separator-border mt-5 font-boardui">
           <div className="flex flex-col md:flex-row items-start justify-between gap-12">
 

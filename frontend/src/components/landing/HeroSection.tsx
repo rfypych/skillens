@@ -3,8 +3,10 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { RiSparklingLine } from '@remixicon/react';
 import ShaderBackground from '@/components/ShaderBackground';
 import TextRollButton from '@/components/TextRollButton';
+import { Chip } from '@/components/base/badges/chip';
 import { useState, useEffect } from 'react';
 import {
   IconArrowUpRight,
@@ -102,6 +104,12 @@ export function HeroSection() {
         {/* ── Main Heading + Subtitle ── */}
         <div className="relative z-30 flex flex-col items-center text-center px-5 mt-[4vh] sm:mt-[7vh] md:mt-[8vh]">
 
+          <Chip variant="subtle" color="orange" className="mb-5">
+            <span className="inline-flex items-center gap-1.5">
+              <RiSparklingLine className="size-3.5" aria-hidden />
+              Rekrutmen berbasis bukti
+            </span>
+          </Chip>
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}

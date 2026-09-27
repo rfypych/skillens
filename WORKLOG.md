@@ -761,6 +761,25 @@ D:\projects\JHIC-rev\
   - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
 
+### Session: 2026-09-23 — Landing ala BoardUI versi Skillens
+- **Goal / User Request**: Source BoardUI masih ada? Miripkan landing BoardUI tapi versi aplikasi kita. (Sumber: re-clone shallow ke Temp, repo BoardUI hanya berisi primitif landing + pola AppShell; struktur marketing diambil dari arsitektur BoardUI.com: badge hero, visual produk, logo cloud, bento, get-started, CTA.)
+- **Changes Made**:
+  - Hero: badge Chip "Rekrutmen berbasis bukti" (ciri khas Playfair/shader/motion/widget utuh).
+  - Baru `PreviewSection`: bingkai browser + StatCards + tabel peringkat BoardUI asli (data demo) + caption pratinjau.
+  - Baru `LogoCloudSection`: strip sponsor dalam kartu.
+  - Baru `StepsSection`: 3 langkah bernomor mono + CTA (cermin get-started BoardUI).
+  - `page.tsx`: urutan Hero, Preview, LogoCloud, Solusi, Metrics, Features, Steps, CTA, footer.
+- **Affected Files**:
+  - `[NEW]` `frontend/src/components/landing/PreviewSection.tsx`, `LogoCloudSection.tsx`, `StepsSection.tsx`
+  - `[MODIFY]` `frontend/src/components/landing/HeroSection.tsx`, `frontend/src/app/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright 3 shot (hero badge, preview browser-frame, steps + CTA): sesuai. 0 pageerror. Temp dibersihkan.
+
+### Session: 2026-09-23 — Push Landing ke preview (199b625)
+- **Goal / User Request**: Push ke preview.
+- **Changes Made**: Gate (secret-scan bersih, tsc/build hijau sebelumnya) → stage 7 file → commit `199b625` + push `preview` (`a13490e..199b625`): landing BoardUI (hero dijaga + bawah revisi total) + worklog.
+- **Verification**: Remote `preview` maju ke `199b625`; working tree bersih kecuali untracked lama.
+
 ### Session: 2026-09-23 — Landing BoardUI (Hero Dijaga, Bawah Revisi Total)
 - **Goal / User Request**: Klarifikasi user: yang dimaksud landing page. Hero jangan hilang ciri khas, revisi dikit stylenya; ke bawah revisi total.
 - **Changes Made**:
