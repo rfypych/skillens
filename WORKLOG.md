@@ -761,6 +761,60 @@ D:\projects\JHIC-rev\
   - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
 
+### Session: 2026-09-23 — ASCII Bilah Diagonal Persis Shader Hero
+- **Goal / User Request**: ASCII harus mirip shader WebGL hero (referensi screenshot bilah kaca diagonal), efek persis. Panel oranye, animasi putih, ada hover.
+- **Changes Made**:
+  - `OrangeFlowAscii` ditulis ulang: 3 bilah ASCII diagonal (sumbu miring turun-kanan, drift 26px/s) + garis halus, charset ringan tanpa `#`, zona tenang di belakang headline, hover boost + tolak. Iterasi jujur: v1 terlalu penuh menabrak teks → dijarangkan (bilah ramping, ambang 0.22, alpha max 0.75).
+  - Panel + mobile header tetap gradien token gelap; teks putih.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/OrangeFlowAscii.tsx`
+- **Verification & Testing**:
+  - `npm run build` green (tsc bersih sesi lalu, tak ada perubahan tipe). Playwright: bilah diagonal jarang + headline terbaca. Temp dibersihkan.
+
+### Session: 2026-09-23 — Riset Efek + Panel Gelap + Kembali ke Dot-Matrix
+- **Riset (context7 canvas-ui + web deep)**: teknik pro = partikel menyusuri noise + trail + tolak kursor + gerbang hemat (IntersectionObserver, visibility, reduced-motion beku). Diterapkan.
+- **Panel**: `bg-accent-500` → gradien token `800→700→600` (lebih gelap, tetap palet).
+- **Kejujuran**: versi orbit partikel saya nilai sendiri jelek (konfeti acak menabrak teks) → revert ke dot-matrix spiral + falloff yang terbukti rapi. Versi final: matriks titik putih tenang + hover.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/OrangeFlowAscii.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/app/signup/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright: dot-matrix rapi + hover. Temp dibersihkan.
+
+### Session: 2026-09-23 — Panel Oranye + ASCII Putih ala Cloudflare
+- **Goal / User Request**: ASCII keren seperti referensi Cloudflare (panel oranye solid + dot-matrix putih), bukan versi sebelumnya. Biru tua → oranye, animasi putih, gerak mirip shader hero, ada efek hover.
+- **Changes Made**:
+  - Baru `OrangeFlowAscii.tsx`: dot-matrix putih (kanvas 2D ringan) — 3 lengan spiral + riak aliran + falloff radial padat-tengah, meniru Swirl/ChromaFlow hero. Hover: titik menyala + menjauh dalam radius. Cap 30fps, DPR 1.5, reduced-motion statis, pause tab hidden.
+  - Panel login + signup: `bg-[#0F172A]` → `bg-accent-500` solid; teks aksen → putih; header mobile ikut oranye. `GlyphLogoArt` dihapus (diganti total).
+  - Iterasi visual: versi 1 terlalu seragam (kata user kurang keren) → v2 spiral + falloff + hover kuat, terverifikasi screenshot.
+- **Affected Files**:
+  - `[NEW]` `frontend/src/components/OrangeFlowAscii.tsx`
+  - `[DELETE]` `frontend/src/components/GlyphLogoArt.tsx`
+  - `[MODIFY]` `frontend/src/app/login/page.tsx`, `frontend/src/app/signup/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright: panel oranye + dot-matrix + hover boost terlihat. Temp dibersihkan.
+
+### Session: 2026-09-23 — Glyphcast: Logo ASCII Ganti WebGL Berat
+- **Goal / User Request**: Pakai narsixyz/glyphcast untuk menggantikan efek shader WebGL yang berat.
+- **Riset**: clone glyphcast, baca `ascii-converter.ts` (downsample offscreen → luminansi BT.601 → petakan charset). Karena tak ada file LISENSI di repo itu, pipa ditulis ulang dari nol (teknik generik) + kredit inspirasi di komentar — bukan copy-paste kode.
+- **Changes Made**:
+  - Baru `GlyphLogoArt.tsx`: logo mark → ASCII rampa oranye 7 stop (komposit alpha di atas warna panel), kilau diagonal halus ~8fps, hormat reduced-motion + pause tab hidden, gagal muat = render kosong (graceful).
+  - Panel gelap login + signup: ShaderBackground diganti seni ASCII logo (tak ada lagi chunk `shaders/*` di rute auth desktop).
+- **Affected Files**:
+  - `[NEW]` `frontend/src/components/GlyphLogoArt.tsx`
+  - `[MODIFY]` `frontend/src/app/login/page.tsx`, `frontend/src/app/signup/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright: swirl ASCII oranye tampil di panel. Temp dibersihkan.
+- **Handoff Notes for Next Session**: ShaderBackground masih dipakai header mobile auth + hero landing (sengaja, permukaan kecil/karakter brand). Clone acuan di Temp (`glyphcast-ref`) akan hilang sendiri.
+
+### Session: 2026-09-23 — Signup Mirror Login (Split Konsisten)
+- **Goal / User Request**: Login dan daftar tidak konsisten; miripkan daftar dengan login.
+- **Changes Made**:
+  - `signup/page.tsx` ditulis ulang mengikuti struktur login persis: mobile card-sheet gelap + desktop split form/panel (panel pemasaran + headline sama), BoardUI skin, semua logika utuh (role toggle, company kondisional, demo 1-ketuk, Masuk link, sponsor). Eye password pola bottom-anchored yang sudah diperbaiki.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/app/signup/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. Playwright desktop + mobile: cermin login. Temp dibersihkan.
+
 ### Session: 2026-09-23 — Copywriting BoardUI: Analisa Korpus, De-hiperbola
 - **Analisa BoardUI (dari situs asli)**: (1) Penamaan literal ("Data table", "File upload"); (2) verba fungsional present ("Filter, sort and paginate"); (3) nomina konkret + angka; (4) deskripsi satu kalimat tanpa tumpuk adjektiva; (5) nol superlatif ("best/ultimate/revolutionary" tak ada); (6) tombol verba+objek 1-3 kata; (7) pernyataan scope jujur; (8) empty state fakta tenang; (9) nol tanda seru/emoji/caps.
 - **Temuan hiperbola Skillens**: "kepastian mutlak" (hero login), "kandidat terbaik", "100% praktis", "Otomatis 100%", belasan toast berseru, deskripsi dashboard "Eliminasi...".

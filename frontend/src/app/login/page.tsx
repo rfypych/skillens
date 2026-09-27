@@ -14,7 +14,7 @@ import {
 } from '@remixicon/react';
 import { api } from '@/lib/api';
 import SponsorLogos from '@/components/SponsorLogos';
-import ShaderBackground from '@/components/ShaderBackground';
+import OrangeFlowAscii from '@/components/OrangeFlowAscii';
 import { Button } from '@/components/base/buttons/button';
 import { IconButton } from '@/components/base/buttons/icon-button';
 import { Input } from '@/components/base/input/input';
@@ -89,10 +89,10 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background-full font-boardui overflow-x-hidden">
 
       {/* MOBILE VIEW (< lg): Dribbble Card Sheet Layout */}
-      <div className="flex lg:hidden min-h-screen flex-col justify-between bg-[#0F172A]">
+      <div className="flex lg:hidden min-h-screen flex-col justify-between bg-gradient-to-b from-accent-800 via-accent-700 to-accent-600">
         {/* Top WebGL Header Area */}
-        <div className="relative w-full h-[220px] sm:h-[260px] text-white p-4 flex flex-col justify-between overflow-hidden">
-          <ShaderBackground variant="dark" />
+        <div className="relative w-full h-[220px] sm:h-[260px] text-white p-4 flex flex-col justify-between overflow-hidden bg-gradient-to-b from-accent-800 to-accent-700">
+          <OrangeFlowAscii />
           <div className="relative z-20 w-full flex items-center justify-between">
             <Link
               href="/"
@@ -323,9 +323,11 @@ export default function LoginPage() {
 
         {/* WebGL Side - Flush Right Edge Floating Panel */}
         <div className="w-[58%] xl:w-[62%] p-3 pl-0">
-          <div className="w-full h-full bg-[#0F172A] rounded-3xl p-12 lg:p-16 text-white flex flex-col justify-between items-start relative overflow-hidden shadow-dropdown">
-            {/* WebGL Shader Background Overlay */}
-            <ShaderBackground variant="dark" />
+          <div className="w-full h-full bg-gradient-to-br from-accent-800 via-accent-700 to-accent-600 rounded-3xl p-12 lg:p-16 text-white flex flex-col justify-between items-start relative overflow-hidden shadow-dropdown">
+            {/* Aliran ASCII putih ala shader hero — ringan, tanpa WebGL */}
+            <div className="absolute inset-0" aria-hidden>
+              <OrangeFlowAscii />
+            </div>
 
             {/* Clean Brand Header */}
             <div className="relative z-20">
@@ -339,9 +341,9 @@ export default function LoginPage() {
               <div>
                 <h2 className="text-display-3-medium lg:text-display-2-medium text-white leading-[1.08]">
                   Merekrut bakat tepat,<br/>
-                  <span className="text-accent-500">dengan bukti nyata.</span>
+                  <span className="text-white">dengan bukti nyata.</span>
                 </h2>
-                <p className="text-body-1-medium text-white/70 leading-relaxed max-w-lg mt-6">
+                <p className="text-body-1-medium text-white/85 leading-relaxed max-w-lg mt-6">
                   Skillens mengeliminasi klaim palsu resume dengan simulasi studi kasus interaktif berbasis telemetry AI cerdas.
                 </p>
               </div>
