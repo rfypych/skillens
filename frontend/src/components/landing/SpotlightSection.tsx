@@ -6,7 +6,7 @@ import { Chip } from '@/components/base/badges/chip';
 export function SpotlightSection() {
   return (
     <section className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-4 md:py-6 font-boardui">
-      <div className="flex flex-col md:flex-row md:items-center gap-6 rounded-2xl bg-[#0B0B0C] p-6 md:p-10 overflow-hidden relative">
+      <div className="flex flex-col md:flex-row md:items-center gap-6 rounded-3xl bg-[#0B0B0C] p-6 md:p-10 overflow-hidden relative">
         <div
           className="pointer-events-none absolute inset-0"
           aria-hidden
@@ -19,7 +19,7 @@ export function SpotlightSection() {
           <p className="text-caption-1-semibold text-white/40">
             Sorotan
           </p>
-          <h2 className="text-title-1-medium text-white max-w-md">
+          <h2 className="text-title-2-medium text-white max-w-md">
             Telemetri yang layak ditatap.
           </h2>
           <p className="text-body-medium text-white/60 max-w-md">

@@ -31,12 +31,12 @@ export function DemoAccessSection() {
         <p className="text-caption-1-semibold text-text-tertiary">
           Coba langsung
         </p>
-        <h2 className="text-title-1-medium text-text-primary max-w-xl">
+        <h2 className="text-title-2-medium text-text-primary max-w-xl">
           Masuk sebagai demo, tanpa daftar.
         </h2>
       </div>
 
-      <div className="overflow-hidden rounded-2xl bg-[#0B0B0C]">
+      <div className="overflow-hidden rounded-3xl bg-[#0B0B0C]">
         <div className="flex items-center justify-between gap-2 border-b border-white/10 px-4 py-3">
           <div className="flex items-center gap-1.5" aria-hidden>
             <span className="size-2.5 rounded-full bg-white/15" />

@@ -40,7 +40,7 @@ export function SolusiSection() {
           <p className="text-caption-1-semibold text-text-tertiary">
             Solusi evaluasi
           </p>
-          <h2 className="text-title-1-medium text-text-primary max-w-xl">
+          <h2 className="text-title-2-medium text-text-primary max-w-xl">
             Merekrut berdasarkan kemampuan nyata.
           </h2>
         </div>
@@ -69,7 +69,7 @@ export function SolusiSection() {
                 <Link
                   href="/signup"
                   aria-label={`Mulai ${item.title}`}
-                  className="flex size-8 items-center justify-center rounded-full text-foreground-icon-tertiary outline-none transition-colors hover:bg-background-tertiary-default hover:text-text-primary focus-visible:ring-2 focus-visible:ring-border-focus-ring"
+                  className="flex size-8 items-center justify-center rounded-full text-foreground-icon-tertiary outline-none transition-colors hover:bg-background-tertiary-default hover:text-text-primary active:bg-background-primary-active focus-visible:ring-2 focus-visible:ring-border-focus-ring"
                 >
                   <RiArrowRightUpLine className="size-4" aria-hidden />
                 </Link>

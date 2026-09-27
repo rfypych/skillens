@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { RiArrowRightUpLine, RiBriefcaseLine, RiUserSmileLine } from '@remixicon/react';
+import { LinkButton } from '@/components/base/buttons/link-button';
 
 const PORTALS = [
   {
@@ -29,7 +29,7 @@ export function PortalsSection() {
         <p className="text-caption-1-semibold text-text-tertiary">
           Template siap pakai
         </p>
-        <h2 className="text-title-1-medium text-text-primary max-w-xl">
+        <h2 className="text-title-2-medium text-text-primary max-w-xl">
           Dua portal, satu bukti.
         </h2>
       </div>
@@ -38,7 +38,7 @@ export function PortalsSection() {
         {PORTALS.map((p) => (
           <div
             key={p.title}
-            className="flex min-w-0 flex-col gap-4 rounded-2xl border border-border-button-default bg-background-primary-default p-5 md:p-6 shadow-card"
+            className="flex min-w-0 flex-col gap-4 rounded-3xl border border-border-button-default bg-background-primary-default p-5 md:p-6 shadow-card"
           >
             <span className="flex size-10 items-center justify-center rounded-2lg bg-gradient-to-b from-accent-500 to-accent-600">
               <p.icon className="size-5 shrink-0 text-white" aria-hidden />
@@ -55,13 +55,15 @@ export function PortalsSection() {
                 </li>
               ))}
             </ul>
-            <Link
+            <LinkButton
               href={p.href}
-              className="mt-auto inline-flex items-center gap-1.5 text-body-medium text-accent-600 outline-none transition-colors hover:text-accent-700 focus-visible:ring-2 focus-visible:ring-border-focus-ring"
+              variant="primary"
+              size="small"
+              trailingIcon={RiArrowRightUpLine}
+              className="mt-auto self-start"
             >
               {p.cta}
-              <RiArrowRightUpLine className="size-3.5" aria-hidden />
-            </Link>
+            </LinkButton>
           </div>
         ))}
       </div>

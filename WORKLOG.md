@@ -761,6 +761,18 @@ D:\projects\JHIC-rev\
   - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
 
+### Session: 2026-09-23 — Audit Standar BoardUI Resmi (Skill + Graphify)
+- **Goal / User Request**: Belum benar-benar mempelajari UI BoardUI; beberapa seksi aislop dan tak penuhi standar. Revisi pakai context7/graphify.
+- **Studi**: skill resmi BoardUI (`.agents/skills/boardui/`: SKILL + patterns/motion/theming) + graphify query/topik standar. Temuan koreksi penting: kartu/panel = `rounded-3xl` (koreksi 2xl saya sebelumnya SALAH), heading seksi = `title-2`, tombol teks = LinkButton, press = step warna `active:`, keyframe wajib guard reduced-motion, ubin stat 2xl mengikuti source komponen.
+- **Changes Made**:
+  - Panel (preview/logo/steps/portals/demo/spotlight/showcase) → 3xl; heading seksi → title-2; FAQ → rounded-xl (baris menu).
+  - Link inline (Mulai Evaluasi, portal CTA) → LinkButton resmi; `active:` press states dilengkapi.
+  - Animasi blink telemetri (tanpa guard, off-scale) DIHAPUS → bar statis.
+  - `graphify update .` pasca-edit.
+- **Affected Files**: 9 file `frontend/src/components/landing/*`.
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright showcase: kartu 3xl, heading title-2, LinkButton. 0 pageerror. Temp dibersihkan.
+
 ### Session: 2026-09-23 — Rombak Landing Ikuti BoardUI.com Asli
 - **Goal / User Request**: Masih tidak mirip BoardUI sama sekali; cari komponen BoardUI yang cocok dan rombak dari "Tiga lapisan bukti" ke bawah.
 - **Riset**: fetch HTML boardui.com (1.8MB) + ekstrak struktur asli: grid komponen live-demo (judul + 1 baris), spotlight loading state, template siap pakai, blok install/MCP, pricing, FAQ. Itu yang ditiru persis.

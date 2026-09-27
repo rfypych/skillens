@@ -15,7 +15,7 @@ export function MetricsSection() {
         <p className="text-caption-1-semibold text-text-tertiary">
           Platform dalam angka
         </p>
-        <h2 className="text-title-1-medium text-text-primary">
+        <h2 className="text-title-2-medium text-text-primary">
           Bukti dalam angka.
         </h2>
       </div>

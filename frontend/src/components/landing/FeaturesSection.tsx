@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { RiArrowRightUpLine } from '@remixicon/react';
+import { LinkButton } from '@/components/base/buttons/link-button';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Chip } from '@/components/base/badges/chip';
 import {
@@ -19,7 +19,7 @@ import CognitiveFingerprintRadar from '@/components/CognitiveFingerprintRadar';
 
 function CardShell({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
   return (
-    <div className="flex min-h-[19rem] flex-col gap-3 rounded-2xl border border-border-button-default bg-background-primary-default p-5 shadow-card">
+    <div className="flex min-h-[19rem] flex-col gap-3 rounded-3xl border border-border-button-default bg-background-primary-default p-5 shadow-card">
       <div className="flex flex-col gap-1">
         <h3 className="text-body-1-medium text-text-primary">{title}</h3>
         <p className="text-body-regular text-text-secondary">{desc}</p>
@@ -93,7 +93,7 @@ function DemoTelemetry() {
           <span
             key={i}
             className="w-full rounded-full bg-accent-500/70"
-            style={{ height: `${h}%`, animation: `telemetry-blink 1.6s ease-in-out ${i * 0.09}s infinite` }}
+            style={{ height: `${h}%` }}
           />
         ))}
       </div>
@@ -102,7 +102,6 @@ function DemoTelemetry() {
         <Chip variant="caption" color="neutral">Backspace: 4.1%</Chip>
         <Chip variant="caption" color="lime">Paste: 0</Chip>
       </div>
-      <style>{`@keyframes telemetry-blink { 0%,100% { opacity: 0.45; } 50% { opacity: 1; } }`}</style>
     </div>
   );
 }
@@ -140,17 +139,13 @@ export function FeaturesSection() {
           <p className="text-caption-1-semibold text-text-tertiary">
             Komponen interaktif
           </p>
-          <h2 className="text-title-1-medium text-text-primary max-w-xl">
+          <h2 className="text-title-2-medium text-text-primary max-w-xl">
             Segalanya hidup, langsung bisa dicoba.
           </h2>
         </div>
-        <Link
-          href="/signup"
-          className="inline-flex items-center gap-1.5 text-body-medium text-text-secondary outline-none transition-colors hover:text-text-primary focus-visible:ring-2 focus-visible:ring-border-focus-ring whitespace-nowrap"
-        >
+        <LinkButton href="/signup" variant="secondary" size="small" trailingIcon={RiArrowRightUpLine}>
           Mulai Evaluasi
-          <RiArrowRightUpLine className="size-3.5" aria-hidden />
-        </Link>
+        </LinkButton>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

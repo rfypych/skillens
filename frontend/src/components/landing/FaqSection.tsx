@@ -29,12 +29,12 @@ const FAQS = [
 
 function FaqRow({ q, a, open, onToggle }: { q: string; a: string; open: boolean; onToggle: () => void }) {
   return (
-    <div className="rounded-2xl border border-border-button-default bg-background-primary-default shadow-card overflow-hidden">
+    <div className="rounded-xl border border-border-button-default bg-background-primary-default shadow-card overflow-hidden">
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        className="flex w-full cursor-pointer items-center justify-between gap-3 p-4 md:p-5 text-left outline-none transition-colors hover:bg-background-primary-hover focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus-ring"
+        className="flex w-full cursor-pointer items-center justify-between gap-3 p-4 md:p-5 text-left outline-none transition-colors hover:bg-background-primary-hover active:bg-background-primary-active focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus-ring"
       >
         <span className="text-body-1-medium text-text-primary">{q}</span>
         <span
@@ -64,7 +64,7 @@ export function FaqSection() {
           <p className="text-caption-1-semibold text-text-tertiary">
             Tanya jawab
           </p>
-          <h2 className="text-title-1-medium text-text-primary">
+          <h2 className="text-title-2-medium text-text-primary">
             Sering ditanyakan.
           </h2>
         </div>
