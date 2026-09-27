@@ -761,6 +761,23 @@ D:\projects\JHIC-rev\
   - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
 
+### Session: 2026-09-23 — Rombak Presisi BoardUI Bawah Hero
+- **Goal / User Request**: Rombak, belum puas; hero jangan diubah; bawah dibuat presis BoardUI versi kita.
+- **Changes Made** (temuan presisi: kartu BoardUI asli `rounded-2xl` bukan 3xl; ubin plain = secondary tile + icon tile; KPI khas = StatCards footer):
+  - Solusi: anatomi PlainStatCard persis (ubin secondary, icon tile, label, judul, deskripsi, skor + panah).
+  - Metrics: StatCards `footer` asli (gradient icon tile, angka display, band caption + delta pill + hint tooltip).
+  - Preview/LogoCloud/Steps/Features: radius diseragamkan 2xl; Steps jadi kartu putih + ubin secondary.
+  - Hero TIDAK disentuh sama sekali sesi ini.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/landing/SolusiSection.tsx`, `MetricsSection.tsx`, `FeaturesSection.tsx`, `PreviewSection.tsx`, `LogoCloudSection.tsx`, `StepsSection.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright 2 shot: ubin plain + footer cards + browser-frame presisi. 0 pageerror. Temp dibersihkan.
+
+### Session: 2026-09-23 — Push Landing BoardUI ke preview (2d2f880)
+- **Goal / User Request**: Push ke preview.
+- **Changes Made**: Stage 6 file (page, Hero, 3 seksi baru, worklog) → commit `2d2f880` + push `preview` (`199b625..2d2f880`). Secret-scan bersih, tsc/build hijau sebelumnya.
+- **Verification**: Remote `preview` maju ke `2d2f880`.
+
 ### Session: 2026-09-23 — Landing ala BoardUI versi Skillens
 - **Goal / User Request**: Source BoardUI masih ada? Miripkan landing BoardUI tapi versi aplikasi kita. (Sumber: re-clone shallow ke Temp, repo BoardUI hanya berisi primitif landing + pola AppShell; struktur marketing diambil dari arsitektur BoardUI.com: badge hero, visual produk, logo cloud, bento, get-started, CTA.)
 - **Changes Made**:

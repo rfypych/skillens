@@ -55,7 +55,7 @@ export function PreviewSection() {
       </div>
 
       {/* Bingkai browser */}
-      <div className="overflow-hidden rounded-3xl border border-border-button-default bg-background-primary-default shadow-card">
+      <div className="overflow-hidden rounded-2xl border border-border-button-default bg-background-primary-default shadow-card">
         <div className="flex items-center gap-1.5 border-b border-separator-border bg-background-secondary-default px-4 py-2.5">
           <span className="size-2.5 rounded-full bg-background-tertiary-default" aria-hidden />
           <span className="size-2.5 rounded-full bg-background-tertiary-default" aria-hidden />

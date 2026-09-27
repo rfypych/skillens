@@ -25,7 +25,7 @@ const STEPS = [
 export function StepsSection() {
   return (
     <section className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-6 md:py-10 font-boardui">
-      <div className="bg-background-secondary-default rounded-3xl p-6 sm:p-10 md:p-14">
+      <div className="bg-background-primary-default border border-border-button-default rounded-2xl p-6 sm:p-10 md:p-12 shadow-card">
         <div className="flex flex-wrap items-end justify-between gap-3 mb-8">
           <div className="flex flex-col gap-2">
             <p className="text-caption-1-semibold text-text-tertiary">
@@ -46,7 +46,7 @@ export function StepsSection() {
           {STEPS.map((s) => (
             <div
               key={s.num}
-              className="flex flex-col gap-3 rounded-2xl border border-border-button-default bg-background-primary-default p-6 shadow-card"
+              className="flex flex-col gap-3 rounded-2xl bg-background-secondary-default p-6"
             >
               <span className="text-body-medium tabular-nums text-accent-600">{s.num}</span>
               <h3 className="text-title-3-semibold text-text-primary">{s.title}</h3>
