@@ -31,7 +31,37 @@ export default function Signup() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState<string | null>(null);
   const [error, setError] = useState('');
+
+  // Akun demo seeded di DB — masuk langsung satu ketukan tanpa mendaftar.
+  const DEMO_ACCOUNTS = [
+    { label: 'Rekruter', email: 'recruiter@skillens.com', password: 'password123' },
+    { label: 'Kandidat', email: 'kandidat@skillens.com', password: 'password123' },
+  ];
+
+  const demoLogin = async (email: string, password: string, label: string) => {
+    if (loading || demoLoading) return;
+    setDemoLoading(label);
+    setError('');
+    try {
+      const loginData = new URLSearchParams();
+      loginData.append('username', email);
+      loginData.append('password', password);
+
+      await api.post('/auth/login', loginData.toString(), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        requireAuth: false
+      });
+
+      const me = await api.get('/auth/me');
+      const targetUrl = (me.role === 'recruiter' || me.role === 'admin') ? '/recruiter' : '/candidate/dashboard';
+      window.location.href = targetUrl;
+    } catch (err: any) {
+      setError(err.message || 'Kredensial tidak valid. Silakan coba lagi.');
+      setDemoLoading(null);
+    }
+  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,6 +217,25 @@ export default function Signup() {
                 : 'Dapatkan bukti nyata dari setiap pelamar dengan simulasi AI interaktif.'}
             </p>
           </form>
+
+          <div className="mt-6 flex flex-col gap-2">
+            <p className="text-center text-caption-1-medium text-text-tertiary">Punya akun demo? Masuk langsung</p>
+            <div className="grid grid-cols-2 gap-2">
+              {DEMO_ACCOUNTS.map((acc) => (
+                <Button
+                  key={acc.label}
+                  type="button"
+                  variant="secondary"
+                  size="small"
+                  disabled={loading || demoLoading !== null}
+                  onClick={() => demoLogin(acc.email, acc.password, acc.label)}
+                  title={`${acc.email} / ${acc.password}`}
+                >
+                  {demoLoading === acc.label ? 'Memproses...' : acc.label}
+                </Button>
+              ))}
+            </div>
+          </div>
 
           <p className="mt-6 text-center text-body-regular text-text-secondary">
             Sudah memiliki akun?{' '}

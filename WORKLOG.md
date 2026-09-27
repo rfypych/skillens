@@ -127,6 +127,23 @@ D:\projects\JHIC-rev\
 
 ## 6. Recent Work History
 
+### Session: 2026-09-27 08:55 WIB — Terapkan Sitemap Gaps: Edit-Link, Offer Stat, Konektor SVG (DONE, uncommitted)
+- **Goal / User Request**: "terapkan yang lebih baik" — 4 celah audit sitemap.
+- **Changes Made** (skill `skillens-design-system` + NeedMCP craft dimuat; tabrakan gaya: none — semua pakai komponen/kelas yang sudah ada di file yang sama):
+  - `jobs/[id]/page.tsx`: tombol secondary "Edit Parameter & KKM" → `jobs/edit/${jobId}` di header banner (ikon RiPencilLine yang sudah diimpor). Link audit sudah ada via RankingTable:198 — tanpa perubahan.
+  - `metrics/page.tsx`: stat ke-5 "Penawaran Diterima (Offer)" = count `status==='hired'` + delta mingguan, ikon RiSendPlaneLine (terbukti ada di bundle).
+  - `sitemap-skillens.svg`: konektor Landing→Login diganti Landing→Signup via sisi kanan (chip "Mulai", XML tervalidasi).
+- **Affected Files**: `[MODIFY]` `frontend/src/app/recruiter/jobs/[id]/page.tsx`, `frontend/src/app/recruiter/metrics/page.tsx`, `sitemap-skillens.svg`.
+- **Verification & Testing**: `npx tsc --noEmit` exit 0; SVG parse OK; `graphify update .` OK. Playwright tidak dijalankan (tambahan link + stat read-only, verifikasi via tsc + inspeksi).
+- **Handoff Notes for Next Session**: Belum di-commit/push (tunggu instruksi). Setelah push, staging rebuild otomatis; VPS prod perlu pull manual + gotcha copy standalone.
+
+### Session: 2026-09-27 08:40 WIB — Audit Flow vs sitemap-skillens.svg via Graphify (DONE)
+- **Goal / User Request**: `/graphify` + apakah flow sudah lengkap sesuai sitemap (24 rute, 4 pilar).
+- **Changes Made**: Graph query (11534 nodes) + map 21 `page.tsx` + grep navigasi. Hasil: rute file 21/21 + sistem 3/3 ADA. Funnel kandidat utuh (apply:101→instructions:152→test:220→dashboard, guard di kedua layout, role-routing login:47-48). Recruiter CRUD utuh (new:261→detail, edit:57→jobs, candidates:152/209→audit, settings:61↔team:61). Interviews terjadwal dua arah (POST/score/respond).
+- **Affected Files**: none (audit saja).
+- **Verification & Testing**: Graph + grep link, tanpa eksekusi.
+- **Handoff Notes for Next Session**: 4 celah vs sitemap: (1) Landing CTA → `/signup` bukan `/login` (HeroSection:58,141) — minor; (2) `jobs/[id]` tanpa link keluar ke audit/edit (editor in-page + invite modal); (3) `jobs/edit/[id]` orphan, tanpa inbound link; (4) Fitur Offer tidak ada di kode mana pun (sitemap: tombol Offer + metrik "Offer: 6").
+
 ### Session: 2026-09-27 08:25 WIB — Push Lokal 147 File ke Preview + Staging Rebuild (DONE)
 - **Goal / User Request**: "gas" — commit + push perubahan lokal ke branch preview.
 - **Changes Made**:
@@ -689,6 +706,79 @@ D:\projects\JHIC-rev\
 - **Verification & Testing**:
   - `npm run build` green. Playwright: strip login + band footer dashboard (5 img ter-render, sejajar rapi). 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Server dev fresh berjalan (:3000 + :8000) setelah keduanya sempat mati antar-sesi.
+
+### Session: 2026-09-23 — Push Sponsor Logos ke preview
+- **Goal / User Request**: Push ke preview branch.
+- **Changes Made**:
+  - Gate: skill `code-review` dimuat; review difokuskan (diff kecil, 9 file, authored sendiri): standar BoardUI terpenuhi, `tsc`/`build` hijau, secret-scan diff bersih (1 hit = teks dokumentasi worklog, false positive). `.env.local` ter-ignore.
+  - Temuan: HEAD `4744738` sudah berisi full BoardUI rollout (24 file app) dari sync sesi sebelumnya; working diff hanya delta sponsor (9 file).
+  - Stage selektif 9 file (WORKLOG, 5 PNG, 2 layout, SponsorLogos). Artefak tak dilacak (uploads PDF, e2e visual, .agents, dsb.) TIDAK ikut.
+  - Commit `e6757e3` + push `preview` sukses (`4744738..e6757e3`).
+  - Bersih: `e2e/audit-font-dash.png` dihapus.
+- **Affected Files**: (sama 9 file sesi sponsor, kini ter-commit)
+- **Verification & Testing**: `git status` pasca-push bersih (hanya untracked lama); remote `preview` maju ke `e6757e3`.
+- **Handoff Notes for Next Session**: Semua pekerjaan BoardUI sesi ini sudah di `preview`. Merge ke `main` menunggu permintaan user.
+
+### Session: 2026-09-23 — Hybrid Login: Shader Main + ASCII Oranye + Kartu BoardUI
+- **Goal / User Request**: Cek login branch main (ada WebGL shader), terapkan + hybrid dengan style saat ini; shader jadi ASCII warna oranye yang estetik.
+- **Changes Made**:
+  - Baca `main:login/page.tsx` (ShaderBackground: Swirl + ChromaFlow orange + FlutedGlass + FilmGrain) + `AsciiFluidBg` (medan ASCII hijau, tak terpakai).
+  - Baru `OrangeAsciiCanvas.tsx`: plasma ASCII full-layar transparan, rampa oranye 7 stop, alpha memudar ke tengah (zona tenang di belakang kartu), font JetBrains Mono, cap 30fps, hormat reduced-motion + pause saat tab hidden. Tanpa `mix-blend-screen` (blend + WebGL tak tampil di env ini, dibuktikan empiris).
+  - Login hybrid: panggung gelap hangat `#100806` + glow radial oranye CSS + ASCII di atasnya, kartu BoardUI terang tak berubah logikanya (demo 1-klik, show password, error, sponsor) + shadow-waitlist, link kembali putih/60.
+- **Affected Files**:
+  - `[NEW]` `frontend/src/components/OrangeAsciiCanvas.tsx`
+  - `[MODIFY]` `frontend/src/app/login/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright 0 pageerror + screenshot: plasma oranye penuh + kartu tenang (visual proof). Temp dibersihkan.
+  - Debug marathon (dicatat agar tak diulang): piksel probe menipu karena server dev basi (8032 stale) — pola `taskkill //PID //F` + hapus `.next/dev` + start ulang; `mix-blend-screen` + `shaders/react` tak render di headless env ini.
+- **Handoff Notes for Next Session**: Signup masih terang polos (tawarkan hybrid yang sama bila diminta). `ShaderBackground` tetap dipakai landing (excluded).
+
+### Session: 2026-09-23 — Koreksi Tema Login (Gelap Benar, ASCII Rapi, via Context7)
+- **Goal / User Request**: Tema ngawur — putih ya putih, gelap ya gelap. Cek lagi, jangan aislop, gunakan context7.
+- **Audit (jujur)**: Kartu sudah putih murni ✓. Yang ngawur: (1) latar `#100806` coklat kotor saat kena glow; (2) ASCII terlalu rapat (sel 30px, ambang rendah, glif berat `$@`) sehingga jadi noise wallpaper.
+- **Context7**: `/tailwindlabs/tailwindcss.com` → pola resmi `@custom-variant dark (&:where(.dark, .dark *))`. Diverifikasi sistem tema repo sudah benar (varian + token `.dark` ada, app light-only by design) — tak ada yang diubah di sana.
+- **Fix**: panggung jadi hitam netral `#0B0B0C` + glow oranye lebih kecil/redup; ASCII dijarangkan (sel 48px, ambang 0.34, tanpa `$@`, rampa dengan bayangan pekat, alpha + zona tenang diperlebar). Hasil: aksen oranye jarang dan elegan, tengah tenang, kartu putih murni.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/OrangeAsciiCanvas.tsx`, `frontend/src/app/login/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop + mobile (390px): rapi di keduanya. Temp dibersihkan.
+- **Handoff Notes for Next Session**: Jangan kembalikan `mix-blend-screen`/`shaders/react` ke login (tak render andal di env ini, sudah dibuktikan empiris berkali-kali).
+
+### Session: 2026-09-23 — Revert Login ke Versi Production (main)
+- **Goal / User Request**: Undo hybrid login; user ingin layout persis production.
+- **Changes Made**:
+  - `frontend/src/app/login/page.tsx` dikembalikan persis dari `main` (`git checkout main -- ...`): layout split production (mobile card-sheet + desktop form/panel, carbon icons, motion, ShaderBackground). Terverifikasi visual desktop + 0 pageerror + `tsc` bersih.
+  - `frontend/src/components/OrangeAsciiCanvas.tsx` dihapus (tak ada referensi tersisa).
+  - Status: perubahan masih staged, BELUM di-commit/push (menunggu instruksi; aturan commit eksplisit).
+- **Handoff Notes for Next Session**: Jika user minta push revert ini, commit + push `preview` seperti biasa.
+
+### Session: 2026-09-23 — Login Production + Kulit BoardUI (layout persis main)
+- **Goal / User Request**: Setelah revert, user ingin layout persis production tapi style BoardUI.
+- **Changes Made**:
+  - `login/page.tsx` ditulis ulang: struktur + copy 100% production (mobile card-sheet + desktop split form/panel, ShaderBackground, remember/forgot, sponsor) dengan kulit BoardUI — token semantik, font Inter (`font-boardui`), composite type (hero `text-display-3/2-medium`), Button/Input/IconButton BoardUI, ikon remix (eye-toggle via overlay IconButton + `fieldClassName="pr-11"` karena trailingIcon dekoratif), tanpa motion.
+  - Panel gelap production dipertahankan apa adanya (seni yang disengaja, bukan bug tema).
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
+- **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
+
+### Session: 2026-09-23 — Kembalikan Tombol Akun Demo (Login + Daftar)
+- **Goal / User Request**: Jangan hilangkan tombol akun demo di login maupun daftar (hilang saat revert ke production).
+- **Changes Made**:
+  - Login (mobile + desktop, layout production tetap): blok demo BoardUI (caption + 2 tombol Rekruter/Kandidat) + `demoLogin` yang masuk langsung satu ketukan (lebih baik dari isi-form-dulu versi lama), loading per-tombol, error masuk ke box error yang sama.
+  - Signup: blok demo yang sama ("Punya akun demo? Masuk langsung") + `demoLogin` — mengisi form pendaftaran dengan email demo akan error (email sudah ada), jadi tombol langsung login.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/app/login/page.tsx`, `frontend/src/app/signup/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. Playwright klik-terbukti: Rekruter di login → `/recruiter`, Kandidat di signup → `/candidate/dashboard`. Screenshot signup rapi. Temp dibersihkan.
+
+### Session: 2026-09-23 — Graphify + Betulkan Offset Tombol Mata Password
+- **Goal / User Request**: Pakai graphify dulu biar tau relasi; tombol show password offsetnya miring.
+- **Graphify**: `graphify query` (11534 nodes) + `graphify path login/page.tsx → icon-button.tsx` (1 hop EXTRACTED imports_from). Graph mengonfirmasi tak ada pola password-toggle resmi BoardUI di repo, jadi posisi mengikuti layout production. `graphify update .` dijalankan pasca-edit (AST-only).
+- **Fix**: Akar masalah = overlay IconButton diposisikan dengan angka sihir `-top-[42px]` relatif terhadap label (rapuh, miring). Diganti jangkar bawah: wrapper `relative` + `absolute right-1.5 bottom-[2px]` (field h-9 36px vs tombol h-8 32px → selalu tengah presisi, tak peduli tinggi label). Diterapkan di blok mobile + desktop. Layout production (mata di dalam field) dipertahankan.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/app/login/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. Playwright crop-shot kedua viewport: tombol mata tengah presisi di dalam field. Temp dibersihkan.
 
 ### Session: 2026-09-23 18:05 WIB — Pembersihan Kartu Spesifikasi Protokol pada Pilar 4 Sistem
 - **Goal / User Request**: Hapus kartu `Route-System-Protocol` ("SYS App Router Architecture - Protokol Pemulihan & Streaming") dan konektornya pada Pilar 4 sesuai instruksi visual pengguna (lingkaran merah). Pilar 4 kini murni hanya memuat 3 kartu node sistem: `404`, `error boundary`, dan `loading`.

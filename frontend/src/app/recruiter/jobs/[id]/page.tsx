@@ -366,6 +366,15 @@ export default function JobAssessmentReview() {
             {copied ? 'Tersalin ke Papan Klip' : 'Salin Tautan Evaluasi AI'}
           </Button>
         )}
+        <Button
+          variant="secondary"
+          size="medium"
+          leadingIcon={RiPencilLine}
+          onClick={() => router.push(`/recruiter/jobs/edit/${jobId}`)}
+          className="w-full lg:w-auto"
+        >
+          Edit Parameter & KKM
+        </Button>
       </section>
 
       {/* Primary Navigation Tabs */}

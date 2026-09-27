@@ -6,6 +6,7 @@ import {
   RiGroupLine,
   RiLineChartLine,
   RiPulseLine,
+  RiSendPlaneLine,
   RiShieldCheckLine,
   RiSparklingLine,
 } from '@remixicon/react';
@@ -20,11 +21,13 @@ export default function MetricsDashboard() {
     totalProcessed: 0,
     fraudCount: 0,
     hiddenGems: 0,
+    hiredCount: 0,
     averageScore: 0,
     deltas: {
       total: { text: '—', color: 'neutral' } as Delta,
       fraud: { text: '—', color: 'neutral' } as Delta,
       gems: { text: '—', color: 'neutral' } as Delta,
+      hired: { text: '—', color: 'neutral' } as Delta,
       avg: { text: '—', color: 'neutral' } as Delta,
     },
     labels: {
@@ -43,6 +46,7 @@ export default function MetricsDashboard() {
         let total = 0;
         let fraud = 0;
         let gems = 0;
+        let hired = 0;
         let scoreSum = 0;
         let labels = {
           'Sangat Valid': 0,
@@ -84,6 +88,7 @@ export default function MetricsDashboard() {
 
               if (isCheat) fraud++;
               if (label === 'Hidden Gem') gems++;
+              if (app.status === 'hired') hired++;
               if (!isCheat && score > 0) {
                 scoreSum += score;
                 scoredCount++;
@@ -113,8 +118,8 @@ export default function MetricsDashboard() {
           const t = new Date(iso).getTime();
           return t >= now - back * 86400000 && t < now - (back - 7) * 86400000;
         };
-        const week = { total: 0, fraud: 0, gems: 0, sum: 0, n: 0 };
-        const prev = { total: 0, fraud: 0, gems: 0, sum: 0, n: 0 };
+        const week = { total: 0, fraud: 0, gems: 0, hired: 0, sum: 0, n: 0 };
+        const prev = { total: 0, fraud: 0, gems: 0, hired: 0, sum: 0, n: 0 };
         if (Array.isArray(data)) {
           data.forEach(app => {
             const latest = (app.assessment_results || [])[(app.assessment_results || []).length - 1];
@@ -124,6 +129,7 @@ export default function MetricsDashboard() {
             bucket.total++;
             if (latest.ai_cheating_detected) bucket.fraud++;
             if (latest.claim_vs_evidence_label === 'Hidden Gem') bucket.gems++;
+            if (app.status === 'hired') bucket.hired++;
             if (!latest.ai_cheating_detected && (latest.overall_score || 0) > 0) {
               bucket.sum += latest.overall_score;
               bucket.n++;
@@ -155,8 +161,9 @@ export default function MetricsDashboard() {
           totalProcessed: total,
           fraudCount: fraud,
           hiddenGems: gems,
+          hiredCount: hired,
           averageScore: scoredCount > 0 ? Math.round(scoreSum / scoredCount) : 0,
-          deltas: { total: pct(week.total, prev.total), fraud: fraudDelta, gems: pct(week.gems, prev.gems), avg: avgDelta },
+          deltas: { total: pct(week.total, prev.total), fraud: fraudDelta, gems: pct(week.gems, prev.gems), hired: pct(week.hired, prev.hired), avg: avgDelta },
           labels,
           trendData: trendArray
         });
@@ -174,6 +181,7 @@ export default function MetricsDashboard() {
     { icon: RiFocus3Line, label: 'Rata-rata Skor Bukti', value: loading ? '…' : String(metrics.averageScore), delta: loading ? '—' : metrics.deltas.avg.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.avg.color },
     { icon: RiShieldCheckLine, label: 'Tingkat Pencegahan Kecurangan', value: loading ? '…' : `${fraudRate}%`, delta: loading ? '—' : metrics.deltas.fraud.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.fraud.color },
     { icon: RiSparklingLine, label: 'Kandidat Tersembunyi (Gem)', value: loading ? '…' : String(metrics.hiddenGems), delta: loading ? '—' : metrics.deltas.gems.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.gems.color },
+    { icon: RiSendPlaneLine, label: 'Penawaran Diterima (Offer)', value: loading ? '…' : String(metrics.hiredCount), delta: loading ? '—' : metrics.deltas.hired.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.hired.color },
   ];
 
   return (
