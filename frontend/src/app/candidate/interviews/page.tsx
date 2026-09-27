@@ -53,7 +53,7 @@ export default function CandidateInterviewsPage() {
     setResponding(interviewId);
     try {
       await api.put(`/interviews/${interviewId}/respond?action=${action}`);
-      toast.success(action === 'accept' ? 'Undangan wawancara diterima!' : 'Undangan wawancara ditolak.');
+      toast.success(action === 'accept' ? 'Undangan wawancara diterima.' : 'Undangan wawancara ditolak.');
       fetchInterviews();
     } catch (err: any) {
       toast.error(err.message || 'Gagal menanggapi');

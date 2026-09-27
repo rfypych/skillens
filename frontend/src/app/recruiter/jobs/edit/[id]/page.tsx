@@ -53,7 +53,7 @@ export default function EditJob() {
       };
       await api.put(`/jobs/${id}`, formDataObj);
 
-      toast.success('Posisi berhasil diperbarui!');
+      toast.success('Posisi berhasil diperbarui');
       setTimeout(() => router.push('/recruiter/jobs'), 1000);
     } catch (err: any) {
       toast.error(err.message);

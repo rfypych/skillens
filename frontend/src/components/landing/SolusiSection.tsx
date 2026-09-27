@@ -14,7 +14,7 @@ const SOLUSI_ITEMS = [
     tag: 'Evaluasi utama',
     title: 'Studi Kasus Real-time',
     description: 'Kandidat diuji langsung dalam lingkungan simulasi kerja nyata — menyelesaikan insiden, menganalisis data, dan merancang sistem.',
-    stat: '100% praktis',
+    stat: 'Simulasi langsung',
   },
   {
     icon: RiShieldCheckLine,
@@ -28,7 +28,7 @@ const SOLUSI_ITEMS = [
     tag: 'Efisiensi tim',
     title: 'Penilaian Otonom',
     description: 'Menghasilkan skor dan laporan analisis mendalam secara otomatis sehingga tim rekruiter dapat mengambil keputusan tanpa periksa manual.',
-    stat: 'Otomatis 100%',
+    stat: 'Tanpa manual',
   },
 ];
 

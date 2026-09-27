@@ -148,7 +148,7 @@ export default function RecruiterDashboard() {
           </div>
         </div>
         <p className="px-1 text-body-medium text-text-secondary">
-          Eliminasi klaim palsu resume dengan simulasi studi kasus interaktif dan analisis perilaku otomatis.
+          Simulasi studi kasus interaktif dan analisis perilaku otomatis menyaring klaim palsu resume.
         </p>
       </div>
 

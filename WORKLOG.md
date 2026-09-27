@@ -761,6 +761,16 @@ D:\projects\JHIC-rev\
   - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
 
+### Session: 2026-09-23 — Copywriting BoardUI: Analisa Korpus, De-hiperbola
+- **Analisa BoardUI (dari situs asli)**: (1) Penamaan literal ("Data table", "File upload"); (2) verba fungsional present ("Filter, sort and paginate"); (3) nomina konkret + angka; (4) deskripsi satu kalimat tanpa tumpuk adjektiva; (5) nol superlatif ("best/ultimate/revolutionary" tak ada); (6) tombol verba+objek 1-3 kata; (7) pernyataan scope jujur; (8) empty state fakta tenang; (9) nol tanda seru/emoji/caps.
+- **Temuan hiperbola Skillens**: "kepastian mutlak" (hero login), "kandidat terbaik", "100% praktis", "Otomatis 100%", belasan toast berseru, deskripsi dashboard "Eliminasi...".
+- **Changes Made**: hero login → "dengan bukti nyata"; "terbaik" dibuang; stat chips faktual ("Simulasi langsung", "Tanpa manual"); deskripsi dashboard mekanis; semua `!` toast dihapus repo-wide (3 pola quote).
+- **Affected Files**: login, recruiter/page, jobs/[id], jobs/edit, candidate/interviews, jobs/new, SolusiSection.
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. Sweep akhir: 0 superlatif tersisa (kecuali "Terbatas Waktu" faktual + file mati). Screenshot login fresh (server basi di-restart dulu — pelajaran: screenshot basi sempat mengecoh).
+  - Temp dibersihkan.
+- **Handoff Notes for Next Session**: Dev server di-restart bersih; jangan percaya screenshot tanpa pastikan kompilasi fresh.
+
 ### Session: 2026-09-23 — Full-bleed Putih CTA (Gutter Abu)
 - **Goal / User Request**: Area abu di samping kartu CTA.
 - **Root Cause**: root CTASection membawa `max-w + px` sehingga background abu `main` mengintip di gutter kiri-kanan.

@@ -226,7 +226,7 @@ export default function JobAssessmentReview() {
       if (jobForm.max_questions) {
         await api.put(`/jobs/${jobId}`, { max_questions: Number(jobForm.max_questions) });
       }
-      toast.success("Penilaian simulasi berhasil disimpan!");
+      toast.success("Penilaian simulasi berhasil disimpan");
     } catch (err) {
       toast.error("Gagal menyimpan perubahan penilaian.");
     } finally {
@@ -246,7 +246,7 @@ export default function JobAssessmentReview() {
 
       await api.put(`/jobs/${jobId}`, payload);
       setJob({ ...job, ...payload });
-      toast.success("Data lowongan & KKM berhasil diperbarui!");
+      toast.success("Data lowongan & KKM berhasil diperbarui");
       fetchJobData();
     } catch (err) {
       toast.error("Gagal memperbarui detail lowongan.");
@@ -288,7 +288,7 @@ export default function JobAssessmentReview() {
         notes: scheduleForm.notes
       });
 
-      toast.success("Undangan wawancara berhasil dikirim ke kandidat!");
+      toast.success("Undangan wawancara berhasil dikirim ke kandidat");
       setSchedulingAppId(null);
       fetchJobData();
     } catch (err: any) {
@@ -307,7 +307,7 @@ export default function JobAssessmentReview() {
         score_notes: scoreForm.score_notes
       });
 
-      toast.success("Nilai wawancara berhasil diberikan!");
+      toast.success("Nilai wawancara berhasil diberikan");
       setScoringInterviewId(null);
       fetchJobData();
     } catch (err: any) {
@@ -436,7 +436,7 @@ export default function JobAssessmentReview() {
                 </span>
                 <div className="flex flex-col gap-0.5">
                   <h2 className="text-title-2-medium text-text-primary">Rekomendasi Otomatis AI (Kandidat Teratas Lulus KKM)</h2>
-                  <p className="text-body-regular text-text-secondary">AI merekomendasikan kandidat terbaik berdasarkan kelulusan KKM ({kkmScore}) dan kualitas jawaban studi kasus.</p>
+                  <p className="text-body-regular text-text-secondary">AI merekomendasikan kandidat berdasarkan kelulusan KKM ({kkmScore}) dan kualitas jawaban studi kasus.</p>
                 </div>
               </div>
 

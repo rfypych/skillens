@@ -339,7 +339,7 @@ export default function LoginPage() {
               <div>
                 <h2 className="text-display-3-medium lg:text-display-2-medium text-white leading-[1.08]">
                   Merekrut bakat tepat,<br/>
-                  <span className="text-accent-500">dengan kepastian mutlak.</span>
+                  <span className="text-accent-500">dengan bukti nyata.</span>
                 </h2>
                 <p className="text-body-1-medium text-white/70 leading-relaxed max-w-lg mt-6">
                   Skillens mengeliminasi klaim palsu resume dengan simulasi studi kasus interaktif berbasis telemetry AI cerdas.
