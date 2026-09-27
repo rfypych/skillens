@@ -39,3 +39,4 @@ Thumbs.db
 
 # AI & Agent artifacts
 .gemini/
+graphify-out/

@@ -1,13 +1,26 @@
 'use client';
 
-import { Add, CheckmarkOutline, CloseOutline, Copy, Edit, Group, OverflowMenuVertical, Portfolio, Time, ArrowRight, MagicWand } from '@carbon/icons-react';
-import { motion } from 'framer-motion';
+import {
+  RiAddFill,
+  RiArrowRightLine,
+  RiBriefcaseLine,
+  RiCheckLine,
+  RiCloseLine,
+  RiFileCopyLine,
+  RiMore2Fill,
+  RiSparklingLine,
+  RiTimeLine,
+  RiUserLine,
+} from '@remixicon/react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast, Toaster } from 'react-hot-toast';
 import { api } from '@/lib/api';
-import TextRollButton from '@/components/TextRollButton';
+import { Avatar } from '@/components/base/avatar/avatar';
+import { Button } from '@/components/base/buttons/button';
+import { Chip } from '@/components/base/badges/chip';
+import { cx } from '@/utils/cx';
 import type { Job } from '@/types/api';
 
 export default function ActiveRolesPage() {
@@ -78,7 +91,7 @@ export default function ActiveRolesPage() {
     const url = `${window.location.origin}/candidate/apply/${job.magic_link_token}`;
     navigator.clipboard.writeText(url);
     setCopiedId(job.id);
-    toast.success('Tautan evaluasi berhasil disalin!');
+    toast.success('Tautan evaluasi berhasil disalin');
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -88,162 +101,139 @@ export default function ActiveRolesPage() {
   };
 
   return (
-    <div className="w-full space-y-8 font-sans">
+    <div className="flex w-full flex-col gap-4">
       <Toaster position="top-right" />
-      
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-2 tracking-tight">Posisi Aktif</h1>
-          <p className="text-gray-600 text-base font-normal">Kelola posisi terbuka dan atur evaluasi simulasi AI kandidat.</p>
+
+      <div className="flex w-full flex-wrap items-end justify-between gap-2">
+        <div className="flex flex-col gap-1 px-1">
+          
+          <p className="text-body-medium text-text-secondary">Kelola posisi terbuka dan atur evaluasi simulasi AI kandidat.</p>
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <button
-            onClick={loadDemo}
-            disabled={demoLoading}
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#F26522] hover:bg-[#e05a1a] text-white text-sm font-semibold transition-colors disabled:opacity-60 disabled:cursor-wait"
-          >
-            <MagicWand className={`w-4 h-4 ${demoLoading ? 'animate-spin' : ''}`} />
-            {demoLoading ? 'Memuat Data Demo...' : 'Muat Data Demo'}
-          </button>
-          <Link href="/recruiter/jobs/new" className="w-full sm:w-auto">
-            <TextRollButton text="Buat Posisi Baru" variant="orange" size="md" />
-          </Link>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Button variant="secondary" size="medium" leadingIcon={RiSparklingLine} onClick={loadDemo} disabled={demoLoading}>
+            {demoLoading ? 'Memuat Data Demo…' : 'Muat Data Demo'}
+          </Button>
         </div>
       </div>
 
       {!loading && jobs.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-gray-200 rounded-2xl bg-white shadow-xs">
-          <Portfolio className="w-12 h-12 text-gray-400 mb-3" />
-          <h3 className="text-xl font-bold text-gray-900 mb-1">Belum Ada Posisi Aktif</h3>
-          <p className="text-gray-500 text-sm max-w-sm mb-6 font-normal">Buat posisi pertama Anda untuk mulai mengevaluasi kandidat dengan penilaian berbasis AI.</p>
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <button
-              onClick={loadDemo}
-              disabled={demoLoading}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#F26522] hover:bg-[#e05a1a] text-white text-sm font-semibold transition-colors disabled:opacity-60 disabled:cursor-wait"
-            >
-              <MagicWand className={`w-4 h-4 ${demoLoading ? 'animate-spin' : ''}`} />
-              {demoLoading ? 'Memuat Data Demo...' : 'Muat Data Demo (1 Klik)'}
-            </button>
+        <div className="flex flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border-button-default bg-background-primary-default px-6 py-16 text-center">
+          <span className="flex size-12 items-center justify-center rounded-2xl bg-background-secondary-default">
+            <RiBriefcaseLine className="size-6 text-foreground-icon-secondary" aria-hidden />
+          </span>
+          <h3 className="text-title-3-semibold text-text-primary">Belum Ada Posisi Aktif</h3>
+          <p className="max-w-sm text-body-medium text-text-secondary">Buat posisi pertama Anda untuk mulai mengevaluasi kandidat dengan penilaian berbasis AI.</p>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-2.5">
+            <Button variant="secondary" size="medium" leadingIcon={RiSparklingLine} onClick={loadDemo} disabled={demoLoading}>
+              {demoLoading ? 'Memuat Data Demo…' : 'Muat Data Demo'}
+            </Button>
             <Link href="/recruiter/jobs/new">
-              <TextRollButton text="Buat Posisi Baru" variant="dark" size="md" />
+              <Button variant="primary" size="medium" leadingIcon={RiAddFill}>
+                Buat Posisi Baru
+              </Button>
             </Link>
           </div>
         </div>
       )}
 
-      {/* Roles Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {jobs.map((job, index) => (
-          <motion.div
+      {loading && (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {[1, 2, 3].map(n => (
+            <div key={n} className="h-64 animate-pulse rounded-3xl bg-background-secondary-default" />
+          ))}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {jobs.map((job) => (
+          <section
             key={job.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05, ease: 'easeOut' }}
-            className={`group bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col h-full relative ${openMenuId === job.id ? 'z-50' : 'z-10'}`}
+            className="flex h-full flex-col gap-4 rounded-3xl border border-border-button-default bg-background-primary-default p-4 shadow-card"
           >
-            {/* Top Status & Context Menu */}
-            <div className="flex justify-between items-start mb-4 relative z-20">
-              <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border ${isExpired(job.deadline) ? 'bg-red-50 text-red-700 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
+            <div className="flex items-start justify-between">
+              <Chip variant="bold" color={isExpired(job.deadline) ? 'rose' : 'lime'}>
                 {isExpired(job.deadline) ? 'Kadaluarsa' : 'Aktif'}
-              </span>
-              
+              </Chip>
               <div className="relative action-menu-trigger" onClick={(e) => e.stopPropagation()}>
                 <button
+                  type="button"
                   onClick={() => setOpenMenuId(openMenuId === job.id ? null : job.id)}
-                  className={`p-2 rounded-full transition-colors ${openMenuId === job.id ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
-                  title="Menu Opsi"
+                  aria-label="Menu opsi posisi"
+                  className="flex size-8 cursor-pointer items-center justify-center rounded-full text-foreground-icon-secondary outline-none transition-colors hover:bg-background-primary-hover hover:text-foreground-icon-primary focus-visible:ring-2 focus-visible:ring-border-focus-ring"
                 >
-                  <OverflowMenuVertical className="w-5 h-5" />
+                  <RiMore2Fill className="size-5" aria-hidden />
                 </button>
-                
                 {openMenuId === job.id && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden py-1 z-50"
-                  >
-                    <Link href={`/recruiter/jobs/${job.id}`} onClick={() => setOpenMenuId(null)} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors font-medium flex items-center gap-2">
-                      <Edit className="w-4 h-4 text-[#F26522]" /> Buka / Edit Posisi
+                  <div className="absolute right-0 z-50 mt-1 w-48 rounded-2xl border border-border-button-default bg-background-primary-default p-1.5 shadow-dropdown">
+                    <Link
+                      href={`/recruiter/jobs/${job.id}`}
+                      onClick={() => setOpenMenuId(null)}
+                      className="flex w-full items-center gap-2 rounded-xl p-2 text-body-medium text-text-primary outline-none transition-colors hover:bg-background-primary-hover"
+                    >
+                      <RiBriefcaseLine className="size-5 shrink-0 text-foreground-icon-secondary" aria-hidden />
+                      Buka / Edit Posisi
                     </Link>
-                    <button onClick={() => { handleArchive(job.id); setOpenMenuId(null); }} className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium flex items-center gap-2">
-                      <CloseOutline className="w-4 h-4" /> Tutup Posisi
+                    <button
+                      type="button"
+                      onClick={() => { handleArchive(job.id); setOpenMenuId(null); }}
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-xl p-2 text-body-medium text-text-error-primary outline-none transition-colors hover:bg-background-primary-hover"
+                    >
+                      <RiCloseLine className="size-5 shrink-0" aria-hidden />
+                      Tutup Posisi
                     </button>
-                  </motion.div>
+                  </div>
                 )}
               </div>
             </div>
 
-            {/* Title & Info */}
-            <div className="relative z-10 mb-4">
-              <Link href={`/recruiter/jobs/${job.id}`}>
-                <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-[#F26522] transition-colors">{job.title}</h3>
+            <div className="flex flex-col gap-1">
+              <Link href={`/recruiter/jobs/${job.id}`} className="text-title-3-semibold text-text-primary outline-none transition-colors hover:text-accent-600 focus-visible:ring-2 focus-visible:ring-border-focus-ring">
+                {job.title}
               </Link>
-              <div className="flex flex-wrap items-center gap-2 text-xs font-normal text-gray-500">
-                <span className="flex items-center gap-1">
-                  <Portfolio className="w-3.5 h-3.5 text-[#F26522]" />{job.department || 'Teknik & Produk'}
+              <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-body-regular text-text-secondary">
+                <span className="inline-flex items-center gap-1">
+                  <RiBriefcaseLine className="size-4" aria-hidden />{job.department || 'Teknik dan Produk'}
                 </span>
-                {job.location && <span>· {job.location}</span>}
-                {job.salary_range && <span className="text-gray-900 font-semibold">· {job.salary_range}</span>}
-              </div>
+                {job.location && <span>{job.location}</span>}
+                {job.salary_range && <span className="text-body-medium text-text-primary">{job.salary_range}</span>}
+              </p>
             </div>
 
-            {/* Metric Boxes */}
-            <div className="grid grid-cols-2 gap-3 mb-6 flex-1 relative z-10">
-              <div className="bg-gray-50/80 rounded-2xl p-4 border border-gray-100">
-                <div className="flex items-center gap-1.5 text-gray-500 mb-1">
-                  <Group className="w-3.5 h-3.5 text-[#F26522]" />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider">Kandidat</span>
-                </div>
-                <p className="text-2xl font-bold text-gray-900">{job.candidate_count ?? 0}</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1 rounded-2xl bg-background-secondary-default p-3">
+                <span className="inline-flex items-center gap-1.5 text-caption-1-medium text-text-secondary">
+                  <RiUserLine className="size-4" aria-hidden />Kandidat
+                </span>
+                <span className="text-title-1-medium tabular-nums text-text-primary">{job.candidate_count ?? 0}</span>
               </div>
-              <div className="bg-gray-50/80 rounded-2xl p-4 border border-gray-100">
-                <div className="flex items-center gap-1.5 text-gray-500 mb-1">
-                  <Time className="w-3.5 h-3.5 text-[#F26522]" />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider">Dibuat</span>
-                </div>
-                <p className="text-xs font-semibold text-gray-900 mt-1">
+              <div className="flex flex-col gap-1 rounded-2xl bg-background-secondary-default p-3">
+                <span className="inline-flex items-center gap-1.5 text-caption-1-medium text-text-secondary">
+                  <RiTimeLine className="size-4" aria-hidden />Dibuat
+                </span>
+                <span className="text-body-medium text-text-primary">
                   {new Date(job.created_at).toLocaleDateString('id-ID', { month: 'short', day: 'numeric' })}
-                </p>
+                </span>
               </div>
             </div>
 
-            {/* TWO BOTTOM BUTTONS (Salin & Buka Posisi) */}
-            <div className="mt-auto relative z-10 pt-2 border-t border-gray-100">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Aksi Posisi</div>
-              <div className="grid grid-cols-2 gap-2">
-                {/* Button 1: Salin Tautan */}
-                <button
-                  onClick={() => copyMagicLink(job)}
-                  disabled={isExpired(job.deadline)}
-                  className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full font-semibold text-xs transition-all border shadow-xs ${
-                    copiedId === job.id
-                      ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
-                      : isExpired(job.deadline)
-                        ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
-                        : 'bg-white hover:bg-gray-50 text-gray-900 border-gray-200'
-                  }`}
-                  title="Salin Tautan Evaluasi AI"
-                >
-                  {copiedId === job.id ? (
-                    <><CheckmarkOutline className="w-4 h-4 text-emerald-600" />Tersalin</>
-                  ) : (
-                    <><Copy className="w-4 h-4 text-gray-600" />Salin Tautan</>
-                  )}
-                </button>
-
-                {/* Button 2: Buka Posisi */}
-                <Link
-                  href={`/recruiter/jobs/${job.id}`}
-                  className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full font-semibold text-xs transition-all bg-gray-900 hover:bg-[#F26522] text-white border border-transparent shadow-xs"
-                >
-                  <span>Buka Posisi</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
+            <div className="mt-auto flex items-center gap-2 border-t border-separator-border pt-3">
+              <Button
+                variant="secondary"
+                size="small"
+                leadingIcon={copiedId === job.id ? RiCheckLine : RiFileCopyLine}
+                onClick={() => copyMagicLink(job)}
+                disabled={isExpired(job.deadline)}
+                className="flex-1"
+              >
+                {copiedId === job.id ? 'Tersalin' : 'Salin Tautan'}
+              </Button>
+              <Link href={`/recruiter/jobs/${job.id}`} className={cx('flex-1')}>
+                <Button variant="primary" size="small" trailingIcon={RiArrowRightLine} className="w-full">
+                  Buka Posisi
+                </Button>
+              </Link>
             </div>
-          </motion.div>
+          </section>
         ))}
       </div>
     </div>

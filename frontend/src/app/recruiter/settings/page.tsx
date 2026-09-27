@@ -1,18 +1,20 @@
 'use client';
 
-import { Checkmark } from '@carbon/icons-react';
+import { RiCheckLine, RiTeamLine } from '@remixicon/react';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { toast, Toaster } from 'react-hot-toast';
 import { api } from '@/lib/api';
-import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 import Link from 'next/link';
 import { useLanguage } from '@/i18n/LanguageContext';
-import TextRollButton from '@/components/TextRollButton';
+import { Button, ButtonLink } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
+import { Select, SelectItem } from '@/components/base/select/select';
 
 export default function SettingsPage() {
   const [user, setUser] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fullName, setFullName] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const { t, language, setLanguage } = useLanguage();
 
   useEffect(() => {
@@ -20,6 +22,8 @@ export default function SettingsPage() {
       try {
         const data = await api.get('/auth/me');
         setUser(data);
+        setFullName(data.full_name || '');
+        setCompanyName(data.company_name || '');
       } catch {
       }
     };
@@ -31,13 +35,13 @@ export default function SettingsPage() {
     setIsSubmitting(true);
     try {
       const formData = {
-        full_name: (e.target as any).full_name.value,
-        company_name: (e.target as any).company_name.value
+        full_name: fullName,
+        company_name: companyName
       };
       const updated = await api.put('/auth/me', formData);
       setUser(updated);
       window.dispatchEvent(new Event('user-profile-updated'));
-      toast.success('Profil berhasil diperbarui!');
+      toast.success('Profil berhasil diperbarui');
     } catch (err) {
       toast.error('Terjadi kesalahan.');
     } finally {
@@ -46,82 +50,78 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="w-full space-y-8 font-sans">
+    <div className="w-full space-y-8">
       <Toaster position="top-right" />
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <h1 className="text-3xl font-semibold text-gray-900 tracking-tight mb-1">{t('settings.title')}</h1>
-        <p className="text-gray-600 text-sm font-normal">{t('settings.subtitle')}</p>
-      </motion.div>
+      <div>
+        <p className="text-body-medium text-text-secondary">{t('settings.subtitle')}</p>
+      </div>
 
       {(user?.role === 'recruiter' && !user?.parent_account_id || user?.role === 'admin') && (
-        <div className="flex justify-end mb-4">
-          <Link href="/recruiter/settings/team">
-            <TextRollButton text={t('settings.manage_team')} variant="orange" size="md" />
-          </Link>
+        <div className="flex justify-end">
+          <ButtonLink href="/recruiter/settings/team" variant="secondary" size="small" leadingIcon={RiTeamLine}>
+            {t('settings.manage_team')}
+          </ButtonLink>
         </div>
       )}
 
-      <div className="p-8 rounded-2xl bg-white border border-gray-200/80 shadow-xs">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6 pb-3 border-b border-gray-100">{t('settings.profile_info')}</h3>
+      <div className="rounded-3xl border border-border-button-default bg-background-primary-default p-6 shadow-card sm:p-8">
+        <h3 className="border-b border-separator-border pb-3 text-title-3-semibold text-text-primary">{t('settings.profile_info')}</h3>
         {user ? (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">{t('settings.full_name')}</label>
-                <input 
-                  type="text" 
-                  name="full_name"
-                  defaultValue={user.full_name || ''} 
-                  className="w-full bg-white border border-gray-200 rounded-full px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">{t('settings.company_name')}</label>
-                <input 
-                  type="text" 
-                  name="company_name"
-                  defaultValue={user.company_name || ''} 
-                  className="w-full bg-white border border-gray-200 rounded-full px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm"
-                  required
-                />
-              </div>
+          <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Input
+                name="full_name"
+                type="text"
+                label={t('settings.full_name')}
+                value={fullName}
+                onChange={setFullName}
+                isRequired
+              />
+              <Input
+                name="company_name"
+                type="text"
+                label={t('settings.company_name')}
+                value={companyName}
+                onChange={setCompanyName}
+                isRequired
+              />
               <div className="md:col-span-2">
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">{t('settings.email')}</label>
-                <input 
-                  type="email" 
-                  disabled
-                  defaultValue={user.email} 
-                  className="w-full bg-gray-100 border border-gray-200 rounded-full px-4 py-2.5 text-gray-500 cursor-not-allowed text-sm font-mono"
+                <Input
+                  name="email"
+                  type="email"
+                  label={t('settings.email')}
+                  value={user.email || ''}
+                  onChange={() => {}}
+                  isDisabled
+                  hint={t('settings.email_locked')}
                 />
-                <p className="text-xs text-gray-400 mt-1 font-normal">{t('settings.email_locked')}</p>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('settings.language')}</h3>
-              <p className="text-sm text-gray-500 mb-4 font-normal">{t('settings.language_desc')}</p>
-              <select 
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as 'en' | 'id')}
-                className="w-full md:w-1/2 bg-white border border-gray-200 rounded-full px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm font-medium"
-              >
-                <option value="id">Bahasa Indonesia</option>
-                <option value="en">English</option>
-              </select>
+            <div className="border-t border-separator-border pt-6">
+              <h3 className="text-title-3-semibold text-text-primary">{t('settings.language')}</h3>
+              <p className="mb-4 mt-1 text-body-regular text-text-secondary">{t('settings.language_desc')}</p>
+              <div className="flex flex-col gap-1.5 md:w-1/2">
+                <span className="text-body-medium text-text-primary">Bahasa</span>
+                <Select
+                  aria-label={t('settings.language')}
+                  selectedKey={language}
+                  onSelectionChange={(k) => setLanguage(String(k) as 'en' | 'id')}
+                >
+                  <SelectItem id="id">Bahasa Indonesia</SelectItem>
+                  <SelectItem id="en">English</SelectItem>
+                </Select>
+              </div>
             </div>
-            
-            <div className="pt-4 flex justify-end">
-              <button type="submit" disabled={isSubmitting}>
-                <TextRollButton text={isSubmitting ? 'Simpan...' : t('settings.save')} variant="orange" size="md" />
-              </button>
+
+            <div className="flex justify-end pt-2">
+              <Button type="submit" variant="primary" size="medium" leadingIcon={RiCheckLine} disabled={isSubmitting}>
+                {isSubmitting ? 'Simpan...' : t('settings.save')}
+              </Button>
             </div>
           </form>
         ) : (
-          <div className="text-sm text-gray-500">Memuat profil...</div>
+          <div className="mt-6 text-body-regular text-text-secondary">Memuat profil...</div>
         )}
       </div>
     </div>

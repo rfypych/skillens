@@ -11,7 +11,18 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import type { ColumnDef, SortingState } from '@tanstack/react-table';
-import { ArrowDown, ArrowUp, CaretSort, Checkmark, ChevronRight, Warning } from '@carbon/icons-react';
+import {
+  RiArrowDownLine,
+  RiArrowRightSLine,
+  RiArrowUpLine,
+  RiCheckLine,
+  RiErrorWarningLine,
+  RiExpandUpDownLine,
+  RiSearchLine,
+} from '@remixicon/react';
+import { Button } from '@/components/base/buttons/button';
+import { Chip } from '@/components/base/badges/chip';
+import { Input } from '@/components/base/input/input';
 import {
   Table,
   TableBody,
@@ -41,23 +52,22 @@ interface RankingTableProps {
 }
 
 function SortIcon({ dir }: { dir: false | 'asc' | 'desc' }) {
-  if (dir === 'asc') return <ArrowUp className="w-3.5 h-3.5" />;
-  if (dir === 'desc') return <ArrowDown className="w-3.5 h-3.5" />;
-  return <CaretSort className="w-3.5 h-3.5 opacity-40" />;
+  if (dir === 'asc') return <RiArrowUpLine className="w-3.5 h-3.5" />;
+  if (dir === 'desc') return <RiArrowDownLine className="w-3.5 h-3.5" />;
+  return <RiExpandUpDownLine className="w-3.5 h-3.5 opacity-40" />;
 }
 
 function StatusPill({ status }: { status: string }) {
+  const color: 'purple' | 'lime' | 'rose' | 'blue' | 'neutral' =
+    status === 'interview' ? 'purple'
+    : status === 'hired' ? 'lime'
+    : status === 'rejected' ? 'rose'
+    : status === 'evaluated' ? 'blue'
+    : 'neutral';
   return (
-    <span className={cx(
-      'inline-flex px-3 py-1 text-[11px] font-bold uppercase tracking-wider rounded-full border',
-      status === 'interview' && 'bg-purple-50 text-purple-700 border-purple-200',
-      status === 'hired' && 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      status === 'rejected' && 'bg-red-50 text-red-700 border-red-200',
-      status === 'evaluated' && 'bg-blue-50 text-blue-700 border-blue-200',
-      !['interview', 'hired', 'rejected', 'evaluated'].includes(status) && 'bg-gray-100 text-gray-700 border-gray-200',
-    )}>
+    <Chip variant="bold" color={color}>
       {status === 'evaluated' ? 'Tes Selesai' : status}
-    </span>
+    </Chip>
   );
 }
 
@@ -87,7 +97,7 @@ export default function RankingTable({ apps, kkmScore, onInvite }: RankingTableP
         header: 'Peringkat',
         enableSorting: false,
         cell: ({ row }) => (
-          <span className="font-bold font-mono text-gray-900">
+          <span className="text-body-medium tabular-nums text-text-primary">
             #{scoreRank.get(row.original.id) ?? '–'}
           </span>
         ),
@@ -97,10 +107,10 @@ export default function RankingTable({ apps, kkmScore, onInvite }: RankingTableP
         header: 'Pelamar / Kandidat',
         accessorFn: (app) => app.user?.full_name || 'Kandidat (Pelamar)',
         cell: ({ row }) => (
-          <div>
-            <div className="font-bold text-gray-900">{row.original.user?.full_name || 'Kandidat (Pelamar)'}</div>
-            <div className="text-xs text-gray-500">{row.original.user?.email || 'email@kandidat.com'}</div>
-          </div>
+          <span className="flex min-w-0 flex-col">
+            <span className="truncate text-body-medium text-text-primary">{row.original.user?.full_name || 'Kandidat (Pelamar)'}</span>
+            <span className="truncate text-caption-1-medium text-text-tertiary">{row.original.user?.email || 'email@kandidat.com'}</span>
+          </span>
         ),
       },
       {
@@ -117,11 +127,11 @@ export default function RankingTable({ apps, kkmScore, onInvite }: RankingTableP
           const score = row.original.assessment_results?.[0]?.overall_score ?? null;
           const passed = score !== null && score >= kkmScore;
           return score !== null ? (
-            <span className={cx('text-base font-bold font-mono', passed ? 'text-emerald-700' : 'text-red-600')}>
+            <span className={cx('text-body-medium tabular-nums', passed ? 'text-status-lime-text' : 'text-status-rose-text')}>
               {score} / 100
             </span>
           ) : (
-            <span className="text-xs text-gray-400 font-normal">Belum Mengikuti Tes</span>
+            <span className="text-body-regular text-text-tertiary">Belum Mengikuti Tes</span>
           );
         },
       },
@@ -131,16 +141,15 @@ export default function RankingTable({ apps, kkmScore, onInvite }: RankingTableP
         enableSorting: false,
         cell: ({ row }) => {
           const score = row.original.assessment_results?.[0]?.overall_score ?? null;
-          if (score === null) return <span className="text-xs text-gray-400">-</span>;
+          if (score === null) return <span className="text-body-regular text-text-tertiary">-</span>;
           const passed = score >= kkmScore;
           return (
-            <span className={cx(
-              'inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border',
-              passed ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-800 border-red-200',
-            )}>
-              {passed ? <Checkmark className="w-3.5 h-3.5" /> : <Warning className="w-3.5 h-3.5" />}
-              {passed ? 'LULUS KKM' : 'DI BAWAH KKM'}
-            </span>
+            <Chip variant="bold" color={passed ? 'lime' : 'rose'}>
+              <span className="inline-flex items-center gap-1">
+                {passed ? <RiCheckLine className="size-3.5" aria-hidden /> : <RiErrorWarningLine className="size-3.5" aria-hidden />}
+                {passed ? 'Lulus KKM' : 'Di bawah KKM'}
+              </span>
+            </Chip>
           );
         },
       },
@@ -153,19 +162,21 @@ export default function RankingTable({ apps, kkmScore, onInvite }: RankingTableP
           const cheating = result?.ai_cheating_detected || ((result?.tab_switches ?? 0) > 3);
           if (cheating) {
             return (
-                <span className="inline-flex items-center gap-1 text-xs font-bold text-red-700 bg-red-50 px-2.5 py-1 border border-red-200 rounded-full">
-                  <Warning className="w-3.5 h-3.5" /> Terdeteksi ({result?.tab_switches ?? 0} Pindah Tab)
+              <Chip variant="bold" color="rose">
+                <span className="inline-flex items-center gap-1">
+                  <RiErrorWarningLine className="size-3.5" aria-hidden />Terdeteksi ({result?.tab_switches ?? 0} Pindah Tab)
                 </span>
+              </Chip>
             );
           }
           if (result) {
             return (
-              <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1">
-                <Checkmark className="w-3.5 h-3.5 text-emerald-600" /> Bersih / Jujur
+              <span className="inline-flex items-center gap-1 text-body-regular text-status-lime-text">
+                <RiCheckLine className="size-3.5" aria-hidden />Bersih / Jujur
               </span>
             );
           }
-          return <span className="text-xs text-gray-400">-</span>;
+          return <span className="text-body-regular text-text-tertiary">-</span>;
         },
       },
       {
@@ -179,18 +190,15 @@ export default function RankingTable({ apps, kkmScore, onInvite }: RankingTableP
           return (
             <div className="flex items-center justify-end gap-2">
               {passed && app.status !== 'interview' && (
-                <button
-                  onClick={() => onInvite(app.id)}
-                  className="px-4 py-2 bg-[#F26522] hover:bg-[#e05a1a] text-white text-xs font-bold uppercase tracking-wider rounded-full transition-colors shadow-xs whitespace-nowrap"
-                >
+                <Button variant="primary" size="xs" onClick={() => onInvite(app.id)} className="whitespace-nowrap">
                   Undang Wawancara
-                </button>
+                </Button>
               )}
               <Link
                 href={`/recruiter/candidates/${app.id}`}
-                className="px-4 py-2 bg-white border border-gray-200 text-gray-900 text-xs font-bold uppercase tracking-wider rounded-full hover:border-[#F26522] transition-colors flex items-center gap-1 shadow-xs whitespace-nowrap"
+                className="inline-flex items-center gap-0.5 whitespace-nowrap text-body-medium text-accent-600 outline-none transition-colors hover:text-accent-700 focus-visible:ring-2 focus-visible:ring-border-focus-ring"
               >
-                Detail <ChevronRight className="w-3.5 h-3.5" />
+                Detail <RiArrowRightSLine className="size-3.5" aria-hidden />
               </Link>
             </div>
           );
@@ -222,32 +230,31 @@ export default function RankingTable({ apps, kkmScore, onInvite }: RankingTableP
   const totalPages = table.getPageCount();
 
   return (
-    <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-xs">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border-b border-gray-100">
-        <p className="text-xs text-gray-500 font-medium">
+    <div className="overflow-hidden rounded-2xl border border-border-button-default bg-background-primary-default shadow-card">
+      <div className="flex flex-col justify-between gap-3 border-b border-separator-border p-4 sm:flex-row sm:items-center">
+        <p className="text-body-regular text-text-secondary">
           {table.getFilteredRowModel().rows.length} kandidat
-          {query && <> · filter: “{query}”</>}
+          {query && <> - filter: "{query}"</>}
         </p>
-        <div className="relative">
-          <input
-            value={query}
-            onChange={(e) => table.setGlobalFilter(e.target.value)}
-            placeholder="Cari nama atau email…"
-            aria-label="Cari kandidat"
-            className="w-full sm:w-64 pl-4 pr-4 py-2 border border-gray-200 rounded-full text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white font-medium"
-          />
-        </div>
+        <Input
+          value={query}
+          onChange={(v) => table.setGlobalFilter(v)}
+          placeholder="Cari nama atau email…"
+          aria-label="Cari kandidat"
+          leadingIcon={RiSearchLine}
+          className="w-full sm:max-w-64"
+        />
       </div>
       <div className="overflow-x-auto">
         <Table aria-label="Peringkat kandidat" className="min-w-[960px]">
           <TableHeader>
             {table.getHeaderGroups()[0].headers.map((header) => (
-              <TableColumn key={header.id}>
+              <TableColumn key={header.id} id={header.id} isRowHeader={header.id === 'name'}>
                 {header.column.getCanSort() ? (
                   <button
                     type="button"
                     onClick={header.column.getToggleSortingHandler()}
-                    className="flex cursor-pointer items-center gap-1 hover:text-gray-900 transition-colors"
+                    className="flex cursor-pointer items-center gap-1 text-text-secondary outline-none transition-colors hover:text-text-primary focus-visible:ring-2 focus-visible:ring-border-focus-ring"
                     aria-label={`Urutkan ${header.column.id}`}
                   >
                     {flexRender(header.column.columnDef.header, header.getContext())}
@@ -261,7 +268,7 @@ export default function RankingTable({ apps, kkmScore, onInvite }: RankingTableP
           </TableHeader>
           <TableBody
             renderEmptyState={() => (
-              <div className="flex h-32 items-center justify-center text-sm text-gray-400">
+              <div className="flex h-32 items-center justify-center text-body-regular text-text-tertiary">
                 Tidak ada kandidat yang cocok dengan pencarian.
               </div>
             )}
@@ -279,25 +286,27 @@ export default function RankingTable({ apps, kkmScore, onInvite }: RankingTableP
         </Table>
       </div>
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-          <p className="text-xs text-gray-500 font-medium">
+        <div className="flex items-center justify-between border-t border-separator-border px-4 py-3">
+          <p className="text-body-regular tabular-nums text-text-secondary">
             Halaman {pagination.pageIndex + 1} dari {totalPages}
           </p>
           <div className="flex items-center gap-2">
-            <button
+            <Button
+              variant="secondary"
+              size="xs"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full border border-gray-200 text-gray-700 hover:border-[#F26522] transition-colors disabled:opacity-40"
             >
               Sebelumnya
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="secondary"
+              size="xs"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full border border-gray-200 text-gray-700 hover:border-[#F26522] transition-colors disabled:opacity-40"
             >
               Berikutnya
-            </button>
+            </Button>
           </div>
         </div>
       )}

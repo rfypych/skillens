@@ -127,6 +127,122 @@ D:\projects\JHIC-rev\
 
 ## 6. Recent Work History
 
+### Session: 2026-09-27 08:10 WIB — Fix Staging Login 404: Preview Env ke Backend Mati (DONE)
+- **Goal / User Request**: "An error occurred" waktu login di staging.
+- **Changes Made**:
+  - Diagnosis: `POST staging/api/auth/login` → 404 envelope asing (`request_id`, bukan FastAPI `detail`); `staging/api/health` 404 via `Server: Vercel` (rewrite tidak tembus). Env Preview menunjuk backend lama yang mati (61d). Prod apex untuk payload sama → 422 validasi (backend hidup, form `username`+`password`).
+  - Fix via Vercel CLI: Preview `NEXT_PUBLIC_API_URL=https://staging.socratech.my.id/api` (re-add non-sensitive; catatan: prefix NEXT_PUBLIC ditolak sebagai Sensitive di Preview) + Preview `BACKEND_INTERNAL_URL=https://socratech.my.id/api`; `vercel redeploy` preview → build baru Ready 1m, alias staging pindah otomatis (branch domain).
+- **Affected Files**: none lokal (env Vercel project skillens).
+- **Verification & Testing**: `POST staging/api/auth/login` form username+password → 200 `access_token` JWT — Passed.
+- **Handoff Notes for Next Session**: Staging kini fungsional penuh tapi memakai backend+DB PRODUKSI (isolasinya UI saja). Envelope 404 lama tak perlu diusut (backend mati sudah dilepas).
+
+### Session: 2026-09-27 07:55 WIB — Staging staging.socratech.my.id untuk Branch Preview via Vercel (DONE)
+- **Goal / User Request**: Buat subdomain staging untuk branch preview di GitHub; konfirmasi git version control (+graph).
+- **Changes Made**:
+  - Git terkonfirmasi: lokal `preview` @215a0e4 == `origin/preview` == VPS `/home/skillens/skillens` (prod VPS jalan di branch preview, bukan main).
+  - Vercel CLI authed (rfypych, team rofyys-projects). Project `skillens` root `frontend`, env Preview+Production hanya `NEXT_PUBLIC_API_URL` + `BACKEND_INTERNAL_URL` (Sensitive, tak terbaca). Latest preview deploy 17h Ready + alias `skillens-git-preview-…`.
+  - DNS via CF API: CNAME `staging` → `cname.vercel-dns.com`, DNS-only (unproxied) — success.
+  - `vercel domains add staging.socratech.my.id skillens` → verified. Awalnya serve production (main, build 48d). User beri Vercel token (memory-only) → PATCH domain `gitBranch: preview` → alias pindah ke deploy preview terbaru.
+- **Affected Files**: none lokal (config Vercel + DNS Cloudflare).
+- **Verification & Testing**: HTML staging byte-identik dengan preview deploy (40134B, `cmp` IDENTICAL), `X-Vercel-Cache: HIT` — Passed.
+- **Handoff Notes for Next Session**: (1) Setiap push ke `preview` otomatis update staging. (2) Lokal punya uncommitted changes di `frontend/` (+AGENTS/WORKLOG) — BELUM tampil di staging sampai di-commit+push. (3) Staging pakai Preview env → API menunjuk backend VPS produksi (DB prod!). Staging write mengotori data asli; opsi: backend staging terpisah (VPS 8001 + DB sendiri) atau project Vercel staging tersendiri. Token Vercel/CF tidak disimpan di repo.
+
+### Session: 2026-09-27 07:40 WIB — Fix Missing Styling: Standalone Static Copy + CF Purge (DONE)
+- **Goal / User Request**: Styling hilang (no CSS) di socratech.my.id.
+- **Changes Made** (via `ssh jhic`):
+  - Diagnosis: 19 aset `_next/static` di HTML, 2 CSS + 3 font + 2 JS 404 (`Not Found` 9B). File ADA di `.next/static` (70 chunks) tapi origin 404 semua → `.next/standalone/.next/static/` tidak ada (langkah copy standalone terlewat saat deploy manual). Sebagian JS 200 di edge ternyata cache basi dari deploy lama.
+  - Fix: `cp -r .next/static .next/standalone/.next/static` + `cp -r public .next/standalone/public`, `chown skillens`, `systemctl restart skillens-frontend` → origin css/js/font 200.
+  - `purge_everything` via API (token cfat_ bisa purge) karena edge menyimpan 404 lama ber-TTL panjang → 19/19 aset 200, CSS `text/css`, root 200.
+- **Affected Files** (VPS): `/home/skillens/skillens/frontend/.next/standalone/` (ditambah static+public). Tanpa ubah kode repo.
+- **Verification & Testing**: origin css 200:7568B, js 200, font 200; edge 19/19 200 pasca-purge — Passed.
+- **Handoff Notes for Next Session**: GOTCHA — deploy manual VPS (git pull + build + restart) WAJIB sertakan copy standalone, kalau tidak styling hilang lagi:
+  `cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public && chown -R skillens:skillens .next/standalone && systemctl restart skillens-frontend`
+  lalu purge cache CF. Tidak ada deploy script di VPS; pertimbangkan buat `deploy-vps.sh` agar tidak manual.
+
+### Session: 2026-09-27 07:25 WIB — Cloudflare Rules via API: Redirect www→Apex + Edge Cache `/` (DONE)
+- **Goal / User Request**: User memberi token baru (`cfat_…`, nama wispy-heart-2bb6); eksekusi sisa via API.
+- **Changes Made** (via API, token hanya di memory, tidak disimpan di file):
+  - Token verified: rulesets readable (managed saja: sanitize, firewall managed, ddos_l7). SSL setting = `full`, cert active — no change.
+  - Buat ruleset `apex-canonical-redirect` (`ff54c341…`, phase http_request_dynamic_redirect): `www.socratech.my.id/*` → 301 `https://socratech.my.id` + path, preserve query.
+  - Buat ruleset `landing-edge-cache` (`61241749…`, phase http_request_cache_settings): hanya `socratech.my.id/` exact → edge TTL override 300s, browser respect origin.
+- **Affected Files**: none (pure Cloudflare dashboard config via API).
+- **Verification & Testing**:
+  - `www/` → 301 `Location: https://socratech.my.id/`; `www/how-it-works?x=1` → 301 path+query utuh; apex tetap 200 — Passed
+  - `/`: MISS→HIT, TTFB 0.13-0.17s (was 0.2-0.9s via tunnel); `/login` tetap DYNAMIC (tidak ikut tercache) — Passed
+- **Handoff Notes for Next Session**: Config Cloudflare final: tunnel named tunggal, DNS apex+www CNAME tunnel proxied, SSL full, redirect 301 www→apex, edge cache `/` 5 mnt. Jika landing di-deploy ulang, edge refresh maksimal 5 mnt. Token lama (`cfut_…`, Zone:Read+DNS) dan token baru tidak disimpan di repo.
+
+### Session: 2026-09-26 22:15 WIB — Cloudflare API Token Check: Redirect/Cache Rules Blocked by Scope (PENDING USER)
+- **Goal / User Request**: User memberi API token; lanjutkan sisa (SSL verify, redirect www→apex, cache rule `/`).
+- **Changes Made**:
+  - Token valid (`/tokens/verify` active), zone `socratech.my.id` (`81d83f…`, active, full, NS bayan+erin, migrasi dari JagoanHosting hari ini).
+  - DNS via API terkonfirmasi benar: CNAME apex+www → `<tunnelID>.cfargotunnel.com` proxied; legacy A `server.` + CNAME ftp/mail ikut apex.
+  - Token scope terbatas: `settings/ssl` → 9109 Unauthorized; `rulesets` list → 10000 Authentication error; `pagerules` → 403; `settings/cache_level` → Authentication error. Hanya Zone:Read + DNS yang bisa. Redirect Rules / Cache Rules / SSL / Page Rules via API TIDAK bisa dengan token ini maupun cert.pem cloudflared (scope Tunnel+DNS saja).
+  - VPS deploy copy `/home/skillens/skillens` = git repo bersih di `215a0e4`, origin `rfypych/skillens.git` — siap untuk alur fix-via-git jika dipilih.
+- **Affected Files**: none.
+- **Verification & Testing**: apex+www tetap 200 via tunnel — OK, tidak ada regresi.
+- **Handoff Notes for Next Session**: Tiga opsi untuk redirect www→apex + cache `/`: (A) user klik dashboard (Redirect Rules, 2 mnt); (B) user buat token baru dengan SSL:Edit + Rulesets:Edit + Cache:Edit lalu agent eksekusi via API; (C) redirect origin di `frontend/next.config.ts` + rebuild/restart VPS via alur git. Token yang diberikan TIDAK disimpan di file mana pun.
+
+### Session: 2026-09-26 22:05 WIB — Verifikasi CLI Cloudflare VPS + Stabilitas Apex (DONE)
+- **Goal / User Request**: User infokan ada Cloudflare CLI yang sudah auth di VPS jhic.
+- **Changes Made**:
+  - Cek VPS: tidak ada `wrangler`; satu-satunya CLI authed adalah `cloudflared` (`/root/.cloudflared/cert.pem`) — sudah dipakai maksimal (tunnel ingress + `route dns --overwrite-dns` apex+www). Tidak ditemukan `CF_API_TOKEN` di env/file.
+  - Apex sempat 000 1x (transient pasca-overwrite DNS), retest 6x kemudian 200 semua (0.26-1.10s) via SIN edge — pulih, bukan persisten.
+- **Affected Files**: none (verifikasi saja).
+- **Verification & Testing**: apex 6x 200, www 200, `/login`+`/api/health` 200 — OK.
+- **Handoff Notes for Next Session**: Sisa butuh dashboard/API token (SSL mode verify, Redirect Rule www→apex, Cache Rule `/`): minta user buat API token (Zone:Read + Cache Rules:Edit + Rulesets:Edit) atau klik dashboard. Alternatif tanpa token: redirect www→apex via `redirects()` di `frontend/next.config.ts` + rebuild + restart di VPS (perlu alur deploy git yang disepakati dulu).
+
+### Session: 2026-09-26 21:50 WIB — Fix socratech.my.id: DNS Tunnel + Kill Quick Tunnel (DONE)
+- **Goal / User Request**: Perbaiki semuanya (follow-up dari diagnosa lelet).
+- **Changes Made** (via `ssh jhic`, skill `cloudflare` tunnel):
+  - Backup `/root/.cloudflared/config.yml` → `config.yml.bak-20260926`; tulis ingress baru berisi apex + www → `127.0.0.1:3000` + `http_status:404` fallback.
+  - `cloudflared tunnel route dns --overwrite-dns 9e384c55 www.socratech.my.id` → www 525→200. Lalu hal yang sama untuk apex (sempat 000 transient ~30s saat propagasi, pulih 200).
+  - `systemctl stop + disable skillens-tunnel.service` (quick tunnel `--url`, PID 167153 mati); `systemctl restart skillens-tunnel-named.service` (PID baru 410987, 4 koneksi QUIC sehat: sin13/sin14/cgk07x2, env precheck PASS).
+  - `graphify update .` lokal per aturan AGENTS.md.
+- **Affected Files** (VPS): `/root/.cloudflared/config.yml`, DNS CNAME apex+www → `<tunnelID>.cfargotunnel.com`, `/etc/systemd` state (quick disabled).
+- **Verification & Testing**:
+  - www 5x: `200:0.20/0.21/1.43/0.22/0.19s` (was 525 + spike 2.88s) — FIXED
+  - apex 5x: `200:0.26/0.71/0.22s` (was jitter 0.19-0.86s, masih ada jitter wajar tunnel) — OK
+  - `/login` 200, `/api/health` 200 via apex — OK
+  - `systemctl`: named/frontend/backend active, quick inactive; `ps` 1 cloudflared saja — OK
+- **Handoff Notes for Next Session**: Sisa opsional (dashboard Cloudflare, butuh akses): 1) pastikan SSL mode Full (bukan Strict) — 525 sudah hilang jadi kemungkinan sudah benar; 2) pilih kanonik apex vs www + Redirect Rule (saat ini keduanya 200, duplikat konten); 3) opsional Cache Rule edge untuk `/` (prerender, s-maxage=1th) karena HTML masih DYNAMIC; 4) opsional matikan dockerd/Webuzo idle di VPS 4GB. Jitter 0.1-0.9s via tunnel adalah overhead normal (origin 3ms).
+
+### Session: 2026-09-26 21:35 WIB — Troubleshoot socratech.my.id Lelet via Graphify + SSH jhic
+- **Goal / User Request**: Troubleshoot kenapa socratech.my.id terasa lelet menggunakan graphify, SSH VPS alias `jhic`.
+- **Changes Made**:
+  - Graphify-first per AGENTS.md: `graphify query "how is deployment configured"` + `query "frontend backend API proxy"` → peta proxy: `frontend/src/proxy.ts:4`, `lib/api.ts:98`, `next.config.ts` rewrite `/api/:path*` → `BACKEND_INTERNAL_URL`. Catatan: `--code-only` skip Caddyfile/docker-compose (yaml/docs), jadi infra dicek langsung via SSH/curl.
+  - Curl edge: apex 200 TTFB 0.19-0.69s jitter (5x: 0.41/0.47/0.20/0.70/0.39s), `cf-cache-status: DYNAMIC`, `x-nextjs-cache: HIT`; www 525 SSL handshake failed + spike 2.88s. Statik `_next` sudah `cf-cache-status: HIT`.
+  - SSH jhic: origin localhost cepat (frontend `/` 3.5ms, `/login` 2.3ms, backend `/health` 1.8ms), systemd prod build (`server.js` standalone, NODE_ENV=production). DB Neon + Redis Upstash eksternal. Load 0.25, RAM 3.9G (free 1.5G), disk 33%. `docker ps` kosong (compose tidak dipakai), dockerd + Webuzo/Apache/MariaDB idle. Dua cloudflared: named tunnel `9e384c55` (created today, edge 2xCGK+2xSIN) + quick tunnel `--url` 1+ hari (PID 167153). `config.yml` hanya punya `www` → `127.0.0.1:3000`, tanpa apex. Frontend restart 21:20 WIB (SIGTERM 143, deploy, bukan OOM).
+- **Affected Files**: (diagnosa saja, tanpa ubah kode)
+  - `Caddyfile:5`, `docker-compose.prod.yml:13-56` (tidak dipakai di VPS, deploy bare-metal systemd)
+  - `/etc/systemd/system/skillens-frontend.service`, `skillens-backend.service` (VPS)
+  - `/root/.cloudflared/config.yml` (VPS, hanya www, missing apex)
+- **Verification & Testing**:
+  - `curl apex 5x` jitter 3x + `curl www` 525/2.88s spike — reproduced
+  - `ssh jhic curl localhost` 2-3ms — origin healthy, bottleneck di CF edge + tunnel, bukan kode
+  - `graphify god-nodes/query` — graph 4087 nodes responsif — Passed
+- **Handoff Notes for Next Session**: Perbaikan (belum dieksekusi, perlu konfirmasi user): 1) tambah apex ke ingress + `cloudflared tunnel route dns <ID> socratech.my.id www.socratech.my.id`, restart tunnel; 2) kill quick tunnel PID 167153; 3) cek Cloudflare SSL mode (Full, bukan Strict) + redirect www↔apex tunggal; 4) pertimbangkan matikan docker/Webuzo idle atau naikkan VPS. Setelah fix ukur ulang `curl -w ttfb` 5x apex+www dan `cloudflared tunnel info`.
+
+### Session: 2026-09-26 15:30 WIB — Graphify Docs + OpenCode Agent Install + Code Graph Build
+- **Goal / User Request**: Baca dokumentasi https://github.com/Graphify-Labs/graphify, lalu cari cara untuk kamu gunakan sebagai agent (OpenCode).
+- **Changes Made**:
+  - Docs v8 dibaca via WebFetch (README, ARCHITECTURE, pyproject): CLI `graphifyy` (double-y), tree-sitter AST lokal, edge tags EXTRACTED/INFERRED, query/path/explain, `graphify-out/graph.json + GRAPH_REPORT.md + graph.html`.
+  - Install CLI: `uv tool install graphifyy` (v0.9.69, 448 code files supported, 37 grammars).
+  - Install skill project-scope: `graphify install --platform opencode --project` (menulis `.opencode/skills/graphify/SKILL.md`, `.opencode/plugins/graphify.js`, register di `.opencode/opencode.json`, append section `## graphify` ke `AGENTS.md`) + `graphify install --platform agents --project` (menulis `.agents/skills/graphify/SKILL.md`).
+  - Build graph code-only: `graphify extract . --code-only --no-viz` lalu `graphify cluster-only . --no-viz` (label LLM gagal karena Claude credit low, fallback Community N placeholders).
+- **Affected Files**:
+  - `[MODIFY]` `AGENTS.md` (append 13-line graphify section)
+  - `[NEW]` `.opencode/skills/graphify/SKILL.md` + `references/`
+  - `[NEW]` `.opencode/plugins/graphify.js`, `[MODIFY]` `.opencode/opencode.json`
+  - `[NEW]` `.agents/skills/graphify/SKILL.md` + `references/`
+  - `[NEW]` `graphify-out/graph.json` (4087 nodes, 8223 edges, 285 communities), `graphify-out/GRAPH_REPORT.md`, `manifest.json`
+- **Verification & Testing**:
+  - `graphify god-nodes --top 10`: cx (213), react (120), User (71) — Passed
+  - `graphify query "what connects auth to database?"`: 330 nodes found, BFS dari database.py/AuthCard/auth-card.tsx — Passed
+  - `graphify explain "FastAPI"`: 15 imports_from EXTRACTED dari routers/services — Passed
+  - `graphify path "User" "DatabasePool"`: correctly reports no match; `path "FastAPI" "User"`: no directed path (expected, undirected needed) — Passed
+  - `graphify cluster-only`: labeling failed (claude -p credit low) tapi graph + report tetap ditulis — known note
+- **Handoff Notes for Next Session**: Skill sudah always-on via AGENTS.md. Untuk pertanyaan codebase gunakan `graphify query/path/explain` dulu sebelum grep. Setelah ubah kode jalankan `graphify update .`. Untuk docs/PDF/images perlu GEMINI_API_KEY atau biarkan host-agent sebagai LLM. `graphify-out/` saat ini not-ignored (cek `git check-ignore`); putuskan share via `git add -f graphify-out/graph.json GRAPH_REPORT.md` atau tambahkan ke .gitignore.
+
 ### Session: 2026-09-22 16:30 WIB — English Documentation Optimization
 - **Goal / User Request**: Transition `WORKLOG.md` and `AGENTS.md` to technical English for token efficiency and high LLM instruction-following precision.
 - **Changes Made**:

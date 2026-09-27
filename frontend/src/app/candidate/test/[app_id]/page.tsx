@@ -1,25 +1,30 @@
 'use client';
 
 import {
-  CheckmarkOutline,
-  Document,
-  Information,
-  Security,
-  SendAlt,
-  Time,
-  WarningAlt,
-  WarningHex,
-} from '@carbon/icons-react';
+  RiAlertLine,
+  RiCheckLine,
+  RiErrorWarningLine,
+  RiFileTextLine,
+  RiInformationLine,
+  RiSendPlaneLine,
+  RiShieldCheckLine,
+  RiTimeLine,
+} from '@remixicon/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { api } from '@/lib/api';
 import type { ChatMessage } from '@/types/api';
+import { cx } from '@/utils/cx';
+import { Button } from '@/components/base/buttons/button';
+import { IconButton } from '@/components/base/buttons/icon-button';
+import { Chip } from '@/components/base/badges/chip';
 import { ThinkingIndicator } from '@/components/ThinkingIndicator';
-import TextRollButton from '@/components/TextRollButton';
+
+const NATIVE_TEXTAREA_CLASSES =
+  'w-full rounded-xl border border-border-button-default bg-background-primary-default px-3 py-2 text-body-medium text-text-primary outline-none placeholder:text-text-placeholder hover:border-border-button-hover focus-visible:ring-2 focus-visible:ring-border-focus-ring resize-none disabled:opacity-50';
 
 export default function CandidateAssessment() {
   const params = useParams();
@@ -201,46 +206,41 @@ export default function CandidateAssessment() {
       }
     };
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#EFEFEF] p-4 font-sans relative overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-white border border-gray-200/80 max-w-lg w-full rounded-3xl p-10 text-center shadow-xl relative overflow-hidden"
-        >
-          <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-200">
-            <CheckmarkOutline className="w-8 h-8" />
+      <div className="min-h-screen flex items-center justify-center bg-background-full p-4 relative overflow-hidden font-boardui">
+        <div className="bg-background-primary-default border border-border-button-default max-w-lg w-full rounded-3xl p-10 text-center shadow-card relative overflow-hidden">
+          <div className="size-16 bg-background-secondary-default text-accent-600 rounded-full flex items-center justify-center mx-auto mb-6 border border-separator-border">
+            <RiCheckLine className="size-8" aria-hidden />
           </div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-3 tracking-tight">Evaluasi Berhasil Dikirim</h2>
-          <p className="text-gray-600 text-sm leading-relaxed mb-8">
+          <h2 className="text-title-1-medium text-text-primary mb-3">Evaluasi Berhasil Dikirim</h2>
+          <p className="text-body-regular text-text-secondary leading-relaxed mb-8">
             Terima kasih telah menyelesaikan sesi evaluasi AI. Hasil performa dan telemetry Anda telah tersimpan secara aman.
-            Personal Skill &amp; Competency Report (radar) dapat diunduh dari dasbor setelah evaluasi selesai.
+            Personal Skill dan Competency Report (radar) dapat diunduh dari dasbor setelah evaluasi selesai.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button onClick={() => router.push('/candidate/dashboard')}>
-              <TextRollButton text="Kembali Ke Dasbor" variant="orange" size="md" />
-            </button>
-            <button
-              onClick={handleDownloadReport}
-              className="px-6 py-3 rounded-full border border-gray-300 text-sm font-bold text-gray-800 hover:border-[#F26522] hover:text-[#F26522] transition-colors"
-            >
+            <Button variant="primary" size="medium" onClick={() => router.push('/candidate/dashboard')}>
+              Kembali Ke Dasbor
+            </Button>
+            <Button variant="secondary" size="medium" leadingIcon={RiFileTextLine} onClick={handleDownloadReport}>
               Unduh Report
-            </button>
+            </Button>
           </div>
-        </motion.div>
+        </div>
       </div>
     );
   }
 
   if (promptError) {
     return (
-      <div className="min-h-screen bg-[#EFEFEF] flex flex-col items-center justify-center gap-4 font-sans p-6 text-center">
-        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm px-8 py-10 max-w-md">
-          <h2 className="text-xl font-semibold text-gray-900 tracking-tight">Sesi Ujian Tidak Tersedia</h2>
-          <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+      <div className="min-h-screen bg-background-full flex flex-col items-center justify-center gap-4 p-6 text-center font-boardui">
+        <div className="bg-background-primary-default rounded-2xl border border-border-button-default shadow-card px-8 py-10 max-w-md">
+          <h2 className="text-title-2-medium text-text-primary">Sesi Ujian Tidak Tersedia</h2>
+          <p className="text-body-regular text-text-secondary mt-2 leading-relaxed">
             Tautan ujian ini sudah dikumpulkan, kedaluwarsa, atau bukan milik akun Anda. Kembali ke dashboard untuk melihat status lamaran.
           </p>
           <div className="mt-6 flex justify-center">
-            <TextRollButton text="Kembali ke Dashboard" variant="orange" size="lg" onClick={() => router.push('/candidate/dashboard')} className="justify-between" />
+            <Button variant="primary" size="medium" onClick={() => router.push('/candidate/dashboard')}>
+              Kembali ke Dashboard
+            </Button>
           </div>
         </div>
       </div>
@@ -249,7 +249,7 @@ export default function CandidateAssessment() {
 
   if (!promptData) {
     return (
-      <div className="min-h-screen bg-[#EFEFEF] flex flex-col items-center justify-center gap-6 font-sans">
+      <div className="min-h-screen bg-background-full flex flex-col items-center justify-center gap-6 font-boardui">
         <ThinkingIndicator statusText="Menyiapkan Sesi Ujian Aman..." />
       </div>
     );
@@ -259,72 +259,51 @@ export default function CandidateAssessment() {
   const isCriticalTime = timeLeft <= 120;
 
   return (
-    <div className={`min-h-screen text-gray-900 flex flex-col h-screen font-sans transition-colors duration-500 ${isCriticalTime ? 'bg-red-50/40' : 'bg-[#f4f4f5]'}`}>
+    <div className="min-h-screen bg-background-full text-text-primary flex flex-col h-screen font-boardui">
       {/* ── SECURITY TAB OVERLAY ── */}
-      <AnimatePresence>
-        {isTabHidden && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-white/95 z-[100] flex flex-col items-center justify-center p-6 text-center backdrop-blur-md"
-          >
-            <WarningHex className="w-20 h-20 text-red-600 mb-4 animate-pulse" />
-            <h2 className="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">Peringatan Pengawasan Telemetry</h2>
-            <p className="text-sm text-gray-600 max-w-md leading-relaxed">
-              Anda terdeteksi meninggalkan jendela evaluasi. Peristiwa perpindahan tab dicatat oleh AI Proctored Security.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isTabHidden && (
+        <div className="fixed inset-0 bg-background-primary-default/95 z-[100] flex flex-col items-center justify-center p-6 text-center">
+          <RiErrorWarningLine className="size-20 text-text-error-primary mb-4" aria-hidden />
+          <h2 className="text-title-1-medium text-text-primary mb-2">Peringatan Pengawasan Telemetry</h2>
+          <p className="text-body-regular text-text-secondary max-w-md leading-relaxed">
+            Anda terdeteksi meninggalkan jendela evaluasi. Peristiwa perpindahan tab dicatat oleh AI Proctored Security.
+          </p>
+        </div>
+      )}
 
       {/* ── WARNING TOAST NOTIFICATIONS ── */}
       <div className="fixed top-20 right-6 z-50 flex flex-col gap-3">
-        <AnimatePresence>
-          {showPasteWarning && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="bg-red-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-xs font-medium border border-red-700"
-            >
-              <WarningAlt className="w-5 h-5 text-amber-400 shrink-0" />
-              <span>Paste dinonaktifkan untuk menjaga otentisitas jawaban.</span>
-            </motion.div>
-          )}
+        {showPasteWarning && (
+          <div className="bg-background-primary-default border border-border-error-default px-4 py-3 rounded-2xl shadow-card flex items-center gap-3">
+            <RiAlertLine className="size-5 text-text-error-primary shrink-0" aria-hidden />
+            <span className="text-body-medium text-text-primary">Paste dinonaktifkan untuk menjaga otentisitas jawaban.</span>
+          </div>
+        )}
 
-          {showTabWarning && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="bg-amber-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-xs font-medium border border-amber-700"
-            >
-              <WarningHex className="w-5 h-5 text-amber-300 shrink-0" />
-              <span>Peringatan: Pindah tab ({tabSwitches}x) terekam dalam telemetry.</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {showTabWarning && (
+          <div className="bg-background-primary-default border border-border-button-default px-4 py-3 rounded-2xl shadow-card flex items-center gap-3">
+            <RiErrorWarningLine className="size-5 text-accent-600 shrink-0" aria-hidden />
+            <span className="text-body-medium text-text-primary">Peringatan: Pindah tab ({tabSwitches}x) terekam dalam telemetry.</span>
+          </div>
+        )}
       </div>
 
       {/* ── TOP HEADER BAR ── */}
-      <header className="bg-white border-b border-gray-200/90 px-6 py-3.5 flex items-center justify-between z-20 shadow-xs">
+      <header className="bg-background-primary-default border-b border-separator-border px-6 py-3.5 flex items-center justify-between z-20 shadow-card">
         <div className="flex items-center gap-4">
           <img src="/skillens-logo-text.png" alt="Skillens" className="h-7 w-auto object-contain" />
-          <div className="h-4 w-px bg-gray-200 hidden sm:block" />
+          <div className="h-4 w-px bg-separator-border hidden sm:block" />
           <div className="hidden sm:flex items-center gap-2">
-            <Security className="w-4 h-4 text-emerald-600" />
-            <span className="text-xs font-semibold text-gray-700">Ruang Evaluator AI</span>
-            <span className="text-[10px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
-              PROCTORED LIVE
-            </span>
+            <RiShieldCheckLine className="size-4 text-accent-600" aria-hidden />
+            <span className="text-body-medium text-text-primary">Ruang Evaluator AI</span>
+            <Chip variant="caption" color="lime">Live Terpantau</Chip>
           </div>
         </div>
 
         {/* Center: Turn Status Pill */}
-        <div className="hidden md:flex items-center gap-3 bg-gray-100/80 px-4 py-1.5 rounded-full border border-gray-200/70">
-          <span className="text-xs text-gray-600 font-medium">Progres Evaluasi:</span>
-          <span className="text-xs font-bold font-mono text-[#F26522]">
+        <div className="hidden md:flex items-center gap-3 bg-background-secondary-default px-4 py-1.5 rounded-full border border-separator-border">
+          <span className="text-body-regular text-text-secondary">Progres Evaluasi:</span>
+          <span className="text-body-medium text-accent-600 tabular-nums">
             {userTurnsCount} / 4 Pertanyaan
           </span>
         </div>
@@ -332,53 +311,52 @@ export default function CandidateAssessment() {
         {/* Right: Timer & Submit */}
         <div className="flex items-center gap-4">
           <div
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold transition-all ${
+            className={cx(
+              'flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-body-medium tabular-nums transition-all outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring',
               isCriticalTime
-                ? 'bg-red-100 text-red-700 border border-red-300 animate-pulse'
-                : 'bg-gray-100 text-gray-900 border border-gray-200'
-            }`}
+                ? 'bg-background-primary-default text-text-error-primary border-border-error-default'
+                : 'bg-background-secondary-default text-text-primary border-separator-border',
+            )}
           >
-            <Time className="w-4 h-4 text-[#F26522]" />
+            <RiTimeLine className={cx('size-4', isCriticalTime ? 'text-text-error-primary' : 'text-accent-600')} aria-hidden />
             <span>{formatTime(timeLeft)}</span>
           </div>
 
-          <button onClick={() => setShowSubmitConfirm(true)} className={isMaxTurnsReached ? 'animate-bounce' : ''}>
-            <TextRollButton
-              text={isMaxTurnsReached ? '✓ Kirim Jawaban' : 'Kirim Ujian'}
-              variant="orange"
-              size="sm"
-            />
-          </button>
+          <span className={cx(isMaxTurnsReached && 'animate-bounce')}>
+            <Button variant="primary" size="small" onClick={() => setShowSubmitConfirm(true)}>
+              {isMaxTurnsReached ? '✓ Kirim Jawaban' : 'Kirim Ujian'}
+            </Button>
+          </span>
         </div>
       </header>
 
       {/* ── SPLIT WORKSPACE CONTENT ── */}
       <div className="flex-1 flex overflow-hidden p-4 sm:p-6 gap-6 max-w-7xl mx-auto w-full">
         {/* LEFT PANEL: Case Study & Guidelines */}
-        <div className="hidden lg:flex lg:w-1/3 flex-col bg-white rounded-3xl border border-gray-200/90 shadow-xs overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/60 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-bold text-gray-900 uppercase tracking-wider">
-              <Document className="w-4 h-4 text-[#F26522]" />
+        <div className="hidden lg:flex lg:w-1/3 flex-col bg-background-primary-default rounded-3xl border border-border-button-default shadow-card overflow-hidden">
+          <div className="px-5 py-4 border-b border-separator-border bg-background-secondary-default flex items-center justify-between">
+            <div className="flex items-center gap-2 text-caption-1-medium text-text-primary uppercase">
+              <RiFileTextLine className="size-4 text-accent-600" aria-hidden />
               Studi Kasus Evaluasi
             </div>
-            <span className="text-[11px] text-gray-400 font-mono">ID: #{String(appId || '').slice(0, 6)}</span>
+            <span className="text-caption-1-medium text-text-tertiary tabular-nums">ID: #{String(appId || '').slice(0, 6)}</span>
           </div>
 
 
-          <div className="flex-1 p-5 overflow-y-auto space-y-5 text-sm text-gray-700 leading-relaxed font-normal">
-            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-xs space-y-2">
-              <div className="font-semibold text-gray-900 flex items-center gap-1.5">
-                <Information className="w-4 h-4 text-[#F26522]" /> Instruksi Ujian:
+          <div className="flex-1 p-5 overflow-y-auto space-y-5 text-body-regular text-text-secondary leading-relaxed">
+            <div className="p-4 bg-background-secondary-default rounded-2xl border border-separator-border space-y-2">
+              <div className="text-body-medium text-text-primary flex items-center gap-1.5">
+                <RiInformationLine className="size-4 text-accent-600" aria-hidden /> Instruksi Ujian:
               </div>
-              <ul className="list-disc list-inside space-y-1 text-gray-600">
+              <ul className="list-disc list-inside space-y-1 text-body-regular text-text-secondary">
                 <li>Jawab setiap pertanyaan studi kasus dengan analisis mendalam.</li>
                 <li>Maksimal 4 pertukaran instruksi dengan Evaluator AI.</li>
-                <li>Pengawasan telemetry mencatat perpindahan tab & aktivitas mengetik.</li>
+                <li>Pengawasan telemetry mencatat perpindahan tab dan aktivitas mengetik.</li>
               </ul>
             </div>
 
-            <div className="prose prose-sm max-w-none text-gray-800">
-              <div className="font-semibold text-gray-900 mb-2 text-base">Skenario Masalah:</div>
+            <div className="prose prose-sm max-w-none text-text-primary">
+              <div className="text-body-medium text-text-primary mb-2">Skenario Masalah:</div>
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {promptData.scenario_prompt}
               </ReactMarkdown>
@@ -386,18 +364,18 @@ export default function CandidateAssessment() {
           </div>
 
           {/* Left Panel Footer Telemetry Badge */}
-          <div className="p-4 bg-gray-50/80 border-t border-gray-100 text-xs flex items-center justify-between text-gray-500">
-            <span>Perpindahan Tab: <strong className="text-gray-900 font-mono">{tabSwitches}</strong></span>
-            <span>Upaya Paste: <strong className="text-gray-900 font-mono">{pasteCount}</strong></span>
+          <div className="p-4 bg-background-secondary-default border-t border-separator-border flex items-center justify-between text-caption-1-medium text-text-secondary">
+            <span>Perpindahan Tab: <strong className="text-text-primary tabular-nums">{tabSwitches}</strong></span>
+            <span>Upaya Paste: <strong className="text-text-primary tabular-nums">{pasteCount}</strong></span>
           </div>
         </div>
 
         {/* RIGHT PANEL: Interactive Chat Workspace */}
-        <div className="flex-1 flex flex-col bg-white rounded-3xl border border-gray-200/90 shadow-xs overflow-hidden">
+        <div className="flex-1 flex flex-col bg-background-primary-default rounded-3xl border border-border-button-default shadow-card overflow-hidden">
           {/* Top Progress Line */}
-          <div className="bg-gray-100 h-1.5 w-full overflow-hidden">
+          <div className="bg-background-secondary-default h-1.5 w-full overflow-hidden">
             <div
-              className="bg-[#F26522] h-full transition-all duration-300"
+              className="bg-accent-500 h-full transition-all duration-300"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
@@ -405,23 +383,24 @@ export default function CandidateAssessment() {
           {/* Messages Feed */}
           <div className="flex-1 p-5 sm:p-6 overflow-y-auto space-y-5">
             {messages.map((m, i) => (
-              <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div key={i} className={cx('flex', m.role === 'user' ? 'justify-end' : 'justify-start')}>
                 <div className="flex gap-3 max-w-[85%] sm:max-w-[78%]">
                   {m.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full bg-[#F26522] text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-xs">
+                    <div className="size-8 rounded-full bg-accent-500 text-text-white flex items-center justify-center text-caption-1-medium shrink-0 mt-0.5 shadow-xs">
                       AI
                     </div>
                   )}
 
                   <div
-                    className={`p-4 sm:p-5 rounded-2xl text-sm leading-relaxed ${
+                    className={cx(
+                      'p-4 sm:p-5 rounded-2xl text-body-regular leading-relaxed',
                       m.role === 'user'
-                        ? 'bg-gray-900 text-white rounded-tr-none'
-                        : 'bg-gray-50 text-gray-900 border border-gray-200/70 rounded-tl-none'
-                    }`}
+                        ? 'bg-background-tertiary-default text-text-primary rounded-tr-none'
+                        : 'bg-background-secondary-default text-text-primary border border-separator-border rounded-tl-none',
+                    )}
                   >
                     {m.role === 'assistant' && i === 0 && (
-                      <div className="text-[11px] font-semibold text-[#F26522] uppercase tracking-wider mb-2">
+                      <div className="text-caption-1-medium text-accent-600 uppercase mb-2">
                         SKENARIO INTERAKTIF EVALUATOR AI
                       </div>
                     )}
@@ -429,7 +408,7 @@ export default function CandidateAssessment() {
                   </div>
 
                   {m.role === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-xs">
+                    <div className="size-8 rounded-full bg-background-tertiary-default text-text-primary border border-separator-border flex items-center justify-center text-caption-1-medium shrink-0 mt-0.5 shadow-xs">
                       Anda
                     </div>
                   )}
@@ -439,10 +418,10 @@ export default function CandidateAssessment() {
 
             {isAiTyping && (
               <div className="flex justify-start items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#F26522] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                <div className="size-8 rounded-full bg-accent-500 text-text-white flex items-center justify-center text-caption-1-medium shrink-0">
                   AI
                 </div>
-                <ThinkingIndicator statusText="Evaluator AI sedang menganalisis & menyusun balasan..." />
+                <ThinkingIndicator statusText="Evaluator AI sedang menganalisis dan menyusun balasan..." />
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -450,46 +429,49 @@ export default function CandidateAssessment() {
 
           {/* Input Box / Completion Banner */}
           {isMaxTurnsReached ? (
-            <div className="p-5 border-t border-gray-200 bg-[#F26522]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-5 border-t border-separator-border bg-accent-50 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#F26522] text-white flex items-center justify-center font-bold text-base shadow-sm">
+                <div className="size-10 rounded-full bg-accent-500 text-text-white flex items-center justify-center text-body-medium shadow-sm">
                   ✓
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-sm">Sesi Wawancara Evaluasi Selesai</h4>
-                  <p className="text-xs text-gray-600">
-                    Seluruh pertanyaan evaluasi telah dijawab. Silakan klik <strong className="text-gray-900 font-semibold">Kirim Jawaban</strong> untuk menyelesaikan ujian.
+                  <h4 className="text-body-medium text-text-primary">Sesi Wawancara Evaluasi Selesai</h4>
+                  <p className="text-caption-1-medium text-text-secondary">
+                    Seluruh pertanyaan evaluasi telah dijawab. Silakan klik <strong className="text-text-primary">Kirim Jawaban</strong> untuk menyelesaikan ujian.
                   </p>
                 </div>
               </div>
-              <button onClick={() => setShowSubmitConfirm(true)}>
-                <TextRollButton text="Kirim Ujian Sekarang" variant="orange" size="md" />
-              </button>
+              <Button variant="primary" size="medium" onClick={() => setShowSubmitConfirm(true)}>
+                Kirim Ujian
+              </Button>
             </div>
           ) : (
-            <div className="p-4 border-t border-gray-100 bg-white space-y-2">
+            <div className="p-4 border-t border-separator-border bg-background-primary-default space-y-2">
               <div className="relative">
                 <textarea
                   value={currentInput}
                   onChange={(e) => setCurrentInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   onPaste={handlePaste}
-                  placeholder="Ketik jawaban & analisis Anda di sini..."
+                  placeholder="Ketik jawaban dan analisis Anda di sini..."
                   rows={3}
                   disabled={isAiTyping}
-                  className="w-full p-4 pr-14 bg-gray-50 border border-gray-200 rounded-2xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] resize-none disabled:opacity-50"
+                  className={cx(NATIVE_TEXTAREA_CLASSES, 'pr-14')}
+                  aria-label="Jawaban evaluasi"
                 />
-                <button
-                  onClick={handleSend}
-                  disabled={!currentInput.trim() || isAiTyping}
-                  className="absolute right-3.5 bottom-3.5 p-2.5 bg-gray-900 hover:bg-[#F26522] text-white rounded-full transition-colors disabled:opacity-30 disabled:hover:bg-gray-900"
-                >
-                  <SendAlt className="w-4 h-4" />
-                </button>
+                <span className="absolute right-3.5 bottom-3.5">
+                  <IconButton
+                    icon={RiSendPlaneLine}
+                    size="small"
+                    aria-label="Kirim jawaban"
+                    onClick={handleSend}
+                    disabled={!currentInput.trim() || isAiTyping}
+                  />
+                </span>
               </div>
-              <div className="flex items-center justify-between text-[11px] text-gray-400 px-2">
-                <span>Tekan <kbd className="font-mono bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200">Enter ↵</kbd> untuk mengirim</span>
-                <span>{currentInput.length} karakter</span>
+              <div className="flex items-center justify-between text-caption-1-medium text-text-tertiary px-2">
+                <span>Tekan <kbd className="bg-background-secondary-default text-text-secondary px-1.5 py-0.5 rounded border border-separator-border">Enter ↵</kbd> untuk mengirim</span>
+                <span className="tabular-nums">{currentInput.length} karakter</span>
               </div>
             </div>
           )}
@@ -497,38 +479,24 @@ export default function CandidateAssessment() {
       </div>
 
       {/* Confirmation Modal */}
-      <AnimatePresence>
-        {showSubmitConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 backdrop-blur-xs font-sans"
-          >
-            <div className="bg-white rounded-3xl p-8 max-w-md w-full border border-gray-200 shadow-2xl space-y-5">
-              <h3 className="text-xl font-bold text-gray-900 tracking-tight">Selesaikan & Kirim Evaluasi?</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Apakah Anda yakin ingin mengirimkan hasil jawaban dan telemetry sesi ini sekarang? Tindakan ini tidak dapat dibatalkan.
-              </p>
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  onClick={() => setShowSubmitConfirm(false)}
-                  className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900 border border-gray-200 rounded-full"
-                >
-                  Kembali Ke Soal
-                </button>
-                <button onClick={handleSubmit} disabled={isSubmitting}>
-                  <TextRollButton
-                    text={isSubmitting ? 'Mengirim...' : 'Ya, Kirim Sekarang'}
-                    variant="orange"
-                    size="sm"
-                  />
-                </button>
-              </div>
+      {showSubmitConfirm && (
+        <div className="fixed inset-0 bg-background-tertiary-default/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-background-primary-default rounded-3xl p-8 max-w-md w-full border border-border-button-default shadow-card space-y-5">
+            <h3 className="text-title-2-medium text-text-primary">Selesaikan dan Kirim Evaluasi?</h3>
+            <p className="text-body-regular text-text-secondary leading-relaxed">
+              Apakah Anda yakin ingin mengirimkan hasil jawaban dan telemetry sesi ini sekarang? Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <div className="flex justify-end gap-3 pt-2">
+              <Button variant="secondary" size="small" onClick={() => setShowSubmitConfirm(false)}>
+                Kembali Ke Soal
+              </Button>
+              <Button variant="primary" size="small" onClick={handleSubmit} disabled={isSubmitting}>
+                {isSubmitting ? 'Mengirim...' : 'Ya, Kirim'}
+              </Button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

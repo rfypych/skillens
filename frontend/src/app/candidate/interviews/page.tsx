@@ -1,25 +1,32 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
 import { api } from '@/lib/api';
 import { toast, Toaster } from 'react-hot-toast';
 import {
-  Calendar,
-  CheckmarkOutline,
-  CloseOutline,
-  Time,
-  Location,
-  Warning,
-  Star,
-} from '@carbon/icons-react';
-import TextRollButton from '@/components/TextRollButton';
+  RiAlertLine,
+  RiCalendarLine,
+  RiCheckLine,
+  RiCloseLine,
+  RiMapPinLine,
+  RiStarLine,
+  RiTimeLine,
+} from '@remixicon/react';
+import { Button } from '@/components/base/buttons/button';
+import { Chip } from '@/components/base/badges/chip';
 
-const STATUS_STYLES: Record<string, string> = {
-  pending: 'bg-amber-50 text-amber-800 border-amber-300 font-semibold',
-  accepted: 'bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold',
-  rejected: 'bg-red-50 text-red-700 border-red-200 font-semibold',
-  completed: 'bg-blue-50 text-blue-700 border-blue-200 font-semibold',
+const STATUS_CHIP: Record<string, 'yellow' | 'lime' | 'rose' | 'blue'> = {
+  pending: 'yellow',
+  accepted: 'lime',
+  rejected: 'rose',
+  completed: 'blue',
+};
+
+const STATUS_ICON: Record<string, typeof RiTimeLine> = {
+  pending: RiTimeLine,
+  accepted: RiCheckLine,
+  rejected: RiCloseLine,
+  completed: RiStarLine,
 };
 
 export default function CandidateInterviewsPage() {
@@ -56,99 +63,99 @@ export default function CandidateInterviewsPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 font-sans">
+    <div className="mx-auto max-w-5xl space-y-6">
       <Toaster position="top-right" />
 
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-3xl font-semibold text-gray-900 tracking-tight mb-1">
-          Undangan Wawancara
-        </h1>
-        <p className="text-gray-600 text-sm font-normal">
+      <div>
+
+        <p className="text-body-regular text-text-secondary">
           Tinjau dan tanggapi undangan sesi wawancara Anda di bawah ini.
         </p>
-      </motion.div>
+      </div>
 
       {loading ? (
         <div className="space-y-4">
-          {[1, 2].map(i => <div key={i} className="h-32 bg-gray-100 animate-pulse rounded-2xl" />)}
+          {[1, 2].map(i => <div key={i} className="h-32 animate-pulse rounded-3xl bg-background-tertiary-default" />)}
         </div>
       ) : interviews.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-gray-200 rounded-2xl bg-white text-center">
-          <Calendar className="w-12 h-12 text-gray-300 mb-4" />
-          <p className="text-gray-900 font-bold">Belum ada undangan wawancara.</p>
-          <p className="text-gray-500 text-sm mt-1 font-normal">
+        <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border-button-default bg-background-primary-default px-6 py-20 text-center">
+          <RiCalendarLine className="mb-4 size-12 text-foreground-icon-tertiary" aria-hidden />
+          <p className="text-title-3-semibold text-text-primary">Belum ada undangan wawancara.</p>
+          <p className="mt-1 text-body-regular text-text-secondary">
             Setelah tim HR menjadwalkan wawancara, undangan akan muncul di sini.
           </p>
         </div>
       ) : (
         <div className="space-y-4">
-          {interviews.map((iv, i) => (
-            <motion.div
-              key={iv.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className="bg-white border border-gray-200/80 p-6 rounded-2xl shadow-xs space-y-4"
-            >
-              {/* Status badge */}
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${STATUS_STYLES[iv.status] || ''}`}>
-                  {iv.status === 'pending' && <Time className="w-3.5 h-3.5" />}
-                  {iv.status === 'accepted' && <CheckmarkOutline className="w-3.5 h-3.5" />}
-                  {iv.status === 'rejected' && <CloseOutline className="w-3.5 h-3.5" />}
-                  {iv.status === 'completed' && <Star className="w-3.5 h-3.5" />}
-                  {iv.status}
-                </span>
-                <span className="text-xs text-gray-400 font-mono font-medium">Lamaran #{iv.application_id}</span>
-              </div>
-
-              {/* Interview details */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-900 font-bold">
-                  <Calendar className="w-4 h-4 text-[#F26522]" />
-                  {new Date(iv.scheduled_at).toLocaleString('id-ID', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+          {interviews.map((iv) => {
+            const StatusIcon = STATUS_ICON[iv.status] ?? RiTimeLine;
+            return (
+              <div
+                key={iv.id}
+                className="space-y-4 rounded-3xl border border-border-button-default bg-background-primary-default p-6 shadow-card"
+              >
+                {/* Status badge */}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <Chip variant="bold" color={STATUS_CHIP[iv.status] ?? 'neutral'}>
+                    <span className="inline-flex items-center gap-1.5">
+                      <StatusIcon className="size-3.5" aria-hidden />
+                      {iv.status}
+                    </span>
+                  </Chip>
+                  <span className="font-mono text-caption-1-medium text-text-tertiary">Lamaran #{iv.application_id}</span>
                 </div>
-                {iv.location && (
-                  <div className="flex items-center gap-2 text-sm text-gray-600 font-medium">
-                    <Location className="w-4 h-4 text-[#F26522]" />
-                    {iv.location}
+
+                {/* Interview details */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-body-medium text-text-primary">
+                    <RiCalendarLine className="size-4 text-accent-500" aria-hidden />
+                    {new Date(iv.scheduled_at).toLocaleString('id-ID', {
+                      weekday: 'long',
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </div>
+                  {iv.location && (
+                    <div className="flex items-center gap-2 text-body-regular text-text-secondary">
+                      <RiMapPinLine className="size-4 text-accent-500" aria-hidden />
+                      {iv.location}
+                    </div>
+                  )}
+                  {iv.notes && (
+                    <div className="flex items-start gap-2 text-body-regular text-text-secondary italic">
+                      <RiAlertLine className="mt-0.5 size-4 shrink-0" aria-hidden />
+                      <span>&quot;{iv.notes}&quot;</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Action buttons for pending */}
+                {iv.status === 'pending' && (
+                  <div className="flex gap-3 border-t border-separator-border pt-4">
+                    <Button
+                      variant="primary"
+                      size="small"
+                      onClick={() => handleRespond(iv.id, 'accept')}
+                      disabled={responding === iv.id}
+                    >
+                      Terima Wawancara
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="small"
+                      onClick={() => handleRespond(iv.id, 'reject')}
+                      disabled={responding === iv.id}
+                    >
+                      Tolak Undangan
+                    </Button>
                   </div>
                 )}
-                {iv.notes && (
-                  <div className="flex items-start gap-2 text-sm text-gray-500 italic">
-                    <Warning className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <span>"{iv.notes}"</span>
-                  </div>
-                )}
               </div>
-
-              {/* Action buttons for pending */}
-              {iv.status === 'pending' && (
-                <div className="flex gap-3 pt-4 border-t border-gray-100">
-                  <button
-                    onClick={() => handleRespond(iv.id, 'accept')}
-                    disabled={responding === iv.id}
-                  >
-                    <TextRollButton text="Terima Wawancara" variant="orange" size="sm" />
-                  </button>
-                  <button
-                    onClick={() => handleRespond(iv.id, 'reject')}
-                    disabled={responding === iv.id}
-                    className="px-5 py-2 border border-red-200 text-red-600 font-semibold text-xs rounded-full hover:bg-red-50 transition-colors disabled:opacity-60"
-                  >
-                    Tolak Undangan
-                  </button>
-                </div>
-              )}
-            </motion.div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

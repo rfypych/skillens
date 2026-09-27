@@ -1,30 +1,28 @@
 import Link from 'next/link';
+import { RiArrowRightLine } from '@remixicon/react';
+import { Button } from '@/components/base/buttons/button';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-[#EFEFEF] flex flex-col items-center justify-center p-4 font-sans">
-      <div className="bg-white px-8 py-12 sm:px-12 rounded-2xl border border-gray-200/60 shadow-sm max-w-lg w-full text-center">
-        <div className="text-[96px] sm:text-[120px] leading-none font-semibold tracking-tight text-gray-900 select-none">
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-background-full p-4">
+      <div className="w-full max-w-lg rounded-3xl border border-border-button-default bg-background-primary-default px-8 py-12 text-center shadow-card sm:px-12">
+        <div className="text-display-1-medium leading-none text-text-primary tabular-nums select-none">
           404
         </div>
-        <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mt-2">
+        <p className="mt-2 text-caption-1-semibold text-text-tertiary">
           Halaman tidak ditemukan
         </p>
-        <h2 className="text-2xl font-semibold tracking-tight text-gray-900 mt-3">
+        <h2 className="mt-3 text-title-2-medium text-text-primary">
           Tautan ini tidak tersedia.
         </h2>
-        <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+        <p className="mt-2 text-body-medium leading-relaxed text-text-secondary">
           Halaman yang kamu cari sudah dipindah atau tidak pernah ada. Kembali ke beranda untuk melanjutkan.
         </p>
         <div className="mt-8 flex justify-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 bg-[#F26522] hover:bg-[#e05a1a] text-white text-sm font-semibold rounded-full pl-6 pr-2 py-2 transition-colors"
-          >
-            Kembali ke Beranda
-            <span className="w-8 h-8 rounded-full bg-white/25 flex items-center justify-center text-white">
-              &rarr;
-            </span>
+          <Link href="/">
+            <Button variant="primary" size="medium" trailingIcon={RiArrowRightLine}>
+              Kembali ke Beranda
+            </Button>
           </Link>
         </div>
       </div>

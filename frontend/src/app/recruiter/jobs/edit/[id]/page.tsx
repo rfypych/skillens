@@ -1,19 +1,17 @@
 'use client';
 
+import { RiArrowLeftLine } from '@remixicon/react';
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { toast, Toaster } from 'react-hot-toast';
 import { api } from '@/lib/api';
-import TextRollButton from '@/components/TextRollButton';
+import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
+import { Select, SelectItem } from '@/components/base/select/select';
 
-const inputCls =
-  'block w-full px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400';
 const areaCls =
-  'block w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] focus:border-transparent transition-colors bg-white text-sm text-gray-900 font-medium placeholder-gray-400 resize-none';
-const labelCls =
-  'block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider';
+  'block w-full rounded-xl border border-border-button-default bg-background-primary-default px-3 py-2 text-body-medium text-text-primary outline-none transition-colors placeholder:text-text-placeholder hover:border-border-button-hover focus-visible:ring-2 focus-visible:ring-border-focus-ring resize-none';
 
 export default function EditJob() {
   const router = useRouter();
@@ -66,85 +64,81 @@ export default function EditJob() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#F26522] border-t-transparent rounded-full animate-spin" />
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="size-8 animate-spin rounded-full border-4 border-accent-500 border-t-transparent" />
       </div>
     );
   }
 
   if (!job) {
-    return <div className="p-10 text-center text-red-500 text-sm font-medium">Posisi tidak ditemukan.</div>;
+    return <div className="p-10 text-center text-body-medium text-text-error-primary">Posisi tidak ditemukan.</div>;
   }
 
   return (
-    <div className="w-full font-sans">
+    <div className="flex w-full flex-col">
       <Toaster position="top-right" />
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <Link href="/recruiter/jobs" className="text-xs font-semibold text-gray-500 hover:text-[#F26522] transition-colors">
-          &larr; Kembali ke Posisi Aktif
+      <div>
+        <Link href="/recruiter/jobs" className="inline-flex items-center gap-1.5 text-body-medium text-text-secondary outline-none transition-colors hover:text-accent-600 focus-visible:ring-2 focus-visible:ring-border-focus-ring">
+          <RiArrowLeftLine className="size-4" aria-hidden />
+          Kembali ke Posisi Aktif
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-gray-900 mt-2">
+        <h1 className="mt-2 text-title-1-medium text-text-primary">
           Ubah Detail Posisi
         </h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <p className="mt-1 text-body-medium text-text-secondary">
           Perbarui parameter posisi. Catatan: perubahan ini tidak me-regenerasi skenario simulasi AI.
         </p>
-      </motion.div>
+      </div>
 
       <form onSubmit={handleSubmit} className="mt-6">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-6 sm:p-8 space-y-5"
-        >
-          <div className="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label className={labelCls}>Nama Posisi / Pekerjaan *</label>
-              <input
-                required
-                name="title"
-                type="text"
-                defaultValue={job.title}
-                className={inputCls}
-                placeholder="Contoh: Senior Fullstack Engineer"
-              />
-            </div>
+        <div className="space-y-5 rounded-3xl border border-border-button-default bg-background-primary-default p-6 shadow-card sm:p-8">
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Input
+              label="Nama Posisi / Pekerjaan *"
+              name="title"
+              defaultValue={job.title}
+              isRequired
+              placeholder="Contoh: Senior Fullstack Engineer"
+            />
 
-            <div>
-              <label className={labelCls}>Bahasa Wawancara AI *</label>
-              <select name="language" defaultValue={job.language} className={inputCls}>
-                <option value="English">English</option>
-                <option value="Indonesian">Indonesian</option>
-              </select>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-body-medium text-text-primary">Bahasa Wawancara AI *</span>
+              <Select aria-label="Bahasa wawancara AI" name="language" defaultSelectedKey={job.language}>
+                <SelectItem id="English">English</SelectItem>
+                <SelectItem id="Indonesian">Indonesian</SelectItem>
+              </Select>
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-5">
-            <div>
-              <label className={labelCls}>Lokasi Kerja *</label>
-              <input required name="location" type="text" defaultValue={job.location} className={inputCls} placeholder="Contoh: Jakarta (Hybrid / Remote)" />
-            </div>
-            <div>
-              <label className={labelCls}>Rentang Gaji *</label>
-              <input required name="salary_range" type="text" defaultValue={job.salary_range} className={inputCls} placeholder="Contoh: Rp 18–30 juta" />
-            </div>
-            <div>
-              <label className={labelCls}>Tipe Pekerjaan *</label>
-              <select name="job_type" defaultValue={job.job_type} className={inputCls}>
-                <option value="Full-time">Full-time (Penuh Waktu)</option>
-                <option value="Contract">Contract (Kontrak)</option>
-                <option value="Internship">Internship (Magang)</option>
-              </select>
+          <div className="grid gap-5 sm:grid-cols-3">
+            <Input
+              label="Lokasi Kerja *"
+              name="location"
+              defaultValue={job.location}
+              isRequired
+              placeholder="Contoh: Jakarta (Hybrid / Remote)"
+            />
+            <Input
+              label="Rentang Gaji *"
+              name="salary_range"
+              defaultValue={job.salary_range}
+              isRequired
+              placeholder="Contoh: Rp 18-30 juta"
+            />
+            <div className="flex flex-col gap-1.5">
+              <span className="text-body-medium text-text-primary">Tipe Pekerjaan *</span>
+              <Select aria-label="Tipe pekerjaan" name="job_type" defaultSelectedKey={job.job_type}>
+                <SelectItem id="Full-time">Full-time (Penuh Waktu)</SelectItem>
+                <SelectItem id="Contract">Contract (Kontrak)</SelectItem>
+                <SelectItem id="Internship">Internship (Magang)</SelectItem>
+              </Select>
             </div>
           </div>
 
-          <div>
-            <label className={labelCls}>Hasil yang Diharapkan (6–12 Bulan) *</label>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="edit-expected-outcomes" className="text-body-medium text-text-primary">Hasil yang Diharapkan (6-12 Bulan) *</label>
             <textarea
+              id="edit-expected-outcomes"
               required name="expected_outcomes" rows={2}
               defaultValue={job.expected_outcomes}
               className={areaCls}
@@ -152,9 +146,10 @@ export default function EditJob() {
             />
           </div>
 
-          <div>
-            <label className={labelCls}>Keahlian Spesifik yang Dibutuhkan *</label>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="edit-specific-skills" className="text-body-medium text-text-primary">Keahlian Spesifik yang Dibutuhkan *</label>
             <textarea
+              id="edit-specific-skills"
               required name="specific_skills" rows={2}
               defaultValue={job.specific_skills}
               className={areaCls}
@@ -162,39 +157,36 @@ export default function EditJob() {
             />
           </div>
 
-          <div>
-            <label className={labelCls}>Kriteria Kepatuhan & Non-Negosiable</label>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="edit-compliance" className="text-body-medium text-text-primary">Kriteria Kepatuhan dan Non-Negosiable</label>
             <textarea
+              id="edit-compliance"
               name="compliance_criteria" rows={2}
               defaultValue={job.compliance_criteria ?? ''}
               className={areaCls}
               placeholder="Contoh: Minimal 3 tahun pengalaman..."
             />
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="flex justify-end items-center gap-3 mt-6"
-        >
-          <button
+        <div className="mt-6 flex items-center justify-end gap-3">
+          <Button
             type="button"
+            variant="secondary"
+            size="medium"
             onClick={() => router.back()}
-            className="px-5 py-3 text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors"
           >
             Batal
-          </button>
-          <TextRollButton
-            text={isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
-            variant="orange"
-            size="lg"
+          </Button>
+          <Button
             type="submit"
+            variant="primary"
+            size="medium"
             disabled={isSubmitting}
-            className="justify-between"
-          />
-        </motion.div>
+          >
+            {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
+          </Button>
+        </div>
       </form>
     </div>
   );

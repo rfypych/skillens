@@ -1,8 +1,15 @@
 'use client';
 
-import { Activity, Calendar, ChartBar, ChartLineData, Group, Idea, Security, Target } from '@carbon/icons-react';
+import {
+  RiCalendarLine,
+  RiFocus3Line,
+  RiGroupLine,
+  RiLineChartLine,
+  RiPulseLine,
+  RiShieldCheckLine,
+  RiSparklingLine,
+} from '@remixicon/react';
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { api } from '@/lib/api';
 import { StatCards } from '@/components/application/dashboard/stat-cards';
 
@@ -101,8 +108,6 @@ export default function MetricsDashboard() {
           });
         }
 
-        // Honest week-over-week deltas from the same payload (no fabrication):
-        // evaluated apps created in the last 7 days vs the 7 days before.
         const now = Date.now();
         const inWeek = (iso: string, back: number) => {
           const t = new Date(iso).getTime();
@@ -135,7 +140,6 @@ export default function MetricsDashboard() {
           if (prev.fraud <= 0) return { text: week.fraud > 0 ? 'minggu ini' : '—', color: 'neutral' };
           const d = week.fraud - prev.fraud;
           if (d === 0) return { text: 'stabil', color: 'neutral' };
-          // For fraud, DOWN is good (lime), UP is bad (rose).
           return { text: `${d > 0 ? '+' : ''}${d}`, color: d < 0 ? 'lime' : 'rose' };
         })();
         const avgDelta = ((): Delta => {
@@ -161,134 +165,102 @@ export default function MetricsDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  const fraudRate = metrics.totalProcessed > 0 
-    ? Math.round((metrics.fraudCount / metrics.totalProcessed) * 100) 
+  const fraudRate = metrics.totalProcessed > 0
+    ? Math.round((metrics.fraudCount / metrics.totalProcessed) * 100)
     : 0;
 
   const stats = [
-    { icon: Group, label: 'Total Evaluasi', value: loading ? '…' : String(metrics.totalProcessed), delta: loading ? '—' : metrics.deltas.total.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.total.color },
-    { icon: Target, label: 'Rata-rata Skor Bukti', value: loading ? '…' : String(metrics.averageScore), delta: loading ? '—' : metrics.deltas.avg.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.avg.color },
-    { icon: Security, label: 'Tingkat Pencegahan Kecurangan', value: loading ? '…' : `${fraudRate}%`, delta: loading ? '—' : metrics.deltas.fraud.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.fraud.color },
-    { icon: Idea, label: 'Kandidat Tersembunyi (Gem)', value: loading ? '…' : String(metrics.hiddenGems), delta: loading ? '—' : metrics.deltas.gems.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.gems.color },
+    { icon: RiGroupLine, label: 'Total Evaluasi', value: loading ? '…' : String(metrics.totalProcessed), delta: loading ? '—' : metrics.deltas.total.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.total.color },
+    { icon: RiFocus3Line, label: 'Rata-rata Skor Bukti', value: loading ? '…' : String(metrics.averageScore), delta: loading ? '—' : metrics.deltas.avg.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.avg.color },
+    { icon: RiShieldCheckLine, label: 'Tingkat Pencegahan Kecurangan', value: loading ? '…' : `${fraudRate}%`, delta: loading ? '—' : metrics.deltas.fraud.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.fraud.color },
+    { icon: RiSparklingLine, label: 'Kandidat Tersembunyi (Gem)', value: loading ? '…' : String(metrics.hiddenGems), delta: loading ? '—' : metrics.deltas.gems.text, deltaColor: loading ? 'neutral' as const : metrics.deltas.gems.color },
   ];
 
   return (
-    <div className="w-full space-y-8 font-sans">
-      <div>
-        <h1 className="text-3xl font-semibold text-gray-900 tracking-tight flex items-center gap-3 mb-1">
-          <ChartBar className="w-8 h-8 text-[#F26522]" />
-          Analitik & Laporan Performa
-        </h1>
-        <p className="text-gray-600 text-base font-normal">Telemetri alur kerja perekrutan dan performa evaluasi AI.</p>
+    <div className="flex w-full flex-col gap-4">
+      <div className="flex flex-col gap-1 px-1">
+        <h2 className="text-title-1-medium text-text-primary">Ringkasan performa</h2>
+        <p className="text-body-medium text-text-secondary">Telemetri alur kerja perekrutan dan performa evaluasi AI.</p>
       </div>
 
-      {/* KPI Grid — BoardUI StatCards with honest week-over-week deltas */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <StatCards variant="plain" stats={stats} />
-      </motion.div>
+      <StatCards variant="plain" stats={stats} />
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Distribution Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="lg:col-span-2 bg-white p-8 rounded-2xl border border-gray-200/80 shadow-xs"
-        >
-          <h2 className="text-xl font-medium text-gray-900 mb-6 flex items-center gap-2">
-            <Activity className="w-5 h-5 text-[#F26522]" />
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <section className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-primary-default p-5 shadow-card lg:col-span-2">
+          <h3 className="inline-flex items-center gap-2 text-body-1-medium text-text-primary">
+            <RiPulseLine className="size-5 text-accent-600" aria-hidden />
             Distribusi Keselarasan Kandidat
-          </h2>
-          
-          <div className="space-y-6">
+          </h3>
+
+          <div className="flex flex-col gap-5">
             {Object.entries(metrics.labels).map(([label, count], idx) => {
               if (label === 'Menunggu') return null;
               const total = metrics.totalProcessed || 1;
               const percentage = Math.round((count / total) * 100);
-              
-              let barColor = 'bg-[#F26522]';
-              if (label === 'Terindikasi Palsu') barColor = 'bg-red-500';
-              if (label === 'Ketidakcocokan') barColor = 'bg-amber-500';
-              if (label === 'Cocok Solid') barColor = 'bg-blue-600';
+
+              let barColor = 'bg-accent-500';
+              if (label === 'Terindikasi Palsu') barColor = 'bg-status-rose-text';
+              if (label === 'Ketidakcocokan') barColor = 'bg-status-yellow-text';
+              if (label === 'Cocok Solid') barColor = 'bg-status-blue-text';
 
               return (
-                <div key={label}>
-                  <div className="flex justify-between text-sm font-semibold text-gray-900 mb-2">
+                <div key={label} className="flex flex-col gap-2">
+                  <div className="flex justify-between text-body-medium text-text-primary">
                     <span>{label}</span>
-                    <span>{percentage}% ({count})</span>
+                    <span className="tabular-nums">{percentage}% ({count})</span>
                   </div>
-                  <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${percentage}%` }}
-                      transition={{ duration: 1, delay: 0.5 + (idx * 0.1) }}
-                      className={`h-full ${barColor} rounded-full`} 
+                  <div className="h-3 w-full overflow-hidden rounded-full bg-background-secondary-default">
+                    <div
+                      className={`h-full rounded-full ${barColor} transition-[width] duration-700`}
+                      style={{ width: `${percentage}%`, transitionDelay: `${idx * 100}ms` }}
                     />
                   </div>
                 </div>
               );
             })}
           </div>
-        </motion.div>
+        </section>
 
-        {/* Info Box */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-gray-900 p-8 rounded-2xl text-white shadow-sm flex flex-col justify-between"
-        >
-          <div>
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-6 border border-white/10">
-              <ChartLineData className="w-6 h-6 text-[#F26522]" />
-            </div>
-            <h2 className="text-xl font-medium mb-3">Nilai Efisiensi Skillens AI</h2>
-            <p className="text-gray-300 text-sm leading-relaxed font-normal">
-              Dengan menyaring <strong className="text-white font-semibold">{metrics.fraudCount} kandidat</strong> terindikasi palsu secara otomatis, Skillens AI telah menghemat waktu tim Anda sekitar <strong className="text-white font-semibold">{metrics.fraudCount * 1.5} jam</strong> sesi wawancara teknis.
+        <section className="flex flex-col justify-between gap-4 rounded-3xl bg-background-tertiary-default p-5 text-text-primary">
+          <div className="flex flex-col gap-4">
+            <span className="flex size-12 items-center justify-center rounded-full border border-separator-border bg-background-primary-default">
+              <RiLineChartLine className="size-6 text-accent-600" aria-hidden />
+            </span>
+            <h3 className="text-body-1-medium">Nilai Efisiensi Skillens AI</h3>
+            <p className="text-body-regular leading-relaxed text-text-secondary">
+              Dengan menyaring <strong className="text-text-primary">{metrics.fraudCount} kandidat</strong> terindikasi palsu secara otomatis, Skillens AI telah menghemat waktu tim Anda sekitar <strong className="text-text-primary">{metrics.fraudCount * 1.5} jam</strong> sesi wawancara teknis.
             </p>
           </div>
-        </motion.div>
+        </section>
       </div>
 
-      {/* Trend Chart Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-xs"
-      >
-        <h2 className="text-xl font-medium text-gray-900 mb-8 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-[#F26522]" />
+      <section className="flex flex-col gap-6 rounded-3xl border border-border-button-default bg-background-primary-default p-5 shadow-card">
+        <h3 className="inline-flex items-center gap-2 text-body-1-medium text-text-primary">
+          <RiCalendarLine className="size-5 text-accent-600" aria-hidden />
           Volume Evaluasi (7 Hari Terakhir)
-        </h2>
-        
-        <div className="flex items-end gap-3 h-48 w-full mt-4">
+        </h3>
+
+        <div className="flex h-48 w-full items-end gap-3">
           {metrics.trendData.map((day, idx) => {
             const maxCount = Math.max(...metrics.trendData.map(d => d.count), 1);
             const heightPercentage = (day.count / maxCount) * 100;
             return (
-              <div key={day.dateStr} className="flex-1 h-full flex flex-col justify-end items-center group cursor-pointer">
-                <div className="w-full relative flex justify-center items-end h-full bg-gray-50 hover:bg-gray-100 transition-colors rounded-t-xl max-w-[40px]">
-                  <div className="absolute -top-8 bg-gray-900 text-white text-xs font-bold py-1 px-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+              <div key={day.dateStr} className="group flex h-full flex-1 cursor-pointer flex-col items-center justify-end">
+                <div className="relative flex h-full w-full max-w-[40px] items-end justify-center rounded-t-xl bg-background-secondary-default transition-colors group-hover:bg-background-tertiary-default">
+                  <div className="absolute -top-8 rounded-full bg-background-tertiary-default px-2.5 py-1 text-caption-1-semibold tabular-nums text-text-primary opacity-0 transition-opacity group-hover:opacity-100">
                     {day.count}
                   </div>
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: day.count === 0 ? '6px' : `${heightPercentage}%` }}
-                    transition={{ duration: 0.8, delay: 0.7 + (idx * 0.1) }}
-                    className="w-full bg-gray-900 group-hover:bg-[#F26522] rounded-t-xl transition-colors"
+                  <div
+                    className="w-full rounded-t-xl bg-text-primary transition-colors group-hover:bg-accent-500"
+                    style={{ height: day.count === 0 ? '6px' : `${heightPercentage}%`, transition: `height 0.8s ease ${idx * 100}ms` }}
                   />
                 </div>
-                <span className="text-xs font-semibold text-gray-500 mt-3">{day.label}</span>
+                <span className="mt-3 text-caption-1-semibold text-text-secondary">{day.label}</span>
               </div>
             );
           })}
         </div>
-      </motion.div>
+      </section>
     </div>
   );
 }

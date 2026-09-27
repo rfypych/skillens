@@ -1,21 +1,24 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  ShieldCheck,
-  Clock,
-  Sparkles,
-  AlertTriangle,
-  ArrowRight,
-  Info,
-  X,
-  FileCheck,
-  Lock,
-} from 'lucide-react';
-import { IconArrowUpRight } from '@/components/icons/CustomIcons';
+  RiAlertLine,
+  RiArrowRightLine,
+  RiCloseLine,
+  RiFileCheckLine,
+  RiInformationLine,
+  RiLightbulbFlashLine,
+  RiLockLine,
+  RiShieldCheckLine,
+  RiTimeLine,
+} from '@remixicon/react';
+import { Button } from '@/components/base/buttons/button';
+import { Checkbox } from '@/components/base/checkbox/checkbox';
+import { Chip } from '@/components/base/badges/chip';
+import { IconButton } from '@/components/base/buttons/icon-button';
+import { cx } from '@/utils/cx';
 
 function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [currentTab, setCurrentTab] = useState(0);
@@ -25,8 +28,7 @@ function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClos
   const guides = [
     {
       title: 'Tahap 1: Konsep Simulasi AI',
-      icon: Sparkles,
-      color: 'text-[#F26522]',
+      icon: RiLightbulbFlashLine,
       bullets: [
         'Ujian ini berbasis **skenario studi kasus nyata** industri, bukan soal hafalan atau pilihan ganda.',
         'AI bertindak sebagai penguji teknis yang mengukur alur kerja, arsitektur, dan keputusan teknis Anda.',
@@ -34,9 +36,8 @@ function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClos
       ]
     },
     {
-      title: 'Tahap 2: Aturan & Integritas',
-      icon: AlertTriangle,
-      color: 'text-amber-600',
+      title: 'Tahap 2: Aturan dan Integritas',
+      icon: RiAlertLine,
       bullets: [
         'Durasi total adalah **15 menit** dan penghitung waktu tidak dapat dihentikan.',
         'Dilarang **pindah tab** atau **copy-paste** teks. Sistem telemetri akan menandai aktivitas mencurigakan.',
@@ -45,10 +46,9 @@ function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClos
     },
     {
       title: 'Tahap 3: Tips Penilaian Maksimal',
-      icon: ShieldCheck,
-      color: 'text-[#F26522]',
+      icon: RiShieldCheckLine,
       bullets: [
-        'Gunakan metode terstruktur saat menjawab (masalah → solusi → dampak).',
+        'Gunakan metode terstruktur saat menjawab (masalah, solusi, dampak).',
         'Jelaskan **mengapa** Anda mengambil keputusan tersebut, bukan hanya apa yang dilakukan.',
         'Skor evaluasi dikalkulasi secara otomatis dan dapat langsung dilihat oleh tim recruiter.'
       ]
@@ -59,91 +59,69 @@ function CandidateOnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClos
   const IconComponent = current.icon;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className="w-full max-w-lg bg-white rounded-[2rem] border border-gray-200/80 shadow-2xl overflow-hidden p-6 md:p-8"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-lg overflow-hidden rounded-3xl border border-border-button-default bg-background-primary-default p-6 shadow-dropdown md:p-7">
+        <div className="flex items-center justify-between border-b border-separator-border pb-4">
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-[#F26522]/10 flex items-center justify-center text-[#F26522]">
-              <Info size={16} />
+            <span className="flex size-8 items-center justify-center rounded-full bg-accent-50 text-accent-600">
+              <RiInformationLine className="size-4" aria-hidden />
             </span>
-            <span className="font-semibold text-gray-900 text-sm">Panduan Assessment Candidate</span>
+            <span className="text-body-medium text-text-primary">Panduan Assessment Candidate</span>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors"
-          >
-            <X size={16} />
-          </button>
+          <IconButton icon={RiCloseLine} size="small" aria-label="Tutup panduan" onClick={onClose} />
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 my-5 bg-[#F9FAFB] p-1.5 rounded-full border border-gray-200/60">
+        <div className="my-4 flex gap-1 rounded-full border border-separator-border bg-background-secondary-default p-1.5">
           {guides.map((_, idx) => (
             <button
               key={idx}
+              type="button"
               onClick={() => setCurrentTab(idx)}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-full transition-colors ${
+              className={cx(
+                'flex-1 cursor-pointer rounded-full py-1.5 text-caption-1-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-border-focus-ring',
                 currentTab === idx
-                  ? 'bg-gray-900 text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-900'
-              }`}
+                  ? 'bg-background-tertiary-default text-text-primary'
+                  : 'text-text-tertiary hover:text-text-primary'
+              )}
             >
               Tahap {idx + 1}
             </button>
           ))}
         </div>
 
-        {/* Content */}
-        <div className="py-2 space-y-3">
-          <h4 className="font-semibold text-gray-900 text-base flex items-center gap-2">
-            <IconComponent size={18} className={current.color} />
+        <div className="space-y-3 py-2">
+          <h4 className="flex items-center gap-2 text-body-medium text-text-primary">
+            <IconComponent className="size-[18px] text-accent-600" aria-hidden />
             {current.title}
           </h4>
-          <ul className="space-y-2.5 text-xs text-gray-600 leading-relaxed">
+          <ul className="space-y-2.5 text-body-regular leading-relaxed text-text-secondary">
             {current.bullets.map((b, i) => (
-              <li key={i} className="flex items-start gap-2 bg-[#F9FAFB] p-3 rounded-xl border border-gray-200/40">
-                <span className="text-[#F26522] font-bold mt-0.5">•</span>
-                <span dangerouslySetInnerHTML={{ __html: b.replace(/\*\*(.*?)\*\*/g, '<strong class="text-gray-900 font-semibold">$1</strong>') }} />
+              <li key={i} className="flex items-start gap-2 rounded-xl border border-separator-border bg-background-secondary-default p-3">
+                <span className="mt-0.5 font-bold text-accent-600">-</span>
+                <span dangerouslySetInnerHTML={{ __html: b.replace(/\*\*(.*?)\*\*/g, '<strong class="text-text-primary">$1</strong>') }} />
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Footer buttons */}
-        <div className="pt-6 mt-4 border-t border-gray-100 flex items-center justify-between">
-          <button
-            disabled={currentTab === 0}
-            onClick={() => setCurrentTab(t => t - 1)}
-            className="text-xs font-semibold text-gray-500 hover:text-gray-900 disabled:opacity-30 px-3 py-2"
-          >
+        <div className="mt-4 flex items-center justify-between border-t border-separator-border pt-4">
+          <Button variant="secondary" size="small" disabled={currentTab === 0} onClick={() => setCurrentTab(t => t - 1)}>
             Sebelumnya
-          </button>
-          <span className="text-xs font-medium text-gray-400">
+          </Button>
+          <span className="text-body-regular tabular-nums text-text-tertiary">
             {currentTab + 1} / {guides.length}
           </span>
           {currentTab < guides.length - 1 ? (
-            <button
-              onClick={() => setCurrentTab(t => t + 1)}
-              className="bg-gray-900 text-white text-xs font-semibold px-5 py-2 rounded-full hover:bg-[#F26522] transition-colors"
-            >
+            <Button variant="secondary" size="small" onClick={() => setCurrentTab(t => t + 1)}>
               Lanjut
-            </button>
+            </Button>
           ) : (
-            <button
-              onClick={onClose}
-              className="bg-[#F26522] text-white text-xs font-semibold px-5 py-2 rounded-full hover:bg-[#d95316] transition-colors"
-            >
-              Paham & Tutup
-            </button>
+            <Button variant="primary" size="small" onClick={onClose}>
+              Paham dan Tutup
+            </Button>
           )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -175,137 +153,82 @@ export default function AssessmentInstructions() {
     }
   };
 
+  const rules = [
+    { icon: RiTimeLine, tint: 'text-text-primary', title: 'Durasi 15 Menit', desc: 'Waktu berjalan otomatis begitu tombol ditekan dan tidak dapat dihentikan.' },
+    { icon: RiLightbulbFlashLine, tint: 'text-accent-600', title: 'Simulasi Skenario Industri', desc: 'Fokus pada pemecahan masalah praktis dan penjelasan logika keputusan Anda.' },
+    { icon: RiAlertLine, tint: 'text-status-yellow-text', title: 'Deteksi Anti-Cheat', desc: 'Sistem otomatis mencatat perpindahan tab dan aktivitas copy-paste ke laporan.' },
+    { icon: RiFileCheckLine, tint: 'text-text-primary', title: 'Laporan Evaluasi AI', desc: 'Kedalaman jawaban Anda akan dianalisis secara objektif untuk recruiter.' },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#f0f0f0] py-10 px-4 sm:px-6 md:px-8 font-sans flex items-center justify-center relative">
+    <div className="relative flex min-h-dvh items-center justify-center bg-background-full px-4 py-10 sm:px-6 md:px-8 font-boardui">
       <CandidateOnboardingModal isOpen={showGuide} onClose={handleCloseGuide} />
 
-      {/* Floating Help Button */}
-      <button
-        onClick={() => setShowGuide(true)}
-        className="fixed top-6 right-6 px-4 py-2 bg-white border border-gray-200/80 rounded-full text-gray-700 hover:text-gray-900 shadow-sm transition-all z-40 flex items-center gap-2 text-xs font-semibold"
-      >
-        <Info size={14} className="text-[#F26522]" />
-        Panduan Assessment
-      </button>
+      <div className="fixed top-6 right-6 z-40">
+        <Button variant="secondary" size="small" leadingIcon={RiInformationLine} onClick={() => setShowGuide(true)}>
+          Panduan Assessment
+        </Button>
+      </div>
 
-      <div className="max-w-3xl w-full">
-        {/* Logo */}
-        <div className="text-center mb-8">
+      <div className="w-full max-w-3xl">
+        <div className="mb-8 text-center">
           <Link href="/">
-            <img src="/skillens-logo-text.png" alt="Skillens" className="h-9 w-auto object-contain mx-auto" />
+            <img src="/skillens-logo-text.png" alt="Skillens" className="mx-auto h-9 w-auto object-contain" />
           </Link>
         </div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="bg-white rounded-[2rem] md:rounded-[3rem] border border-gray-200/60 shadow-lg overflow-hidden p-8 sm:p-10 md:p-12"
-        >
-          {/* Header */}
-          <div className="text-center pb-8 border-b border-gray-100 mb-8">
-            <span className="inline-flex items-center gap-2 bg-[#F26522]/10 text-[#F26522] border border-[#F26522]/20 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
-              <ShieldCheck size={14} /> Assessment Briefing
-            </span>
-            <h1 className="text-gray-900 text-3xl sm:text-4xl font-semibold leading-tight mb-3" style={{ letterSpacing: '-0.03em' }}>
+        <div className="overflow-hidden rounded-3xl border border-border-button-default bg-background-primary-default p-8 shadow-dropdown sm:p-10">
+          <div className="mb-8 border-b border-separator-border pb-8 text-center">
+            <Chip variant="subtle" color="orange" className="mb-4">
+              <span className="inline-flex items-center gap-1.5">
+                <RiShieldCheckLine className="size-3.5" aria-hidden />Assessment Briefing
+              </span>
+            </Chip>
+            <h1 className="text-title-1-medium text-text-primary">
               Petunjuk Pengerjaan Tes
             </h1>
-            <p className="text-gray-500 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+            <p className="mx-auto mt-2 max-w-lg text-body-medium leading-relaxed text-text-secondary">
               Anda akan memulai simulasi teknis berbasis AI. Harap pahami aturan lingkungan tes sebelum menekan tombol mulai.
             </p>
           </div>
 
-          {/* 4 Rules Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <div className="bg-[#F9FAFB] border border-gray-200/60 rounded-[1.25rem] p-5 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-white border border-gray-200/80 flex items-center justify-center flex-shrink-0 text-gray-900 shadow-sm">
-                <Clock size={18} />
+          <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {rules.map((r) => (
+              <div key={r.title} className="flex items-start gap-3.5 rounded-2xl border border-separator-border bg-background-secondary-default p-4">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border-button-default bg-background-primary-default shadow-card">
+                  <r.icon className={cx('size-[18px]', r.tint)} aria-hidden />
+                </span>
+                <div className="flex min-w-0 flex-col gap-1">
+                  <h3 className="text-caption-1-semibold text-text-primary">{r.title}</h3>
+                  <p className="text-body-regular leading-relaxed text-text-secondary">{r.desc}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-1">
-                  Durasi 15 Menit
-                </h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Waktu berjalan otomatis begitu tombol ditekan dan tidak dapat dihentikan.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-[#F9FAFB] border border-gray-200/60 rounded-[1.25rem] p-5 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-white border border-gray-200/80 flex items-center justify-center flex-shrink-0 text-[#F26522] shadow-sm">
-                <Sparkles size={18} />
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-1">
-                  Simulasi Skenario Industri
-                </h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Fokus pada pemecahan masalah praktis dan penjelasan logika keputusan Anda.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-[#F9FAFB] border border-gray-200/60 rounded-[1.25rem] p-5 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-white border border-gray-200/80 flex items-center justify-center flex-shrink-0 text-amber-600 shadow-sm">
-                <AlertTriangle size={18} />
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-1">
-                  Deteksi Anti-Cheat
-                </h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Sistem otomatis mencatat perpindahan tab dan aktivitas copy-paste ke laporan.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-[#F9FAFB] border border-gray-200/60 rounded-[1.25rem] p-5 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-white border border-gray-200/80 flex items-center justify-center flex-shrink-0 text-gray-900 shadow-sm">
-                <FileCheck size={18} />
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-1">
-                  Laporan Evaluasi AI
-                </h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Kedalaman jawaban Anda akan dianalisis secara objektif untuk recruiter.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* Checkbox agreement */}
           <div className="mb-8">
-            <label className="flex items-start gap-3 bg-[#F9FAFB] border border-gray-200/80 p-4 rounded-xl cursor-pointer hover:border-gray-400 transition-colors">
-              <input 
-                type="checkbox" 
-                className="w-4 h-4 rounded text-[#F26522] focus:ring-0 cursor-pointer mt-0.5"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-              />
-              <span className="text-xs text-gray-700 leading-relaxed font-medium">
+            <Checkbox isSelected={agreed} onChange={setAgreed}>
+              <span className="text-body-regular leading-relaxed text-text-primary">
                 Saya memahami seluruh aturan tes, dan bersedia pengerjaan saya dipantau secara otomatis tanpa berpindah tab selama 15 menit.
               </span>
-            </label>
+            </Checkbox>
           </div>
 
-          {/* Action Row */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-100">
-            <span className="text-xs text-gray-400 font-medium flex items-center gap-1.5">
-              <Lock size={13} /> Sesi ini terenkripsi & aman
+          <div className="flex flex-col items-center justify-between gap-4 border-t border-separator-border pt-4 sm:flex-row">
+            <span className="inline-flex items-center gap-1.5 text-body-regular text-text-tertiary">
+              <RiLockLine className="size-[13px]" aria-hidden />Sesi ini terenkripsi dan aman
             </span>
-            <button
+            <Button
+              variant="primary"
+              size="medium"
+              trailingIcon={RiArrowRightLine}
               onClick={handleStart}
               disabled={!agreed}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gray-900 text-white text-sm font-semibold pl-7 pr-3 py-3 rounded-full hover:bg-[#F26522] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
             >
               Mulai Tes Simulasi AI
-              <span className="bg-white/20 rounded-full p-1.5">
-                <ArrowRight size={14} className="text-white" />
-              </span>
-            </button>
+            </Button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

@@ -1,22 +1,23 @@
 'use client';
 
-import { ArrowLeft, CheckmarkOutline, Document, Email, Portfolio, User } from '@carbon/icons-react';
+import { RiArrowLeftLine, RiBriefcaseLine, RiCheckLine, RiFileTextLine, RiMailLine, RiUserLine } from '@remixicon/react';
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import toast, { Toaster } from 'react-hot-toast';
-import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 import { useLanguage } from '@/i18n/LanguageContext';
-import TextRollButton from '@/components/TextRollButton';
+import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
+import { Textarea } from '@/components/base/textarea/textarea';
+import { Select, SelectItem } from '@/components/base/select/select';
 
 export default function CandidateProfile() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { t, language, setLanguage } = useLanguage();
-  
+  const { language, setLanguage } = useLanguage();
+
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
@@ -62,7 +63,7 @@ export default function CandidateProfile() {
         profile: formData.profile
       });
       window.dispatchEvent(new Event('user-profile-updated'));
-      toast.success('Profil berhasil diperbarui!');
+      toast.success('Profil berhasil diperbarui');
     } catch (err: any) {
       toast.error(err.message || 'Gagal memperbarui profil');
     } finally {
@@ -71,100 +72,80 @@ export default function CandidateProfile() {
   };
 
   if (loading) return (
-    <div className="max-w-5xl mx-auto space-y-10 pb-12 font-sans">
-      <div className="h-20 bg-gray-100 animate-pulse rounded-2xl" />
-      <div className="bg-white p-8 border border-gray-200/80 rounded-2xl h-96 animate-pulse" />
+    <div className="mx-auto max-w-5xl space-y-10 pb-12">
+      <div className="h-20 animate-pulse rounded-3xl bg-background-tertiary-default" />
+      <div className="h-96 animate-pulse rounded-3xl border border-border-button-default bg-background-primary-default p-8" />
     </div>
   );
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10 pb-12 font-sans">
+    <div className="mx-auto max-w-5xl space-y-6 pb-12">
       <Toaster position="top-right" />
-      
+
       <div>
-        <Link href="/candidate/dashboard" className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors mb-4">
-          <ArrowLeft className="w-4 h-4" />
+        <Link href="/candidate/dashboard" className="mb-4 inline-flex items-center gap-2 text-body-medium text-text-secondary transition-colors hover:text-text-primary">
+          <RiArrowLeftLine className="size-4" aria-hidden />
           Kembali ke Dasbor
         </Link>
-        <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-2 tracking-tight">Profil Saya</h1>
-        <p className="text-gray-600 text-base font-normal">Kelola informasi pribadi dan ringkasan resume Anda.</p>
+        
+        <p className="text-body-regular text-text-secondary">Kelola informasi pribadi dan ringkasan resume Anda.</p>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl border border-gray-200/80 shadow-xs overflow-hidden"
-      >
-        <form onSubmit={handleSave} className="p-8 space-y-8">
+      <div className="overflow-hidden rounded-3xl border border-border-button-default bg-background-primary-default shadow-card">
+        <form onSubmit={handleSave} className="space-y-8 p-6 sm:p-8">
           {/* Basic Info */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
-              <User className="w-5 h-5 text-[#F26522]" />
+            <h3 className="mb-4 flex items-center gap-2 border-b border-separator-border pb-3 text-title-3-semibold text-text-primary">
+              <RiUserLine className="size-5 text-accent-500" aria-hidden />
               Informasi Dasar
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Nama Lengkap</label>
-                <input
-                  type="text"
-                  value={formData.full_name}
-                  onChange={e => setFormData({ ...formData, full_name: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Alamat Email</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Email className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    disabled
-                    className="w-full pl-11 pr-4 py-2.5 bg-gray-100 border border-gray-200 rounded-full text-gray-500 cursor-not-allowed text-sm font-mono"
-                  />
-                </div>
-              </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Input
+                label="Nama Lengkap"
+                value={formData.full_name}
+                onChange={(v) => setFormData({ ...formData, full_name: v })}
+              />
+              <Input
+                label="Alamat Email"
+                value={formData.email}
+                isDisabled
+                leadingIcon={RiMailLine}
+              />
             </div>
           </div>
 
           {/* Professional Summary */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
-              <Document className="w-5 h-5 text-[#F26522]" />
-              Detail Profesional & Resume
+            <h3 className="mb-4 flex items-center gap-2 border-b border-separator-border pb-3 text-title-3-semibold text-text-primary">
+              <RiFileTextLine className="size-5 text-accent-500" aria-hidden />
+              Detail Profesional dan Resume
             </h3>
-            <div className="space-y-6">
+            <div className="space-y-4">
+              <Textarea
+                label="Bio Singkat"
+                value={formData.profile.bio}
+                onChange={(v) => setFormData({ ...formData, profile: { ...formData.profile, bio: v } })}
+                placeholder="Saya adalah software engineer yang berfokus pada pengembangan aplikasi AI skala besar..."
+                rows={3}
+              />
+              <Textarea
+                label="Ringkasan Pengalaman Kerja"
+                value={formData.profile.experience}
+                onChange={(v) => setFormData({ ...formData, profile: { ...formData.profile, experience: v } })}
+                placeholder="5 tahun di TechCorp (Backend), 2 tahun di Startup Inc (Fullstack)..."
+                rows={4}
+              />
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Bio Singkat</label>
-                <textarea
-                  value={formData.profile.bio}
-                  onChange={e => setFormData({ ...formData, profile: { ...formData.profile, bio: e.target.value } })}
-                  placeholder="Saya adalah software engineer yang berfokus pada pengembangan aplikasi AI skala besar..."
-                  className="w-full h-24 px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 resize-none font-normal"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Ringkasan Pengalaman Kerja</label>
-                <textarea
-                  value={formData.profile.experience}
-                  onChange={e => setFormData({ ...formData, profile: { ...formData.profile, experience: e.target.value } })}
-                  placeholder="5 tahun di TechCorp (Backend), 2 tahun di Startup Inc (Fullstack)..."
-                  className="w-full h-32 px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 resize-y font-normal"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">CV / Resume</label>
-                
+                <span className="mb-1.5 block text-body-medium text-text-primary">CV / Resume</span>
+
                 {/* Current stored CV indicator */}
                 {formData.profile.resume_url && (
-                  <div className="flex items-center justify-between p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl mb-3">
-                    <div className="flex items-center gap-2.5 text-xs text-emerald-900">
-                      <CheckmarkOutline className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <div className="mb-3 flex items-center justify-between rounded-2xl border border-border-button-default bg-background-secondary-default p-3.5">
+                    <div className="flex items-center gap-2.5">
+                      <RiCheckLine className="size-4 shrink-0 text-accent-600" aria-hidden />
                       <div>
-                        <p className="font-semibold">CV Tersimpan</p>
-                        <p className="text-emerald-700 font-mono text-[11px] truncate max-w-[200px]">
+                        <p className="text-body-medium text-text-primary">CV Tersimpan</p>
+                        <p className="max-w-[200px] truncate font-mono text-caption-1-medium text-text-secondary">
                           {formData.profile.resume_url.split('/').pop()}
                         </p>
                       </div>
@@ -173,7 +154,7 @@ export default function CandidateProfile() {
                       href={`${process.env.NEXT_PUBLIC_API_URL || '/api'}${formData.profile.resume_url}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 underline"
+                      className="text-body-medium text-accent-600 underline"
                     >
                       Lihat
                     </a>
@@ -181,7 +162,7 @@ export default function CandidateProfile() {
                 )}
 
                 {/* Upload new CV */}
-                <div className="relative group">
+                <div className="group relative">
                   <input
                     type="file"
                     accept=".pdf,application/pdf"
@@ -202,7 +183,7 @@ export default function CandidateProfile() {
                       const formDataObj = new FormData();
                       formDataObj.append('file', file);
                       formDataObj.append('document_type', 'resume');
-                      
+
                       try {
                         const res = await api.post('/candidates/upload', formDataObj);
                         setFormData(prev => ({
@@ -214,15 +195,15 @@ export default function CandidateProfile() {
                         toast.error(err.message || 'Gagal mengunggah resume');
                       }
                     }}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                   />
-                  <div className="flex items-center gap-3 w-full px-4 py-3 bg-white border-2 border-dashed border-gray-200 rounded-2xl group-hover:border-[#F26522]/50 group-hover:bg-gray-50 transition-all">
-                    <Portfolio className="w-4 h-4 text-gray-400" />
+                  <div className="flex items-center gap-3 rounded-2xl border-2 border-dashed border-border-button-default bg-background-primary-default px-4 py-3 transition-all group-hover:border-accent-500 group-hover:bg-background-secondary-default">
+                    <RiBriefcaseLine className="size-4 text-foreground-icon-secondary" aria-hidden />
                     <div>
-                      <p className="text-xs font-semibold text-gray-700">
+                      <p className="text-body-medium text-text-primary">
                         {formData.profile.resume_url ? 'Ganti CV (Opsional)' : 'Unggah CV / Resume'}
                       </p>
-                      <p className="text-[10px] text-gray-400">PDF saja — Maks 5MB</p>
+                      <p className="text-caption-1-medium text-text-tertiary">PDF saja - Maks 5MB</p>
                     </div>
                   </div>
                 </div>
@@ -233,28 +214,28 @@ export default function CandidateProfile() {
 
           {/* Preferences */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
+            <h3 className="mb-4 border-b border-separator-border pb-3 text-title-3-semibold text-text-primary">
               Bahasa Platform
             </h3>
-            <div className="space-y-4">
-              <select 
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as 'en' | 'id')}
-                className="w-full md:w-1/2 px-4 py-2.5 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 font-medium"
+            <div className="w-full md:w-1/2">
+              <Select
+                aria-label="Bahasa platform"
+                selectedKey={language}
+                onSelectionChange={(k) => setLanguage(String(k) as 'en' | 'id')}
               >
-                <option value="id">Bahasa Indonesia</option>
-                <option value="en">English</option>
-              </select>
+                <SelectItem id="id">Bahasa Indonesia</SelectItem>
+                <SelectItem id="en">English</SelectItem>
+              </Select>
             </div>
           </div>
 
-          <div className="pt-6 border-t border-gray-100 flex justify-end">
-            <button type="submit" disabled={saving}>
-              <TextRollButton text={saving ? 'Menyimpan...' : 'Simpan Profil'} variant="orange" size="md" />
-            </button>
+          <div className="flex justify-end border-t border-separator-border pt-6">
+            <Button type="submit" variant="primary" size="medium" disabled={saving}>
+              {saving ? 'Menyimpan...' : 'Simpan Profil'}
+            </Button>
           </div>
         </form>
-      </motion.div>
+      </div>
     </div>
   );
 }

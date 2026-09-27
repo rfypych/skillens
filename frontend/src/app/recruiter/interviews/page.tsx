@@ -1,33 +1,37 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import {
+  RiAddFill,
+  RiCalendarLine,
+  RiCheckLine,
+  RiCloseLine,
+  RiMapPinLine,
+  RiStarFill,
+  RiTimeLine,
+} from '@remixicon/react';
 import { api } from '@/lib/api';
 import { toast, Toaster } from 'react-hot-toast';
-import {
-  Calendar,
-  CheckmarkOutline,
-  CloseOutline,
-  Time,
-  Star,
-  Location,
-  Warning,
-} from '@carbon/icons-react';
-import TextRollButton from '@/components/TextRollButton';
+import { Button } from '@/components/base/buttons/button';
+import { Chip } from '@/components/base/badges/chip';
+import { Input } from '@/components/base/input/input';
 
-const STATUS_STYLES: Record<string, string> = {
-  pending: 'bg-amber-50 text-amber-800 border-amber-300 font-semibold',
-  accepted: 'bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold',
-  rejected: 'bg-red-50 text-red-700 border-red-200 font-semibold',
-  completed: 'bg-blue-50 text-blue-700 border-blue-200 font-semibold',
+const STATUS_CHIP: Record<string, 'yellow' | 'lime' | 'rose' | 'blue'> = {
+  pending: 'yellow',
+  accepted: 'lime',
+  rejected: 'rose',
+  completed: 'blue',
 };
 
-const STATUS_ICONS: Record<string, React.ReactNode> = {
-  pending: <Time className="w-3.5 h-3.5" />,
-  accepted: <CheckmarkOutline className="w-3.5 h-3.5" />,
-  rejected: <CloseOutline className="w-3.5 h-3.5" />,
-  completed: <Star className="w-3.5 h-3.5" />,
-};
+const STATUS_ICON = {
+  pending: RiTimeLine,
+  accepted: RiCheckLine,
+  rejected: RiCloseLine,
+  completed: RiStarFill,
+} as const;
+
+const nativeFieldClass =
+  'w-full rounded-xl border border-border-button-default bg-background-primary-default px-3 py-2 text-body-medium text-text-primary outline-none transition-colors placeholder:text-text-placeholder hover:border-border-button-hover focus-visible:ring-2 focus-visible:ring-border-focus-ring';
 
 export default function RecruiterInterviewsPage() {
   const [interviews, setInterviews] = useState<any[]>([]);
@@ -91,7 +95,7 @@ export default function RecruiterInterviewsPage() {
         interview_score: numScore,
         score_notes: notes || undefined,
       });
-      toast.success('Skor berhasil dikirim!');
+      toast.success('Skor berhasil dikirim');
       setScoringId(null);
       fetchInterviews();
     } catch (err: any) {
@@ -102,184 +106,157 @@ export default function RecruiterInterviewsPage() {
   const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16);
 
   return (
-    <div className="w-full space-y-10 font-sans">
+    <div className="flex w-full flex-col gap-4">
       <Toaster position="top-right" />
 
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-3xl font-semibold text-gray-900 tracking-tight mb-1">
-          Manajemen Wawancara
-        </h1>
-        <p className="text-gray-600 text-sm font-normal">Jadwalkan sesi wawancara dan berikan penilaian pasca-wawancara kandidat.</p>
-      </motion.div>
+      <div className="flex flex-col gap-1 px-1">
+        
+        <p className="text-body-medium text-text-secondary">Jadwalkan sesi wawancara dan berikan penilaian pasca-wawancara kandidat.</p>
+      </div>
 
-      {/* Schedule New Interview */}
-      <div className="bg-white border border-gray-200/80 p-8 rounded-2xl shadow-xs">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-[#F26522]" />
+      <section className="flex w-full flex-col gap-4 rounded-3xl border border-border-button-default bg-background-primary-default p-4 shadow-card sm:p-5">
+        <h3 className="inline-flex items-center gap-2 text-body-1-medium text-text-primary">
+          <RiCalendarLine className="size-5 text-foreground-icon-secondary" aria-hidden />
           Jadwalkan Sesi Wawancara Baru
-        </h2>
-        <form onSubmit={handleSchedule} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider">
-              ID Lamaran (Application ID) <span className="text-red-500">*</span>
+        </h3>
+        <form onSubmit={handleSchedule} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="iv-app-id" className="text-caption-1-semibold text-text-secondary">
+              ID lamaran <span className="text-text-error-primary">*</span>
             </label>
             <input
+              id="iv-app-id"
               type="number"
               value={schedulingAppId}
               onChange={e => setSchedulingAppId(e.target.value)}
               placeholder="Contoh: 42"
-              className="w-full bg-white border border-gray-200 rounded-full px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] text-xs font-medium"
+              className={nativeFieldClass}
               required
             />
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider">
-              Tanggal & Waktu <span className="text-red-500">*</span>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="iv-when" className="text-caption-1-semibold text-text-secondary">
+              Tanggal dan Waktu <span className="text-text-error-primary">*</span>
             </label>
             <input
+              id="iv-when"
               type="datetime-local"
               value={scheduledAt}
               min={minDate}
               onChange={e => setScheduledAt(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-full px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] text-xs font-medium"
+              className={nativeFieldClass}
               required
             />
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider">Lokasi / Tautan Video Meet</label>
-            <input
-              type="text"
-              value={schedLocation}
-              onChange={e => setSchedLocation(e.target.value)}
-              placeholder="Contoh: Google Meet link atau Ruang A"
-              className="w-full bg-white border border-gray-200 rounded-full px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] text-xs font-medium"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wider">Catatan Untuk Kandidat</label>
-            <input
-              type="text"
-              value={schedNotes}
-              onChange={e => setSchedNotes(e.target.value)}
-              placeholder="Contoh: Siapkan ringkasan arsitektur sistem"
-              className="w-full bg-white border border-gray-200 rounded-full px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F26522] text-xs font-medium"
-            />
-          </div>
-          <div className="md:col-span-2 flex justify-end pt-2">
-            <button type="submit" disabled={isScheduling}>
-              <TextRollButton
-                text={isScheduling ? 'Menjadwalkan...' : 'Jadwalkan Wawancara'}
-                variant="orange"
-                size="md"
-              />
-            </button>
+          <Input
+            label="Lokasi / Tautan Video Meet"
+            placeholder="Contoh: Google Meet link atau Ruang A"
+            value={schedLocation}
+            onChange={setSchedLocation}
+          />
+          <Input
+            label="Catatan Untuk Kandidat"
+            placeholder="Contoh: Siapkan ringkasan arsitektur sistem"
+            value={schedNotes}
+            onChange={setSchedNotes}
+          />
+          <div className="flex justify-end md:col-span-2">
+            <Button variant="primary" size="medium" leadingIcon={RiAddFill} type="submit" disabled={isScheduling}>
+              {isScheduling ? 'Menjadwalkan…' : 'Jadwalkan Wawancara'}
+            </Button>
           </div>
         </form>
-      </div>
+      </section>
 
-      {/* Interviews List */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">Daftar Wawancara Terjadwal</h2>
+      <div className="flex flex-col gap-3">
+        <h3 className="px-1 text-body-1-medium text-text-primary">Daftar Wawancara Terjadwal</h3>
         {loading ? (
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-24 bg-gray-100 animate-pulse rounded-2xl" />
+              <div key={i} className="h-24 animate-pulse rounded-3xl bg-background-secondary-default" />
             ))}
           </div>
         ) : interviews.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 border-2 border-dashed border-gray-200 rounded-2xl bg-white text-center">
-            <Calendar className="w-10 h-10 text-gray-300 mb-3" />
-            <p className="text-gray-500 text-sm font-medium">Belum ada wawancara yang dijadwalkan.</p>
+          <div className="flex flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-border-button-default bg-background-primary-default px-6 py-14 text-center">
+            <RiCalendarLine className="size-10 text-foreground-icon-quaternary" aria-hidden />
+            <p className="text-body-medium text-text-secondary">Belum ada wawancara yang dijadwalkan.</p>
           </div>
         ) : (
-          interviews.map((iv, i) => (
-            <motion.div
-              key={iv.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="bg-white border border-gray-200/80 p-6 rounded-2xl shadow-xs"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-sm font-bold text-gray-900">
-                      Lamaran #{iv.application_id}
-                    </span>
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${STATUS_STYLES[iv.status] || ''}`}>
-                      {STATUS_ICONS[iv.status]} {iv.status}
-                    </span>
-                    {iv.interview_score !== null && iv.interview_score !== undefined && (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-[#F26522] border border-orange-200">
-                        <Star className="w-3.5 h-3.5" /> Skor: {iv.interview_score}/100
+          interviews.map((iv) => {
+            const StatusIcon = STATUS_ICON[iv.status as keyof typeof STATUS_ICON] ?? RiTimeLine;
+            return (
+              <section
+                key={iv.id}
+                className="flex w-full flex-col gap-3 rounded-3xl border border-border-button-default bg-background-primary-default p-4 shadow-card sm:flex-row sm:items-start sm:justify-between"
+              >
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-body-medium tabular-nums text-text-primary">Lamaran #{iv.application_id}</span>
+                    <Chip variant="bold" color={STATUS_CHIP[iv.status] ?? 'neutral'}>
+                      <span className="inline-flex items-center gap-1">
+                        <StatusIcon className="size-3.5" aria-hidden />{iv.status}
                       </span>
+                    </Chip>
+                    {iv.interview_score !== null && iv.interview_score !== undefined && (
+                      <Chip variant="bold" color="orange">
+                        <span className="inline-flex items-center gap-1">
+                          <RiStarFill className="size-3.5" aria-hidden />Skor: {iv.interview_score}/100
+                        </span>
+                      </Chip>
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 font-normal">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-[#F26522]" />
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-body-regular text-text-secondary">
+                    <span className="inline-flex items-center gap-1.5">
+                      <RiCalendarLine className="size-4" aria-hidden />
                       {new Date(iv.scheduled_at).toLocaleString()}
                     </span>
                     {iv.location && (
-                      <span className="flex items-center gap-1.5">
-                        <Location className="w-3.5 h-3.5 text-[#F26522]" />
+                      <span className="inline-flex items-center gap-1.5">
+                        <RiMapPinLine className="size-4" aria-hidden />
                         {iv.location}
                       </span>
                     )}
                   </div>
                   {iv.notes && (
-                    <p className="text-xs text-gray-600 italic">"{iv.notes}"</p>
+                    <p className="text-body-regular text-text-secondary italic">"{iv.notes}"</p>
                   )}
                 </div>
 
-                {/* Score Input */}
                 {iv.status === 'accepted' && (
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     {scoringId === iv.id ? (
-                      <div className="flex flex-col gap-2 p-4 border border-gray-200 bg-gray-50 rounded-2xl">
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
+                      <div className="flex w-56 flex-col gap-2 rounded-2xl border border-border-button-default bg-background-secondary-default p-3">
+                        <Input
+                          aria-label="Skor wawancara 0 sampai 100"
                           placeholder="Skor (0-100)"
                           value={scoreInput[iv.id]?.score || ''}
-                          onChange={e => setScoreInput(prev => ({ ...prev, [iv.id]: { ...prev[iv.id], score: e.target.value } }))}
-                          className="w-40 border border-gray-200 rounded-full px-3 py-1.5 text-xs text-gray-900 focus:outline-none"
+                          onChange={(v) => setScoreInput(prev => ({ ...prev, [iv.id]: { score: v, notes: prev[iv.id]?.notes ?? '' } }))}
                         />
-                        <input
-                          type="text"
+                        <Input
+                          aria-label="Catatan skor"
                           placeholder="Catatan (opsional)"
                           value={scoreInput[iv.id]?.notes || ''}
-                          onChange={e => setScoreInput(prev => ({ ...prev, [iv.id]: { ...prev[iv.id], notes: e.target.value } }))}
-                          className="w-40 border border-gray-200 rounded-full px-3 py-1.5 text-xs text-gray-900 focus:outline-none"
+                          onChange={(v) => setScoreInput(prev => ({ ...prev, [iv.id]: { score: prev[iv.id]?.score ?? '', notes: v } }))}
                         />
                         <div className="flex gap-2 pt-1">
-                          <button
-                            onClick={() => handleScore(iv.id)}
-                            className="px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-full hover:bg-gray-800"
-                          >
+                          <Button variant="primary" size="small" onClick={() => handleScore(iv.id)} className="flex-1">
                             Kirim
-                          </button>
-                          <button
-                            onClick={() => setScoringId(null)}
-                            className="px-3 py-1.5 border border-gray-200 text-xs font-semibold text-gray-600 rounded-full hover:bg-white"
-                          >
+                          </Button>
+                          <Button variant="secondary" size="small" onClick={() => setScoringId(null)} className="flex-1">
                             Batal
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     ) : (
-                      <button
-                        onClick={() => setScoringId(iv.id)}
-                      >
-                        <TextRollButton text="Kirim Skor" variant="dark" size="sm" />
-                      </button>
+                      <Button variant="secondary" size="small" onClick={() => setScoringId(iv.id)}>
+                        Kirim Skor
+                      </Button>
                     )}
                   </div>
                 )}
-              </div>
-            </motion.div>
-          ))
+              </section>
+            );
+          })
         )}
       </div>
     </div>

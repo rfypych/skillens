@@ -222,8 +222,17 @@ Do NOT output markdown (like ```json), just the raw JSON object.
             n_photos = len(_json2.loads(app.resume_images)) if app.resume_images else 0
         except Exception:
             n_photos = 0
+        visual_note = ""
+        try:
+            import json as _json3
+            va = _json3.loads(app.resume_visual_analysis) if app.resume_visual_analysis else None
+            if va and va.get("findings"):
+                bits = [f"Foto {i+1}: {(f.get('analysis') or '')[:300]}" for i, f in enumerate(va["findings"][:3])]
+                visual_note = "\n- Visual Evidence Analysis (local vision, observable content only):\n" + "\n".join(bits)
+        except Exception:
+            pass
         photo_line = (
-            f"\n- Portfolio Photos Attached: {n_photos} (evidence documentation, content not machine-readable)"
+            f"\n- Portfolio Photos Attached: {n_photos} (evidence documentation){visual_note}"
             if n_photos else ""
         )
         user_prompt = f"Candidate Resume/CV Content:\n{resume_text}\n\nTelemetry Data:\n- Tab Switches: {result.tab_switches}\n- Copy-Paste Attempts: {result.copy_paste_attempts}\n- Time Taken: {result.time_taken_seconds} seconds\n- Decision Telemetry: {decision_telemetry}{photo_line}\n\nCandidate Chat Transcript:\n{formatted_transcript}"

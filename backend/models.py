@@ -104,6 +104,7 @@ class Application(Base):
     resume_url = Column(String, nullable=True)
     resume_text = Column(Text, nullable=True)
     resume_images = Column(Text, nullable=True)  # JSON list of /uploads/*.png evidence photo URLs
+    resume_visual_analysis = Column(Text, nullable=True)  # JSON: local-vision findings per photo
     access_token = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

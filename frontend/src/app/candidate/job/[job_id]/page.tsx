@@ -2,10 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import {
+  RiArrowLeftLine,
+  RiArrowRightLine,
+  RiBriefcaseLine,
+  RiCheckLine,
+  RiErrorWarningLine,
+  RiFileTextLine,
+  RiLockLine,
+  RiMapPinLine,
+  RiTimeLine,
+} from '@remixicon/react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { ThinkingIndicator } from '@/components/ThinkingIndicator';
+import { Avatar } from '@/components/base/avatar/avatar';
+import { Button } from '@/components/base/buttons/button';
+import { Chip } from '@/components/base/badges/chip';
 
 export default function JobDetail() {
   const params = useParams();
@@ -49,8 +62,6 @@ export default function JobDetail() {
     setApplying(true);
     setError('');
     try {
-      // Send empty FormData — backend auto-uses profile CV
-      // Gunakan numeric job id hasil resolve magic-link agar POST /assessment/{id}/apply valid
       const numericId = job?.id ?? jobId;
       const formData = new FormData();
       const app = await api.post(`/assessment/${numericId}/apply`, formData);
@@ -73,7 +84,7 @@ export default function JobDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="flex min-h-dvh items-center justify-center bg-background-full font-boardui">
         <ThinkingIndicator />
       </div>
     );
@@ -81,10 +92,10 @@ export default function JobDetail() {
 
   if (!job) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="flex min-h-dvh items-center justify-center bg-background-full font-boardui">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">Posisi tidak ditemukan.</p>
-          <Link href="/candidate/dashboard" className="text-sm underline text-black">
+          <p className="mb-4 text-body-medium text-text-tertiary">Posisi tidak ditemukan.</p>
+          <Link href="/candidate/dashboard" className="text-body-medium text-accent-600 hover:text-accent-700">
             Kembali ke daftar posisi
           </Link>
         </div>
@@ -92,85 +103,79 @@ export default function JobDetail() {
     );
   }
 
+  const ctaLabel = applying ? 'Memproses…' : alreadyApplied ? 'Sudah Melamar' : 'Mulai Asesmen';
+
   return (
-    <div
-      className="min-h-screen bg-white"
-      style={{ fontFamily: 'Inter, system-ui, sans-serif', color: '#111' }}
-    >
-      {/* ── Top nav ─────────────────────────────────────── */}
-      <header className="border-b border-gray-100 sticky top-0 bg-white z-40">
-        <div className="max-w-5xl mx-auto px-6 h-12 flex items-center gap-3">
+    <div className="min-h-dvh bg-background-full text-text-primary font-boardui">
+      <header className="sticky top-0 z-40 border-b border-separator-border bg-background-primary-default">
+        <div className="mx-auto flex h-12 max-w-5xl items-center gap-3 px-6">
           <Link
             href="/candidate/dashboard"
-            className="text-xs text-gray-400 hover:text-black transition-colors flex items-center gap-1.5"
+            className="inline-flex items-center gap-1.5 text-body-regular text-text-tertiary outline-none transition-colors hover:text-text-primary focus-visible:ring-2 focus-visible:ring-border-focus-ring"
           >
-            ← Kembali ke daftar posisi
+            <RiArrowLeftLine className="size-4" aria-hidden />
+            Kembali ke daftar posisi
           </Link>
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-12">
+      <div className="mx-auto max-w-5xl px-6 py-10">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_300px]">
 
-          {/* ── LEFT: Job info ────────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="space-y-8"
-          >
-            {/* Company + Title */}
+          <div className="flex flex-col gap-8">
             <div>
-              <div className="w-12 h-12 border border-gray-200 flex items-center justify-center mb-4 bg-gray-50">
-                <span className="text-lg font-bold text-gray-400">S</span>
-              </div>
-              <h1 className="text-3xl font-bold tracking-tight text-black mb-1">
+              <Avatar size="lg" color="blue" initials={(job.title || 'S').slice(0, 1).toUpperCase()} className="mb-4" />
+              <h1 className="mb-1 text-title-1-medium text-text-primary">
                 {job.title}
               </h1>
-              <p className="text-gray-500 text-sm mb-4">Skillens Platform</p>
+              <p className="mb-4 text-body-regular text-text-secondary">Skillens Platform</p>
 
-              {/* Meta tags */}
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="mb-6 flex flex-wrap gap-2">
                 {job.location && (
-                  <span className="text-[12px] border border-gray-200 text-gray-600 px-3 py-1.5">
-                    📍 {job.location}
-                  </span>
+                  <Chip variant="subtle" color="neutral">
+                    <span className="inline-flex items-center gap-1.5">
+                      <RiMapPinLine className="size-3.5" aria-hidden />{job.location}
+                    </span>
+                  </Chip>
                 )}
                 {job.job_type && (
-                  <span className="text-[12px] border border-gray-200 text-gray-600 px-3 py-1.5">
-                    {job.job_type}
-                  </span>
+                  <Chip variant="subtle" color="neutral">
+                    <span className="inline-flex items-center gap-1.5">
+                      <RiBriefcaseLine className="size-3.5" aria-hidden />{job.job_type}
+                    </span>
+                  </Chip>
                 )}
                 {job.salary_range && (
-                  <span className="text-[12px] border border-gray-200 text-gray-600 px-3 py-1.5">
-                    {job.salary_range}
-                  </span>
+                  <Chip variant="subtle" color="neutral">{job.salary_range}</Chip>
                 )}
               </div>
 
-              {/* Primary CTA row (visible on mobile) */}
-              <div className="flex items-center gap-3 lg:hidden pb-6 border-b border-gray-100">
-                <button
+              <div className="flex items-center gap-3 border-b border-separator-border pb-6 lg:hidden">
+                <Button
+                  variant="primary"
+                  size="medium"
+                  trailingIcon={alreadyApplied || applying ? undefined : RiArrowRightLine}
+                  leadingIcon={alreadyApplied ? RiCheckLine : undefined}
                   onClick={!alreadyApplied ? handleApply : undefined}
                   disabled={applying || alreadyApplied}
-                  className="flex items-center gap-2 bg-black text-white text-sm font-semibold px-5 py-2.5 hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  {applying ? 'Starting…' : alreadyApplied ? '✓ Applied' : 'Start Assessment →'}
-                </button>
+                  {ctaLabel}
+                </Button>
               </div>
 
               {error && (
-                <p className="mt-3 text-sm text-red-600">{error}</p>
+                <p className="mt-3 inline-flex items-center gap-1.5 text-body-regular text-text-error-primary">
+                  <RiErrorWarningLine className="size-4" aria-hidden />{error}
+                </p>
               )}
             </div>
 
-            {/* About this role */}
             {outcomeLines.length > 0 && (
               <div>
-                <h2 className="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-4">
-                  About this role
+                <h2 className="mb-4 text-caption-1-semibold text-text-tertiary">
+                  Tentang peran ini
                 </h2>
-                <div className="space-y-2 text-sm text-gray-600 leading-relaxed pl-4 border-l-2 border-gray-100">
+                <div className="space-y-2 border-l-2 border-separator-border pl-4 text-body-regular leading-relaxed text-text-secondary">
                   {outcomeLines.map((line, i) => (
                     <p key={i}>{line}</p>
                   ))}
@@ -178,146 +183,134 @@ export default function JobDetail() {
               </div>
             )}
 
-            {/* Assessment criteria */}
             <div>
-              <h2 className="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-4">
-                What you&apos;ll be assessed on
+              <h2 className="mb-4 text-caption-1-semibold text-text-tertiary">
+                Yang dinilai dari Anda
               </h2>
               <ul className="space-y-3">
                 {[
-                  'Problem understanding and decomposition',
-                  'Solution approach and reasoning quality',
-                  'Logic and execution clarity',
-                  'Written communication quality',
-                  'Response depth and relevance to the role',
+                  'Memahami dan mengurai masalah',
+                  'Pendekatan solusi dan kualitas penalaran',
+                  'Logika dan kejelasan eksekusi',
+                  'Kualitas komunikasi tertulis',
+                  'Kedalaman jawaban dan relevansi dengan peran',
                 ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
-                    <span className="mt-0.5 text-black shrink-0">✓</span>
+                  <li key={i} className="flex items-start gap-3 text-body-regular text-text-secondary">
+                    <RiCheckLine className="mt-0.5 size-4 shrink-0 text-text-primary" aria-hidden />
                     {item}
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Skills */}
             {skills.length > 0 && (
               <div>
-                <h2 className="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-4">
-                  Required skills
+                <h2 className="mb-4 text-caption-1-semibold text-text-tertiary">
+                  Keahlian yang dibutuhkan
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {skills.map((skill, i) => (
-                    <span
-                      key={i}
-                      className="text-[12px] border border-gray-200 text-gray-700 px-3 py-1.5 font-medium"
-                    >
-                      {skill}
-                    </span>
+                    <Chip key={i} variant="subtle" color="neutral">{skill}</Chip>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* About Skillens */}
-            <div className="border-t border-gray-100 pt-8">
-              <h2 className="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-4">
-                About Skillens
+            <div className="border-t border-separator-border pt-8">
+              <h2 className="mb-4 text-caption-1-semibold text-text-tertiary">
+                Tentang Skillens
               </h2>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                Skillens is an evidence-based hiring platform that replaces résumé
-                screening with AI-proctored micro-simulations. Every candidate is evaluated
-                on actual performance, not self-reported credentials.
+              <p className="text-body-regular leading-relaxed text-text-secondary">
+                Skillens adalah platform rekrutmen berbasis bukti yang menggantikan
+                skrining resume dengan micro-simulasi terpantau AI. Setiap kandidat dinilai
+                dari kinerja nyata, bukan klaim pribadi.
               </p>
             </div>
-          </motion.div>
+          </div>
 
-          {/* ── RIGHT: Sticky CTA card ────────────────────── */}
           <div className="hidden lg:block">
-            <div className="sticky top-20 border border-gray-200 p-6 space-y-6">
+            <div className="sticky top-20 flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-primary-default p-5 shadow-card">
 
-              {/* Attached CV Banner */}
               {userProfile?.profile?.resume_url ? (
-                <div className="p-3.5 bg-emerald-50 border border-emerald-200/80 rounded-2xl flex items-center justify-between">
-                  <div className="flex items-center gap-2.5 text-xs text-emerald-900 font-medium">
-                    <span className="text-emerald-600 font-bold text-sm">✓</span>
-                    <div className="flex flex-col text-left">
-                      <span className="font-semibold text-emerald-950">CV Otomatis Terpasang</span>
-                      <span className="text-[11px] text-emerald-700 truncate max-w-[140px]">
+                <div className="flex items-center justify-between rounded-2xl bg-status-lime-background p-3.5">
+                  <span className="inline-flex min-w-0 items-center gap-2.5 text-body-regular text-status-lime-text">
+                    <RiCheckLine className="size-4 shrink-0" aria-hidden />
+                    <span className="flex min-w-0 flex-col text-left">
+                      <span className="text-body-medium">CV Otomatis Terpasang</span>
+                      <span className="max-w-[140px] truncate text-body-regular">
                         {userProfile.profile.resume_url.split('/').pop()}
                       </span>
-                    </div>
-                  </div>
-                  <Link href="/candidate/profile" className="text-[11px] font-semibold text-gray-600 hover:text-black underline">
+                    </span>
+                  </span>
+                  <Link href="/candidate/profile" className="shrink-0 text-body-regular text-text-secondary hover:text-text-primary">
                     Ubah di Pengaturan
                   </Link>
                 </div>
               ) : (
-                <div className="p-3.5 bg-amber-50 border border-amber-200/80 rounded-2xl flex items-center justify-between">
-                  <div className="flex items-center gap-2.5 text-xs text-amber-900 font-medium">
-                    <span className="text-amber-600 font-bold">!</span>
+                <div className="flex items-center justify-between rounded-2xl bg-status-yellow-background p-3.5">
+                  <span className="inline-flex items-center gap-2.5 text-body-regular text-status-yellow-text">
+                    <RiErrorWarningLine className="size-4 shrink-0" aria-hidden />
                     <span>Belum ada CV di profil</span>
-                  </div>
-                  <Link href="/candidate/profile" className="text-[11px] font-semibold text-[#F26522] underline">
+                  </span>
+                  <Link href="/candidate/profile" className="shrink-0 text-body-regular text-accent-600 hover:text-accent-700">
                     Upload di Pengaturan
                   </Link>
                 </div>
               )}
 
-              {/* Main CTA */}
-              <button
+              <Button
+                variant="primary"
+                size="medium"
+                trailingIcon={alreadyApplied || applying ? undefined : RiArrowRightLine}
+                leadingIcon={alreadyApplied ? RiCheckLine : undefined}
                 onClick={!alreadyApplied ? handleApply : undefined}
                 disabled={applying || alreadyApplied}
-                className="w-full flex items-center justify-center gap-2 bg-black text-white text-sm font-semibold py-3 hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full"
               >
                 {applying ? (
-                  <>
+                  <span className="inline-flex items-center gap-2">
                     <ThinkingIndicator />
                     Starting…
-                  </>
-                ) : alreadyApplied ? (
-                  '✓ Already Applied'
-                ) : (
-                  'Start Assessment →'
-                )}
-              </button>
+                  </span>
+                ) : ctaLabel}
+              </Button>
 
               {error && (
-                <p className="text-sm text-red-600">{error}</p>
+                <p className="inline-flex items-center gap-1.5 text-body-regular text-text-error-primary">
+                  <RiErrorWarningLine className="size-4" aria-hidden />{error}
+                </p>
               )}
 
-
-              {/* Quick facts */}
-              <div className="space-y-3 border-t border-gray-100 pt-5 text-sm text-gray-500">
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-300 shrink-0">⏱</span>
-                  ~15 minutes to complete
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-300 shrink-0">🔒</span>
-                  AI-proctored session
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-300 shrink-0">📄</span>
-                  No resume required
-                </div>
+              <div className="flex flex-col gap-3 border-t border-separator-border pt-5 text-body-regular text-text-secondary">
+                <span className="inline-flex items-center gap-3">
+                  <RiTimeLine className="size-4 shrink-0 text-foreground-icon-tertiary" aria-hidden />
+                  Sekitar 15 menit
+                </span>
+                <span className="inline-flex items-center gap-3">
+                  <RiLockLine className="size-4 shrink-0 text-foreground-icon-tertiary" aria-hidden />
+                  Sesi terpantau AI
+                </span>
+                <span className="inline-flex items-center gap-3">
+                  <RiFileTextLine className="size-4 shrink-0 text-foreground-icon-tertiary" aria-hidden />
+                  Tanpa perlu resume
+                </span>
               </div>
 
-              {/* Steps */}
-              <div className="border-t border-gray-100 pt-5">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-black mb-4">
-                  What happens next
+              <div className="border-t border-separator-border pt-5">
+                <p className="mb-4 text-caption-1-semibold text-text-primary">
+                  Langkah berikutnya
                 </p>
                 <ol className="space-y-3">
                   {[
-                    'You start the 15-min AI assessment',
-                    'Our AI analyzes your response',
-                    'Recruiter reviews your evidence score',
+                    'Anda memulai asesmen AI 15 menit',
+                    'AI kami menganalisis jawaban Anda',
+                    'Rekruiter meninjau skor bukti Anda',
                   ].map((step, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <span className="w-5 h-5 shrink-0 border border-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-400">
+                      <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-border-button-default text-caption-1-semibold text-text-tertiary">
                         {i + 1}
                       </span>
-                      <span className="text-[12px] text-gray-500 leading-snug pt-0.5">
+                      <span className="pt-0.5 text-body-regular leading-snug text-text-secondary">
                         {step}
                       </span>
                     </li>
@@ -325,9 +318,9 @@ export default function JobDetail() {
                 </ol>
               </div>
 
-              <div className="border-t border-gray-100 pt-5">
-                <p className="text-[11px] text-gray-400 leading-relaxed">
-                  Your response is confidential and only visible to the hiring team.
+              <div className="border-t border-separator-border pt-5">
+                <p className="text-body-regular leading-relaxed text-text-tertiary">
+                  Jawaban Anda bersifat rahasia dan hanya terlihat oleh tim rekrutmen.
                 </p>
               </div>
             </div>

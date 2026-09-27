@@ -183,6 +183,7 @@ class ApplicationResponse(ApplicationBase):
     resume_url: Optional[str] = None
     resume_text: Optional[str] = None
     resume_images: Optional[str] = None
+    resume_visual_analysis: Optional[str] = None
     created_at: datetime
     assessment_results: List[AssessmentResultResponse] = []
     user: Optional[UserResponse] = None # Including user info to show in dashboard

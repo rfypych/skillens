@@ -1,15 +1,32 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import {
-  Portfolio as Briefcase, Code as Code2, CheckmarkOutline as CheckCircle2, Time as Clock, ArrowRight, Location as MapPin, Currency as CircleDollarSign, User
-} from '@carbon/icons-react';
+  RiArrowRightLine,
+  RiBriefcaseLine,
+  RiCheckLine,
+  RiCodeLine,
+  RiDownloadLine,
+  RiMapPinLine,
+  RiMoneyDollarCircleLine,
+  RiRefreshLine,
+  RiTimeLine,
+  RiUserLine,
+} from '@remixicon/react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
-import TextRollButton from '@/components/TextRollButton';
-import ShaderBackground from '@/components/ShaderBackground';
+import { Button } from '@/components/base/buttons/button';
+import { Chip } from '@/components/base/badges/chip';
+import { cx } from '@/utils/cx';
+
+const STATUS_CHIP: Record<string, 'orange' | 'blue' | 'purple' | 'lime' | 'rose'> = {
+  testing: 'orange',
+  evaluated: 'blue',
+  interview: 'purple',
+  hired: 'lime',
+  rejected: 'rose',
+};
 
 export default function CandidateDashboard() {
   const router = useRouter();
@@ -60,216 +77,226 @@ export default function CandidateDashboard() {
   const myAppIds = applications.map(a => a.job_id);
 
   if (loading) return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <div className="w-8 h-8 border-4 border-[#F26522] border-t-transparent rounded-full animate-spin" />
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="size-8 animate-spin rounded-full border-4 border-accent-500 border-t-transparent" />
     </div>
   );
 
   return (
-    <div className="w-full space-y-8 font-sans">
-
-      {/* Greeting Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="bg-[#0F172A] rounded-2xl p-8 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden shadow-sm"
-      >
-        {/* WebGL Shader Overlay */}
-        <ShaderBackground variant="dark" />
-
-        <div className="relative z-20">
-          <h1 className="text-2xl font-semibold leading-tight tracking-tight text-white">
+    <div className="w-full space-y-6">
+      {/* Greeting panel */}
+      <div className="flex flex-col gap-4 rounded-3xl border border-border-button-default bg-background-secondary-default p-6 shadow-card sm:p-8">
+        <div>
+          <h1 className="text-title-2-medium text-text-primary">
             Pusat Penilaian Kandidat
           </h1>
-          <p className="text-gray-300 text-sm mt-1 font-normal">
+          <p className="mt-1 text-body-regular text-text-secondary">
             Pantau evaluasi aktif, kirimkan tanggapan simulasi, dan jelajahi posisi terbuka.
           </p>
         </div>
-        <Link href="/candidate/profile" className="relative z-10 flex-shrink-0">
-          <TextRollButton text="Edit Profil" variant="orange" size="sm" />
-        </Link>
-      </motion.div>
+      </div>
 
       {/* Mobile Tabs */}
-      <div className="flex lg:hidden bg-white p-1.5 rounded-full border border-gray-200 shadow-xs">
+      <div className="flex gap-1 rounded-full border border-border-button-default bg-background-secondary-default p-1.5 lg:hidden">
         <button
+          type="button"
           onClick={() => setActiveTab('applications')}
-          className={`flex-1 py-2 text-xs font-semibold rounded-full transition-colors ${activeTab === 'applications' ? 'bg-gray-900 text-white' : 'text-gray-600'}`}
+          className={cx(
+            'flex-1 rounded-full py-2 text-body-medium transition-colors',
+            activeTab === 'applications' ? 'bg-accent-500 text-white shadow-xs' : 'text-text-secondary',
+          )}
         >
           Lamaran Saya
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('positions')}
-          className={`flex-1 py-2 text-xs font-semibold rounded-full transition-colors ${activeTab === 'positions' ? 'bg-gray-900 text-white' : 'text-gray-600'}`}
+          className={cx(
+            'flex-1 rounded-full py-2 text-body-medium transition-colors',
+            activeTab === 'positions' ? 'bg-accent-500 text-white shadow-xs' : 'text-text-secondary',
+          )}
         >
           Posisi Terbuka
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-10">
 
         {/* My Applications */}
-        <div className={`space-y-6 ${activeTab === 'applications' ? 'block' : 'hidden lg:block'}`}>
-          <div className="flex items-center justify-between">
+        <div className={cx('space-y-6', activeTab === 'applications' ? 'block' : 'hidden lg:block')}>
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">Lamaran Saya</h2>
-              <p className="text-gray-500 mt-0.5 text-xs font-normal">Pantau evaluasi aktif dan laporan Anda.</p>
+              <h2 className="text-title-3-semibold text-text-primary">Lamaran Saya</h2>
+              <p className="mt-0.5 text-caption-1-medium text-text-secondary">Pantau evaluasi aktif dan laporan Anda.</p>
             </div>
-            <button
+            <Button
+              variant="secondary"
+              size="small"
+              leadingIcon={RiRefreshLine}
               onClick={loadDashboard}
               disabled={loading}
-              className="px-4 py-2 rounded-full bg-gray-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-[#F26522] disabled:opacity-60"
             >
               {loading ? 'Memuat...' : 'Refresh'}
-            </button>
+            </Button>
           </div>
 
           {applications.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-2xl bg-white">
-              <Briefcase className="w-10 h-10 text-gray-300 mb-3" />
-              <p className="text-gray-500 text-sm font-medium">Belum ada lamaran aktif. Pilih posisi di bawah untuk melamar.</p>
+            <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border-button-default bg-background-primary-default px-6 py-16 text-center">
+              <RiBriefcaseLine className="mb-3 size-10 text-foreground-icon-tertiary" aria-hidden />
+              <p className="text-body-medium text-text-secondary">Belum ada lamaran aktif. Pilih posisi di bawah untuk melamar.</p>
             </div>
           )}
 
           <div className="space-y-4">
-            {applications.map((app, i) => (
-              <motion.div
+            {applications.map((app) => (
+              <div
                 key={app.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.1, ease: 'easeOut' }}
-                className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs hover:border-[#F26522]/40 transition-all duration-200"
+                className="rounded-3xl border border-border-button-default bg-background-primary-default p-6 shadow-card"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      app.status === 'testing' ? 'bg-orange-50 text-[#F26522]' : 'bg-emerald-50 text-emerald-700'
-                    }`}>
-                      {app.status === 'testing' ? <Code2 className="w-6 h-6" /> : <CheckCircle2 className="w-6 h-6" />}
+                    <div className={cx(
+                      'flex size-12 shrink-0 items-center justify-center rounded-full',
+                      app.status === 'testing' ? 'bg-accent-50 text-accent-600' : 'bg-background-tertiary-default text-foreground-icon-secondary',
+                    )}>
+                      {app.status === 'testing'
+                        ? <RiCodeLine className="size-6" aria-hidden />
+                        : <RiCheckLine className="size-6" aria-hidden />}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-lg mb-1">{app.job?.title ?? 'Evaluasi AI'}</h3>
-                      <div className="flex items-center gap-3 text-xs text-gray-500 font-normal">
-                        <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-[#F26522]" /> {new Date(app.created_at).toLocaleDateString()}</span>
+                      <h3 className="mb-1 text-title-3-semibold text-text-primary">{app.job?.title ?? 'Evaluasi AI'}</h3>
+                      <div className="flex items-center gap-1.5 text-caption-1-medium text-text-secondary">
+                        <RiTimeLine className="size-3.5 text-accent-500" aria-hidden />
+                        {new Date(app.created_at).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
+                  <div className="flex w-full flex-col gap-3 sm:mt-0 sm:w-auto sm:flex-row sm:items-center">
                     {app.status === 'testing' ? (
-                      <Link href={`/candidate/test/${app.id}`}>
-                        <TextRollButton text="Mulai Tes AI" variant="orange" size="sm" />
+                      <Link href={`/candidate/test/${app.id}`} className={cx('contents')}>
+                        <Button variant="primary" size="small" trailingIcon={RiArrowRightLine}>
+                          Mulai Tes AI
+                        </Button>
                       </Link>
                     ) : (
-                      <div className="flex flex-wrap sm:flex-col sm:items-end gap-2 w-full">
+                      <div className="flex w-full flex-wrap gap-2 sm:flex-col sm:items-end">
                         {app.status === 'evaluated' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                            <Clock className="w-3.5 h-3.5" /> Dalam Peninjauan
-                          </span>
+                          <Chip variant="bold" color="blue">
+                            <span className="inline-flex items-center gap-1.5">
+                              <RiTimeLine className="size-3.5" aria-hidden /> Dalam Peninjauan
+                            </span>
+                          </Chip>
                         )}
                         {app.status === 'interview' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 border border-purple-200">
-                            <User className="w-3.5 h-3.5" /> Wawancara
-                          </span>
+                          <Chip variant="bold" color="purple">
+                            <span className="inline-flex items-center gap-1.5">
+                              <RiUserLine className="size-3.5" aria-hidden /> Wawancara
+                            </span>
+                          </Chip>
                         )}
                         {app.status === 'hired' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Diterima
-                          </span>
+                          <Chip variant="bold" color="lime">
+                            <span className="inline-flex items-center gap-1.5">
+                              <RiCheckLine className="size-3.5" aria-hidden /> Diterima
+                            </span>
+                          </Chip>
                         )}
                         {app.status === 'rejected' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-700 border border-red-200">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Tidak Terpilih
-                          </span>
+                          <Chip variant="bold" color="rose">
+                            <span className="inline-flex items-center gap-1.5">
+                              <RiCheckLine className="size-3.5" aria-hidden /> Tidak Terpilih
+                            </span>
+                          </Chip>
+                        )}
+                        {app.status !== 'testing' && !['evaluated', 'interview', 'hired', 'rejected'].includes(app.status) && (
+                          <Chip variant="bold" color={STATUS_CHIP[app.status] ?? 'neutral'}>{app.status}</Chip>
                         )}
                         {app.status !== 'testing' && (
-                          <button
+                          <Button
+                            variant="secondary"
+                            size="small"
+                            leadingIcon={RiDownloadLine}
                             onClick={() => handleDownloadReport(app.id)}
-                            className="px-3 py-1 text-xs font-bold rounded-full border border-gray-300 text-gray-700 hover:border-[#F26522] hover:text-[#F26522] transition-colors"
                           >
                             Unduh Report
-                          </button>
+                          </Button>
                         )}
                       </div>
                     )}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
 
         {/* Open Positions */}
-        <div className={`space-y-6 ${activeTab === 'positions' ? 'block' : 'hidden lg:block'}`}>
+        <div className={cx('space-y-6', activeTab === 'positions' ? 'block' : 'hidden lg:block')}>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">Posisi Terbuka</h2>
-              <p className="text-gray-500 mt-0.5 text-xs font-normal">Peran dengan evaluasi studi kasus interaktif.</p>
+              <h2 className="text-title-3-semibold text-text-primary">Posisi Terbuka</h2>
+              <p className="mt-0.5 text-caption-1-medium text-text-secondary">Peran dengan evaluasi studi kasus interaktif.</p>
             </div>
           </div>
 
           {jobs.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-2xl bg-white">
-              <p className="text-gray-500 text-sm font-medium">Tidak ada posisi terbuka saat ini.</p>
+            <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border-button-default bg-background-primary-default px-6 py-16 text-center">
+              <p className="text-body-medium text-text-secondary">Tidak ada posisi terbuka saat ini.</p>
             </div>
           )}
 
           <div className="space-y-4">
-            {jobs.map((job, i) => {
+            {jobs.map((job) => {
               const hasApplied = myAppIds.includes(job.id);
               return (
-                <motion.div
+                <div
                   key={job.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + i * 0.1, ease: 'easeOut' }}
-                  className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs hover:border-[#F26522]/40 transition-all duration-200"
+                  className="rounded-3xl border border-border-button-default bg-background-primary-default p-6 shadow-card"
                 >
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 text-lg mb-1">{job.title}</h3>
-                    </div>
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-900 text-xs font-mono font-bold">
-                      {job.id}
-                    </div>
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <h3 className="text-title-3-semibold text-text-primary">{job.title}</h3>
+                    <Chip variant="caption" color="soft">{job.id}</Chip>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="mb-4 flex flex-wrap gap-2">
                     {job.location && (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
-                        <MapPin className="w-3.5 h-3.5 text-[#F26522]" />
+                      <span className="inline-flex items-center gap-1 text-caption-1-medium text-text-secondary">
+                        <RiMapPinLine className="size-3.5 text-accent-500" aria-hidden />
                         {job.location}
                       </span>
                     )}
                     {job.salary_range && (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
-                        <CircleDollarSign className="w-3.5 h-3.5 text-[#F26522]" />
+                      <span className="inline-flex items-center gap-1 text-caption-1-medium text-text-secondary">
+                        <RiMoneyDollarCircleLine className="size-3.5 text-accent-500" aria-hidden />
                         {job.salary_range}
                       </span>
                     )}
                   </div>
 
-                  <p className="text-xs text-gray-600 mb-4 line-clamp-2 leading-relaxed font-normal">{job.expected_outcomes}</p>
+                  <p className="mb-4 line-clamp-2 text-body-regular leading-relaxed text-text-secondary">{job.expected_outcomes}</p>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <p className="text-xs font-normal text-gray-500">
-                      <span className="font-bold text-gray-900">{job.candidate_count ?? 0}</span> pelamar
+                  <div className="flex items-center justify-between border-t border-separator-border pt-4">
+                    <p className="text-caption-1-medium text-text-secondary">
+                      <span className="text-body-medium text-text-primary">{job.candidate_count ?? 0}</span> pelamar
                     </p>
                     {hasApplied ? (
-                      <button disabled className="px-5 py-2 bg-gray-100 text-gray-400 text-xs font-semibold rounded-full cursor-not-allowed">
+                      <Button variant="secondary" size="small" disabled>
                         Sudah Melamar
-                      </button>
+                      </Button>
                     ) : (
-                      <button
+                      <Button
+                        variant="primary"
+                        size="small"
+                        trailingIcon={RiArrowRightLine}
                         onClick={() => handleApply(job.id)}
                         disabled={applyingTo === job.id}
                       >
-                        <TextRollButton text={applyingTo === job.id ? 'Memuat...' : 'Lamar Sekarang'} variant="orange" size="sm" />
-                      </button>
+                        {applyingTo === job.id ? 'Memuat...' : 'Lamar'}
+                      </Button>
                     )}
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>

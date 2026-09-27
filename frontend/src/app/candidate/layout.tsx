@@ -1,35 +1,61 @@
 'use client';
 
-import { Close, Dashboard, Logout, Menu, Notification, Settings } from '@carbon/icons-react';
+import {
+  RiCalendarLine,
+  RiCloseLine,
+  RiDashboardLine,
+  RiEditLine,
+  RiLogoutBoxLine,
+  RiMenuLine,
+  RiUserLine,
+} from '@remixicon/react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { api } from '@/lib/api';
-import clsx from 'clsx';
-import SponsorLogos from '@/components/SponsorLogos';
+import { DashboardSidebar, type DashboardNavItem } from '@/components/application/dashboard/dashboard-sidebar';
+import { NotificationBell } from '@/components/application/app-shell/notification-bell';
+import { Avatar } from '@/components/base/avatar/avatar';
+import { Breadcrumb, BreadcrumbItem } from '@/components/base/breadcrumb/breadcrumb';
+import { Button } from '@/components/base/buttons/button';
+import { IconButton } from '@/components/base/buttons/icon-button';
+import { cx } from '@/utils/cx';
 import { LanguageProvider, useLanguage } from '@/i18n/LanguageContext';
 import OnboardingWizardModal from '@/components/OnboardingWizardModal';
 
+function selectedKey(pathname: string): string {
+  if (pathname.startsWith('/candidate/interviews')) return 'interviews';
+  if (pathname.startsWith('/candidate/profile')) return 'profile';
+  return 'dashboard';
+}
 
-const sidebarLinks = [
-  { nameKey: 'sidebar.dashboard', href: '/candidate/dashboard', icon: Dashboard },
-  { nameKey: 'sidebar.interviews', href: '/candidate/interviews', icon: Notification },
-  { nameKey: 'sidebar.profile', href: '/candidate/profile', icon: Settings },
-];
+function pageTitle(pathname: string, t: (k: string) => string): string {
+  if (pathname.startsWith('/candidate/interviews')) return t('sidebar.interviews');
+  if (pathname.startsWith('/candidate/profile')) return t('sidebar.profile');
+  if (pathname.startsWith('/candidate/job')) return 'Detail Lowongan';
+  return t('sidebar.dashboard');
+}
 
-function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
+function CandidateShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [userName, setUserName] = useState('Candidate');
   const [userInitials, setUserInitials] = useState('CA');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [userData, setUserData] = useState<any>(null);
   const { t } = useLanguage();
+  const selected = selectedKey(pathname ?? '');
+  const title = pageTitle(pathname ?? '', t);
 
-  const isPublicAssessmentPage = pathname.includes('/candidate/test/') || 
-                                 pathname.includes('/candidate/apply/') || 
+  const CANDIDATE_NAV: DashboardNavItem[] = [
+    { key: 'dashboard', label: t('sidebar.dashboard'), icon: RiDashboardLine, href: '/candidate/dashboard' },
+    { key: 'interviews', label: t('sidebar.interviews'), icon: RiCalendarLine, href: '/candidate/interviews' },
+    { key: 'profile', label: t('sidebar.profile'), icon: RiUserLine, href: '/candidate/profile' },
+  ];
+
+  const isPublicAssessmentPage = pathname.includes('/candidate/test/') ||
+                                 pathname.includes('/candidate/apply/') ||
                                  pathname.includes('/candidate/instructions/');
 
   useEffect(() => {
@@ -66,7 +92,7 @@ function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
 
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    setNavOpen(false);
   }, [pathname]);
 
   const handleLogout = async () => {
@@ -82,115 +108,92 @@ function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
+  const accountUsers = [{ initials: userInitials, color: 'neutral' as const, name: userName }];
+
   return (
-    <div className="min-h-screen bg-[#EFEFEF] flex overflow-hidden relative font-sans">
-      
-      {/* Mobile Sidebar Overlay */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-xs"
+    <div className="relative flex h-dvh w-full gap-4 overflow-hidden bg-background-full p-3 font-boardui">
+      <DashboardSidebar
+        items={CANDIDATE_NAV}
+        selected={selected}
+        displayName={userName}
+        displayInitials={userInitials}
+        settingsHref="/candidate/profile"
+        showSupport={false}
+        showThemeToggle={false}
+        showTeamMenu={false}
+        menuUsers={accountUsers}
+        onSignOut={handleLogout}
+        className="hidden lg:flex"
+      />
+
+      {navOpen && (
+        <div className="fixed inset-0 z-50 flex lg:hidden">
+          <button
+            type="button"
+            aria-label="Tutup navigasi"
+            onClick={() => setNavOpen(false)}
+            className="absolute inset-0 cursor-pointer bg-black/40"
           />
-        )}
-      </AnimatePresence>
-
-      {/* Sidebar */}
-      <aside className={clsx(
-        "w-64 bg-white border-r border-gray-200/80 flex flex-col fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 shadow-sm",
-        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
-        <div className="p-6 flex items-center justify-between border-b border-gray-100">
-          <Link href="/candidate/dashboard" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-            <img src="/skillens-logo-text.png" alt="Skillens" className="h-8 w-auto object-contain" />
-          </Link>
-          <button 
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-full"
-          >
-            <Close className="w-5 h-5" />
-          </button>
-        </div>
-
-        <nav className="flex-1 px-3 py-6 flex flex-col gap-2 overflow-y-auto">
-          {sidebarLinks.map((link) => {
-            const isActive = pathname === link.href || (link.href !== '/candidate/dashboard' && pathname.startsWith(link.href));
-            const Icon = link.icon;
-            return (
-              <Link
-                key={link.nameKey}
-                href={link.href}
-                className={clsx(
-                  "flex items-center gap-3 px-4 py-2.5 rounded-full transition-all text-sm font-medium",
-                  isActive
-                    ? "bg-gray-900 text-white shadow-xs"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                )}
-              >
-                <Icon className="w-4 h-4 flex-shrink-0" />
-                <span>{t(link.nameKey)}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="p-4 border-t border-gray-100 flex-shrink-0">
-          <Link href="/candidate/profile">
-            <div className="flex items-center gap-3 px-4 py-2.5 rounded-full hover:bg-gray-100 text-gray-700 hover:text-gray-900 transition-colors cursor-pointer mb-1 font-medium text-sm">
-              <Settings className="w-4 h-4" />
-              <span>{t('sidebar.profile')}</span>
-            </div>
-          </Link>
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full hover:bg-red-50 text-red-600 transition-colors cursor-pointer font-medium text-sm">
-            <Logout className="w-4 h-4" />
-            <span>{t('sidebar.logout')}</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 md:ml-64 flex flex-col min-h-screen w-full relative z-10">
-        {/* Top Header */}
-        <header className="h-16 bg-white/90 backdrop-blur-md border-b border-gray-200/80 flex items-center justify-between px-6 md:px-8 sticky top-0 z-30 shadow-xs">
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-full mr-2"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-            <div className="hidden sm:flex items-center gap-2 text-sm text-gray-700">
-              <span className="font-medium text-gray-500">{t('header.welcome_back')}</span>
-              <span className="font-bold text-gray-900">{userName}</span>
-            </div>
+          <div className="relative flex h-full p-3">
+            <DashboardSidebar
+              mobile
+              items={CANDIDATE_NAV}
+              selected={selected}
+              displayName={userName}
+              displayInitials={userInitials}
+              settingsHref="/candidate/profile"
+              showSupport={false}
+              showThemeToggle={false}
+              showTeamMenu={false}
+              menuUsers={accountUsers}
+              onSignOut={handleLogout}
+              onClose={() => setNavOpen(false)}
+              className="flex"
+            />
           </div>
-          <div className="flex items-center gap-4">
-            <button className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
-              <Notification className="w-5 h-5" />
-            </button>
-            <div className="flex items-center gap-3 cursor-pointer">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-gray-900">{userName}</p>
-                <p className="text-xs text-gray-500">{t('header.candidate')}</p>
+        </div>
+      )}
+
+      <main className="relative flex min-h-0 min-w-0 flex-1 justify-center overflow-x-hidden overflow-y-auto bg-background-full sm:pt-3 font-boardui">
+        <div className="flex w-full max-w-[1300px] flex-col gap-2.5">
+          <header className="flex w-full flex-col gap-2">
+            <Breadcrumb>
+              <BreadcrumbItem href="/candidate/dashboard">
+                <Avatar size="xs" color="blue" initials="S" />
+                Skillens
+              </BreadcrumbItem>
+              <BreadcrumbItem href="/candidate/profile">
+                <Avatar size="xs" color="neutral" initials={userInitials} />
+                {userName}
+              </BreadcrumbItem>
+              <BreadcrumbItem current icon={RiDashboardLine}>
+                {title}
+              </BreadcrumbItem>
+            </Breadcrumb>
+            <div className="flex w-full flex-wrap items-end justify-between gap-2">
+              <div className="flex min-w-0 items-center gap-1.5">
+                <IconButton
+                  icon={navOpen ? RiCloseLine : RiMenuLine}
+                  size="medium"
+                  aria-label="Buka navigasi"
+                  onClick={() => setNavOpen((open) => !open)}
+                  className="lg:hidden"
+                />
+                <h1 className="px-1 text-title-2-medium whitespace-nowrap text-text-primary">
+                  {title}
+                </h1>
               </div>
-              <div className="w-9 h-9 rounded-full bg-[#F26522] flex items-center justify-center text-white font-bold text-xs shadow-xs">
-                {userInitials}
+              <div className="flex flex-wrap items-center justify-end gap-2.5">
+                <NotificationBell />
+                <Link href="/candidate/profile" className={cx('contents')}>
+                  <Button variant="secondary" size="medium" leadingIcon={RiEditLine}>
+                    Edit Profil
+                  </Button>
+                </Link>
               </div>
             </div>
-          </div>
-        </header>
-
-        {/* Page Content */}
-        <div className="p-6 md:p-8 flex-1 overflow-x-hidden">
-          {children}
-        </div>
-
-        {/* Footer Logos */}
-        <div className="w-full bg-white border-t border-gray-200/60">
-          <SponsorLogos />
+          </header>
+          <div className="flex w-full flex-col gap-4 pb-4">{children}</div>
         </div>
       </main>
 
@@ -214,7 +217,7 @@ function CandidateLayoutContent({ children }: { children: React.ReactNode }) {
 export default function CandidateLayout({ children }: { children: React.ReactNode }) {
   return (
     <LanguageProvider>
-      <CandidateLayoutContent>{children}</CandidateLayoutContent>
+      <CandidateShell>{children}</CandidateShell>
     </LanguageProvider>
   );
 }

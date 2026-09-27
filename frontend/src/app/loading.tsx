@@ -1,12 +1,11 @@
-import { Renew } from '@carbon/icons-react';
 import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-[#EFEFEF] flex flex-col items-center justify-center">
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-background-full">
       <ThinkingIndicator />
-      <p className="mt-4 text-sm text-gray-500 font-medium animate-pulse">Memuat...</p>
+      <p className="mt-4 animate-pulse text-body-medium text-text-tertiary">Memuat…</p>
     </div>
   );
 }

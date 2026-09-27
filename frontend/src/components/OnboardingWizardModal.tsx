@@ -1,19 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CheckmarkFilled,
-  ChevronDown,
-  ChevronUp,
-  Close,
-  Document,
-  Upload,
-  User,
-  Building,
-} from '@carbon/icons-react';
+  RiBuildingLine,
+  RiCheckDoubleLine,
+  RiCloseLine,
+  RiFileUploadLine,
+  RiArrowDownSLine,
+  RiArrowUpSLine,
+} from '@remixicon/react';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/base/buttons/button';
+import { Chip } from '@/components/base/badges/chip';
+import { IconButton } from '@/components/base/buttons/icon-button';
+import { Input } from '@/components/base/input/input';
+import { cx } from '@/utils/cx';
 
 interface OnboardingWizardProps {
   isOpen: boolean;
@@ -30,6 +32,9 @@ interface OnboardingWizardProps {
   };
   onComplete: () => void;
 }
+
+const nativeAreaClass =
+  'w-full rounded-xl border border-border-button-default bg-background-primary-default px-3 py-2 text-body-medium text-text-primary outline-none transition-colors placeholder:text-text-placeholder hover:border-border-button-hover focus-visible:ring-2 focus-visible:ring-border-focus-ring';
 
 export default function OnboardingWizardModal({
   isOpen,
@@ -55,6 +60,13 @@ export default function OnboardingWizardModal({
   const isStep1Complete = !!fullName.trim();
   const isStep2Complete = userRole === 'candidate' ? !!resumeUrl : !!companyName.trim();
 
+  const dismiss = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('onboarding_wizard_dismissed', 'true');
+    }
+    onComplete();
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
@@ -68,7 +80,7 @@ export default function OnboardingWizardModal({
       const res = await api.post('/candidates/upload', formData);
       setResumeUrl(res.file_url);
       setResumeFileName(file.name);
-      toast.success('CV / Resume berhasil diunggah!');
+      toast.success('CV / Resume berhasil diunggah');
     } catch (err: any) {
       toast.error(err.message || 'Gagal mengunggah CV');
     } finally {
@@ -103,12 +115,11 @@ export default function OnboardingWizardModal({
         },
       });
 
-      // Mark as dismissed BEFORE dispatching event so fetchUser won't re-open wizard
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('onboarding_wizard_dismissed', 'true');
       }
       window.dispatchEvent(new Event('user-profile-updated'));
-      toast.success('Setup data profil selesai!');
+      toast.success('Setup data profil selesai');
       onComplete();
     } catch (err: any) {
       toast.error(err.message || 'Gagal menyimpan profil');
@@ -117,267 +128,177 @@ export default function OnboardingWizardModal({
     }
   };
 
+  const stepHeader = (
+    done: boolean,
+    num: number,
+    title: string,
+    open: boolean,
+    onOpen: () => void,
+  ) => (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-expanded={open}
+      className="flex w-full cursor-pointer items-center justify-between px-5 py-4 text-left outline-none transition-colors hover:bg-background-primary-hover focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus-ring"
+    >
+      <span className="flex items-center gap-3">
+        {done ? (
+          <RiCheckDoubleLine className="size-5 shrink-0 text-accent-600" aria-hidden />
+        ) : (
+          <span className="flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-border-button-default text-caption-1-semibold text-text-tertiary">
+            {num}
+          </span>
+        )}
+        <span className={cx('text-body-medium', done ? 'text-text-primary' : 'text-text-secondary')}>
+          {title}
+        </span>
+      </span>
+      {open ? (
+        <RiArrowUpSLine className="size-5 text-foreground-icon-tertiary" aria-hidden />
+      ) : (
+        <RiArrowDownSLine className="size-5 text-foreground-icon-tertiary" aria-hidden />
+      )}
+    </button>
+  );
+
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs font-sans">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96, y: 12 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.96, y: 12 }}
-          className="bg-white rounded-[2rem] border border-gray-200/90 shadow-2xl max-w-lg w-full overflow-hidden text-gray-900"
-        >
-          {/* Header Bar */}
-          <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-gray-900 tracking-tight">
-              {userRole === 'candidate' ? 'Setup Data Profil & CV' : 'Setup Profil Rekruiter'}
-            </h2>
-            <button
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  sessionStorage.setItem('onboarding_wizard_dismissed', 'true');
-                }
-                onComplete();
-              }}
-              className="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <Close className="w-5 h-5" />
-            </button>
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 font-boardui">
+      <div className="max-h-[90vh] w-full max-w-lg overflow-hidden rounded-3xl border border-border-button-default bg-background-primary-default text-text-primary shadow-dropdown">
+        <div className="flex items-center justify-between border-b border-separator-border px-6 py-5">
+          <h2 className="text-title-3-semibold text-text-primary">
+            {userRole === 'candidate' ? 'Setup Data Profil dan CV' : 'Setup Profil Rekruiter'}
+          </h2>
+          <IconButton icon={RiCloseLine} size="small" aria-label="Tutup" onClick={dismiss} />
+        </div>
 
-          <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-            {/* ── STEP 1 ACCORDION ITEM ── */}
-            <div className="border border-gray-200/80 rounded-2xl overflow-hidden transition-all">
-              <button
-                type="button"
-                onClick={() => setActiveStep(1)}
-                className="w-full px-5 py-4 flex items-center justify-between bg-gray-50/50 hover:bg-gray-50 transition-colors text-left"
-              >
-                <div className="flex items-center gap-3">
-                  {isStep1Complete ? (
-                    <CheckmarkFilled className="w-5 h-5 text-[#F26522] flex-shrink-0" />
-                  ) : (
-                    <span className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs font-bold text-gray-500 flex-shrink-0">
-                      1
-                    </span>
-                  )}
-                  <span
-                    className={`text-sm font-semibold ${
-                      isStep1Complete ? 'text-gray-900' : 'text-gray-700'
-                    }`}
-                  >
-                    Informasi Dasar & Pengalaman
-                  </span>
-                </div>
-                {activeStep === 1 ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                )}
-              </button>
+        <div className="max-h-[80vh] space-y-4 overflow-y-auto p-6">
+          <div className="overflow-hidden rounded-2xl border border-border-button-default">
+            {stepHeader(isStep1Complete, 1, 'Informasi Dasar dan Pengalaman', activeStep === 1, () => setActiveStep(1))}
 
-              <AnimatePresence>
-                {activeStep === 1 && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="p-5 border-t border-gray-100 bg-white space-y-4"
-                  >
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
-                        Nama Lengkap *
-                      </label>
-                      <input
-                        type="text"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Masukkan nama lengkap Anda..."
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900"
+            {activeStep === 1 && (
+              <div className="flex flex-col gap-4 border-t border-separator-border bg-background-primary-default p-5">
+                <Input
+                  label="Nama Lengkap *"
+                  placeholder="Masukkan nama lengkap Anda…"
+                  value={fullName}
+                  onChange={setFullName}
+                />
+
+                {userRole === 'candidate' ? (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <label htmlFor="ob-bio" className="text-body-medium text-text-primary">Bio Singkat</label>
+                      <textarea
+                        id="ob-bio"
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        placeholder="Ringkasan singkat latar belakang dan minat profesional Anda…"
+                        rows={3}
+                        className={cx(nativeAreaClass, 'resize-none')}
                       />
                     </div>
 
-                    {userRole === 'candidate' ? (
-                      <>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
-                            Bio Singkat
-                          </label>
-                          <textarea
-                            value={bio}
-                            onChange={(e) => setBio(e.target.value)}
-                            placeholder="Ringkasan singkat latar belakang dan minat profesional Anda..."
-                            className="w-full h-20 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 resize-none font-normal"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
-                            Ringkasan Pengalaman Kerja
-                          </label>
-                          <textarea
-                            value={experience}
-                            onChange={(e) => setExperience(e.target.value)}
-                            placeholder="Contoh: 3 tahun di TechCorp (Backend), 2 tahun di Startup Inc (Fullstack)..."
-                            className="w-full h-24 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900 resize-y font-normal"
-                          />
-                        </div>
-                      </>
-                    ) : (
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
-                          Nama Perusahaan / Organisasi
-                        </label>
-                        <input
-                          type="text"
-                          value={companyName}
-                          onChange={(e) => setCompanyName(e.target.value)}
-                          placeholder="Masukkan nama perusahaan Anda..."
-                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#F26522] text-sm text-gray-900"
-                        />
-                      </div>
-                    )}
-
-                    <div className="flex justify-end pt-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!fullName.trim()) {
-                            toast.error('Silakan isi Nama Lengkap terlebih dahulu');
-                            return;
-                          }
-                          setActiveStep(2);
-                        }}
-                        className="px-5 py-2 bg-[#F26522] hover:bg-[#d85415] text-white text-xs font-semibold rounded-full transition-colors flex items-center gap-1.5 shadow-xs"
-                      >
-                        Lanjut ke Upload CV →
-                      </button>
+                    <div className="flex flex-col gap-1.5">
+                      <label htmlFor="ob-exp" className="text-body-medium text-text-primary">Ringkasan Pengalaman Kerja</label>
+                      <textarea
+                        id="ob-exp"
+                        value={experience}
+                        onChange={(e) => setExperience(e.target.value)}
+                        placeholder="Contoh: 3 tahun di TechCorp (Backend), 2 tahun di Startup Inc (Fullstack)…"
+                        rows={4}
+                        className={cx(nativeAreaClass, 'resize-y')}
+                      />
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* ── STEP 2 ACCORDION ITEM ── */}
-            <div className="border border-gray-200/80 rounded-2xl overflow-hidden transition-all">
-              <button
-                type="button"
-                onClick={() => setActiveStep(2)}
-                className="w-full px-5 py-4 flex items-center justify-between bg-gray-50/50 hover:bg-gray-50 transition-colors text-left"
-              >
-                <div className="flex items-center gap-3">
-                  {isStep2Complete ? (
-                    <CheckmarkFilled className="w-5 h-5 text-[#F26522] flex-shrink-0" />
-                  ) : (
-                    <span className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs font-bold text-gray-500 flex-shrink-0">
-                      2
-                    </span>
-                  )}
-                  <span
-                    className={`text-sm font-semibold ${
-                      isStep2Complete ? 'text-gray-900' : 'text-gray-700'
-                    }`}
-                  >
-                    {userRole === 'candidate' ? 'Unggah CV / Resume' : 'Detail Tambahan'}
-                  </span>
-                </div>
-                {activeStep === 2 ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                  </>
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                  <Input
+                    label="Nama Perusahaan / Organisasi"
+                    placeholder="Masukkan nama perusahaan Anda…"
+                    value={companyName}
+                    onChange={setCompanyName}
+                    leadingIcon={RiBuildingLine}
+                  />
                 )}
-              </button>
 
-              <AnimatePresence>
-                {activeStep === 2 && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="p-5 border-t border-gray-100 bg-white space-y-4"
+                <div className="flex justify-end pt-2">
+                  <Button
+                    variant="primary"
+                    size="small"
+                    onClick={() => {
+                      if (!fullName.trim()) {
+                        toast.error('Silakan isi Nama Lengkap terlebih dahulu');
+                        return;
+                      }
+                      setActiveStep(2);
+                    }}
                   >
-                    {userRole === 'candidate' ? (
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
-                          File CV / Resume (PDF / DOCX) *
-                        </label>
-                        <div className="border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center hover:border-[#F26522] transition-colors bg-gray-50/50">
-                          <Upload className="w-7 h-7 text-gray-400 mx-auto mb-2" />
-                          <p className="text-sm font-medium text-gray-700">
-                            {uploading ? 'Mengunggah file...' : 'Pilih File Resume'}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX (Maks 5MB)</p>
-                          <input
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={handleFileUpload}
-                            disabled={uploading}
-                            className="mt-3 block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#F26522] file:text-white hover:file:bg-[#d85415] cursor-pointer"
-                          />
-                        </div>
+                    Lanjut ke Upload CV
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
 
-                        {resumeUrl && (
-                          <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs text-emerald-900 font-medium">
-                            <span className="truncate max-w-[200px]">
-                              ✓ {resumeFileName || 'CV Terpasang'}
-                            </span>
-                            <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">
-                              TERPASANG
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-gray-500 leading-relaxed">
-                        Data profil rekruiter akan digunakan untuk menyesuaikan peran pekerjaan yang Anda publikasikan di Skillens Platform.
+          <div className="overflow-hidden rounded-2xl border border-border-button-default">
+            {stepHeader(isStep2Complete, 2, userRole === 'candidate' ? 'Unggah CV / Resume' : 'Detail Tambahan', activeStep === 2, () => setActiveStep(2))}
+
+            {activeStep === 2 && (
+              <div className="flex flex-col gap-4 border-t border-separator-border bg-background-primary-default p-5">
+                {userRole === 'candidate' ? (
+                  <div className="flex flex-col gap-2">
+                    <span className="text-body-medium text-text-primary">File CV / Resume (PDF / DOCX) *</span>
+                    <div className="rounded-2xl border-2 border-dashed border-border-button-default bg-background-secondary-default p-6 text-center transition-colors hover:border-border-button-hover">
+                      <RiFileUploadLine className="mx-auto mb-2 size-7 text-foreground-icon-tertiary" aria-hidden />
+                      <p className="text-body-medium text-text-primary">
+                        {uploading ? 'Mengunggah file…' : 'Pilih File Resume'}
                       </p>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
+                      <p className="mt-1 text-body-regular text-text-tertiary">PDF, DOC, DOCX (Maks 5MB)</p>
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileUpload}
+                        disabled={uploading}
+                        aria-label="Pilih file resume"
+                        className="mt-3 block w-full cursor-pointer text-body-regular text-text-secondary file:mr-4 file:cursor-pointer file:rounded-full file:border-0 file:bg-accent-500 file:px-4 file:py-2 file:text-body-medium file:text-white hover:file:bg-accent-600"
+                      />
+                    </div>
 
-          {/* Footer Action Buttons */}
-          <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  sessionStorage.setItem('onboarding_wizard_dismissed', 'true');
-                }
-                onComplete();
-              }}
-              className="text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors px-3 py-1.5"
-            >
-              Nanti Saja
-            </button>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  if (typeof window !== 'undefined') {
-                    sessionStorage.setItem('onboarding_wizard_dismissed', 'true');
-                  }
-                  onComplete();
-                }}
-                className="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-xs font-semibold rounded-full hover:bg-gray-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSubmit()}
-                disabled={saving || uploading}
-                className="px-5 py-2 bg-[#F26522] hover:bg-[#d85415] text-white text-xs font-semibold rounded-full transition-colors disabled:opacity-50 shadow-xs"
-              >
-                {saving ? 'Menyimpan...' : 'Simpan & Masuk'}
-              </button>
-            </div>
+                    {resumeUrl && (
+                      <div className="flex items-center justify-between rounded-2xl bg-status-lime-background p-3 text-body-regular text-status-lime-text">
+                        <span className="inline-flex min-w-0 items-center gap-1.5">
+                          <RiCheckDoubleLine className="size-4 shrink-0" aria-hidden />
+                          <span className="max-w-[200px] truncate">
+                            {resumeFileName || 'CV Terpasang'}
+                          </span>
+                        </span>
+                        <Chip variant="caption" color="lime">Terpasang</Chip>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-body-regular leading-relaxed text-text-secondary">
+                    Data profil rekruiter akan digunakan untuk menyesuaikan peran pekerjaan yang Anda publikasikan di Skillens Platform.
+                  </p>
+                )}
+              </div>
+            )}
           </div>
-        </motion.div>
+        </div>
+
+        <div className="flex items-center justify-between border-t border-separator-border bg-background-secondary-default px-6 py-4">
+          <Button variant="secondary" size="small" onClick={dismiss}>
+            Nanti Saja
+          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" size="small" onClick={dismiss}>
+              Batal
+            </Button>
+            <Button variant="primary" size="small" onClick={() => handleSubmit()} disabled={saving || uploading}>
+              {saving ? 'Menyimpan…' : 'Simpan dan Masuk'}
+            </Button>
+          </div>
+        </div>
       </div>
-    </AnimatePresence>
+    </div>
   );
 }
