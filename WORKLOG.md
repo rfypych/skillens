@@ -761,6 +761,25 @@ D:\projects\JHIC-rev\
   - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
 
+### Session: 2026-09-23 — Landing BoardUI (Hero Dijaga, Bawah Revisi Total)
+- **Goal / User Request**: Klarifikasi user: yang dimaksud landing page. Hero jangan hilang ciri khas, revisi dikit stylenya; ke bawah revisi total.
+- **Changes Made**:
+  - Hero (ciri khas dipertahankan: Playfair italic, shader, motion, TextRollButton, corner widget, jam WIB): sentuhan ringan — Inter utk teks UI, token abu, hover CTA → accent token, drawer mobile ber-token. Copy + layout + ikon custom utuh.
+  - Solusi: kartu BoardUI (token, composite type, Chip stat, panah remix, tanpa motion), copy utuh.
+  - Metrics: grid hairline BoardUI (gap-px + separator, 8 sel), tanpa motion/inline-style.
+  - Features: bento dipertahankan, kartu terang semua (kartu gelap dihapus), token + remix + watermark brand dipertahankan, tanpa motion.
+  - CTA: panel gelap netral `#0B0B0C` + shader, headline display BoardUI, tombol putih BoardUI Button, tanpa motion.
+  - Footer di page.tsx: token + composite type.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/landing/HeroSection.tsx`, `SolusiSection.tsx`, `MetricsSection.tsx`, `FeaturesSection.tsx`, `CTASection.tsx`, `frontend/src/app/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright 3 viewport (hero/solusi-metrics/CTA-footer): karakter hero utuh, bawah bersih BoardUI. 0 pageerror. Temp dibersihkan.
+
+### Session: 2026-09-23 — Push Auth ke preview (a13490e)
+- **Goal / User Request**: Konfirmasi apakah sudah push ke preview (belum) → push.
+- **Changes Made**: Review gate (tsc 0 error, secret-scan bersih) → stage 5 file → commit `a13490e` + push `preview` (`e6757e3..a13490e`): login production+BoardUI skin + eye toggle + demo buttons, signup demo block, toast/metrics cleanup, worklog sesi-sesi berjalan.
+- **Verification**: `git log` remote maju ke `a13490e`; working tree bersih kecuali untracked lama.
+
 ### Session: 2026-09-23 — Kembalikan Tombol Akun Demo (Login + Daftar)
 - **Goal / User Request**: Jangan hilangkan tombol akun demo di login maupun daftar (hilang saat revert ke production).
 - **Changes Made**:

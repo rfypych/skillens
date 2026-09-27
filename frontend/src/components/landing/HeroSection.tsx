@@ -43,16 +43,16 @@ function Navbar() {
 
       {/* Desktop center links */}
       <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-        <a href="#about" className="text-gray-800 text-sm font-medium hover:text-gray-900 transition-colors">Solusi</a>
-        <a href="#metrics" className="text-gray-800 text-sm font-medium hover:text-gray-900 transition-colors flex items-center gap-1">
+        <a href="#about" className="text-body-medium text-text-secondary hover:text-text-primary transition-colors">Solusi</a>
+        <a href="#metrics" className="text-body-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1">
           Kapabilitas <IconChevronRight size={14} className="opacity-50" />
         </a>
-        <Link href="/recruiter" className="text-gray-800 text-sm font-medium hover:text-gray-900 transition-colors">Rekruiter</Link>
+        <Link href="/recruiter" className="text-body-medium text-text-secondary hover:text-text-primary transition-colors">Rekruiter</Link>
       </div>
 
       {/* Desktop right: clock + CTA */}
       <div className="hidden md:flex items-center gap-4">
-        <span className="flex items-center gap-1.5 text-[13px] text-gray-500 font-medium font-mono">
+        <span className="flex items-center gap-1.5 text-body-regular text-text-tertiary font-mono">
           <IconClock size={13} />{timeString || '08:00'} WIB
         </span>
         <Link href="/signup">
@@ -70,10 +70,10 @@ function Navbar() {
 
       {/* Mobile drawer */}
       {open && (
-        <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md rounded-2xl mx-3 mt-2 p-5 shadow-xl z-50 flex flex-col gap-3">
-          <a href="#about" onClick={() => setOpen(false)} className="text-base font-medium text-gray-900 py-1">Solusi</a>
-          <a href="#metrics" onClick={() => setOpen(false)} className="text-base font-medium text-gray-900 py-1">Kapabilitas</a>
-          <Link href="/recruiter" onClick={() => setOpen(false)} className="text-base font-medium text-gray-900 py-1">Rekruiter</Link>
+        <div className="absolute top-full left-0 right-0 bg-background-primary-default/95 backdrop-blur-md rounded-2xl border border-border-button-default mx-3 mt-2 p-5 shadow-dropdown z-50 flex flex-col gap-3">
+          <a href="#about" onClick={() => setOpen(false)} className="text-body-medium text-text-primary py-1">Solusi</a>
+          <a href="#metrics" onClick={() => setOpen(false)} className="text-body-medium text-text-primary py-1">Kapabilitas</a>
+          <Link href="/recruiter" onClick={() => setOpen(false)} className="text-body-medium text-text-primary py-1">Rekruiter</Link>
           <Link href="/signup" className="mt-2 block">
             <TextRollButton text="Mulai Gratis" variant="orange" size="md" className="w-full justify-between" />
           </Link>
@@ -89,7 +89,7 @@ function Navbar() {
 export function HeroSection() {
   return (
     <div className="w-full h-screen flex items-center justify-center p-3 sm:p-4 md:p-6 lg:p-7 bg-[#f0f0f0]">
-      <section className="relative w-full max-w-[1760px] h-full rounded-[1.5rem] md:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden flex flex-col items-center group">
+      <section className="relative w-full max-w-[1760px] h-full rounded-[1.5rem] md:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden flex flex-col items-center group font-boardui">
 
         {/* Background Shader */}
         <div className="absolute inset-0 w-full h-full">
@@ -106,7 +106,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.15 }}
-            className="text-gray-900 leading-[0.95]"
+            className="text-text-primary leading-[0.95]"
           >
             <span
               className="block font-playfair italic font-normal text-5xl sm:text-7xl md:text-8xl lg:text-[8.5rem]"
@@ -139,7 +139,7 @@ export function HeroSection() {
           >
             <Link
               href="/signup"
-              className="inline-flex items-center gap-3 bg-gray-900 text-white text-base font-medium pl-7 pr-2 py-2 rounded-full hover:bg-[#F26522] transition-colors duration-200 shadow-md"
+              className="inline-flex items-center gap-3 bg-gray-900 text-white text-base font-medium pl-7 pr-2 py-2 rounded-full hover:bg-accent-600 transition-colors duration-200 shadow-md"
             >
               Mulai Evaluasi
               <span className="bg-white rounded-full p-2">
@@ -148,7 +148,7 @@ export function HeroSection() {
             </Link>
             <Link
               href="/login"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors px-4 py-2"
+              className="text-sm font-medium text-body-medium text-text-secondary hover:text-text-primary transition-colors px-4 py-2"
             >
               Sudah punya akun →
             </Link>
@@ -162,7 +162,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.65 }}
           className="hidden sm:block absolute bottom-10 sm:bottom-14 left-8 md:left-14 max-w-[280px] z-30"
         >
-          <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+          <p className="text-body-regular text-text-secondary leading-relaxed">
             Deteksi kecurangan otomatis berbasis keystroke forensics. Kandidat dinilai dari bukti jawaban nyata — bukan klaim di kertas.
           </p>
         </motion.div>
@@ -192,12 +192,12 @@ export function HeroSection() {
 
             {/* Content inside corner */}
             <Link href="/recruiter" className="flex items-center gap-3.5 group/corner">
-              <div className="w-10 h-10 rounded-full bg-[#F26522] flex items-center justify-center flex-shrink-0 shadow-sm group-hover/corner:scale-105 transition-transform duration-200">
+              <div className="w-10 h-10 rounded-full bg-accent-500 flex items-center justify-center flex-shrink-0 shadow-sm group-hover/corner:scale-105 transition-transform duration-200">
                 <IconArrowUpRight size={18} className="text-white" />
               </div>
               <div className="flex flex-col text-left">
-                <span className="text-xs font-semibold text-gray-900 leading-tight">Untuk Rekruiter</span>
-                <span className="text-[11px] font-medium text-[#F26522] flex items-center gap-0.5">
+                <span className="text-body-medium text-text-primary leading-tight">Untuk Rekruiter</span>
+                <span className="text-caption-1-semibold text-accent-600 flex items-center gap-0.5">
                   Lihat Dashboard &gt;
                 </span>
               </div>

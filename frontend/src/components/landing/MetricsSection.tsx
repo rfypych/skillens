@@ -1,73 +1,37 @@
 'use client';
 
-import { motion, type Variants } from 'framer-motion';
-
 const METRICS = [
-  { value: '3,400+', label: 'Simulasi Selesai' },
-  { value: '98.4%', label: 'Akurasi Deteksi AI' },
-  { value: '< 0.3s', label: 'Kecepatan Deteksi' },
-  { value: '50+', label: 'Skenario Tersedia' },
-  { value: '12 min', label: 'Rata-rata Durasi Test' },
-  { value: '99.9%', label: 'Platform Uptime' },
-  { value: '5 peran', label: 'Domain Evaluasi' },
-  { value: 'ISO 27001', label: 'Keamanan Data' },
+  { value: '3,400+', label: 'Simulasi selesai' },
+  { value: '98.4%', label: 'Akurasi deteksi AI' },
+  { value: '< 0.3s', label: 'Kecepatan deteksi' },
+  { value: '50+', label: 'Skenario tersedia' },
+  { value: '12 min', label: 'Rata-rata durasi tes' },
+  { value: '99.9%', label: 'Platform uptime' },
+  { value: '5 peran', label: 'Domain evaluasi' },
+  { value: 'ISO 27001', label: 'Keamanan data' },
 ];
-
-const container: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
-const item: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-};
 
 export function MetricsSection() {
   return (
-    <section id="metrics" className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-6 md:py-10">
-      <div
-        className="border rounded-[1.5rem] md:rounded-[2.5rem] lg:rounded-[3rem] p-8 md:p-16"
-        style={{
-          backgroundColor: 'rgba(30,50,90,0.02)',
-          borderColor: 'rgba(30,50,90,0.05)',
-        }}
-      >
-        {/* Header */}
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-[13px] uppercase tracking-widest text-gray-400 font-medium mb-10"
-        >
+    <section id="metrics" className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-6 md:py-10 font-boardui">
+      <div className="border border-border-button-default bg-background-primary-default rounded-3xl p-8 md:p-14 shadow-card">
+        <p className="text-caption-1-semibold text-text-tertiary mb-10">
           Platform dalam angka
-        </motion.p>
+        </p>
 
-        {/* 4-col × 2-row grid */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: '-60px' }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-y"
-          style={{ '--tw-divide-opacity': 1, borderColor: 'rgba(30,50,90,0.1)' } as React.CSSProperties}
-        >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-separator-border border border-separator-border rounded-2xl overflow-hidden">
           {METRICS.map((m, i) => (
-            <motion.div
+            <div
               key={i}
-              variants={item}
-              className="flex flex-col gap-1 p-6 md:p-8"
+              className="flex flex-col gap-1.5 bg-background-primary-default p-6 md:p-8"
             >
-              <span
-                className="text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 tabular-nums leading-none"
-                style={{ letterSpacing: '-0.04em' }}
-              >
+              <span className="text-title-1-medium text-text-primary tabular-nums leading-none">
                 {m.value}
               </span>
-              <span className="text-sm text-gray-500 mt-1">{m.label}</span>
-            </motion.div>
+              <span className="text-body-regular text-text-secondary mt-1">{m.label}</span>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
