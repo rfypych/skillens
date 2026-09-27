@@ -1,134 +1,181 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
+import { RiArrowRightUpLine } from '@remixicon/react';
+import { Avatar } from '@/components/base/avatar/avatar';
+import { Chip } from '@/components/base/badges/chip';
 import {
-  RiArrowRightUpLine,
-  RiShieldCheckLine,
-  RiNodeTree,
-} from '@remixicon/react';
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from '@/components/base/table/table';
+import { FileUpload } from '@/components/base/file-upload/file-upload';
+import { ThinkingIndicator } from '@/components/ThinkingIndicator';
+import CognitiveFingerprintRadar from '@/components/CognitiveFingerprintRadar';
 
-function CardMicroSim() {
+function CardShell({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
   return (
-    <div className="group relative bg-background-secondary-default border border-separator-border rounded-2xl p-8 md:p-10 md:row-span-2 min-h-[28rem] flex flex-col justify-between overflow-hidden">
-      <div className="relative z-10 flex flex-col gap-4">
-        <p className="text-caption-1-semibold text-accent-600">
-          Lapisan 1
-        </p>
-        <h3 className="text-title-1-medium text-text-primary max-w-[260px]">
-          Micro-Simulation Assessment
-        </h3>
-        <p className="text-body-regular leading-relaxed text-text-secondary max-w-[240px]">
-          Kandidat menghadapi studi kasus nyata sesuai posisi. AI mewawancarai multi-putaran dan menilai 5 dimensi kompetensi.
-        </p>
+    <div className="flex min-h-[19rem] flex-col gap-3 rounded-2xl border border-border-button-default bg-background-primary-default p-5 shadow-card">
+      <div className="flex flex-col gap-1">
+        <h3 className="text-body-1-medium text-text-primary">{title}</h3>
+        <p className="text-body-regular text-text-secondary">{desc}</p>
       </div>
+      <div className="mt-auto overflow-hidden rounded-xl border border-separator-border bg-background-secondary-default p-3">
+        {children}
+      </div>
+    </div>
+  );
+}
 
-      <div className="relative z-10">
-        <div className="border-t border-separator-border pt-5 space-y-2.5 mb-5">
-          {[
-            'Pemahaman Masalah',
-            'Pendekatan Solusi',
-            'Eksekusi Logis',
-            'Komunikasi',
-            'Label Integritas',
-          ].map((f, i) => (
-            <div key={f} className="flex items-center justify-between">
-              <span className="text-body-regular text-text-secondary">{f}</span>
-              <span className="text-caption-1-semibold tabular-nums text-text-tertiary">D{i + 1}</span>
-            </div>
-          ))}
+function DemoTable() {
+  const rows = [
+    { initials: 'AP', name: 'Arka Pratama', score: 87.5, chip: 'Highly Validated', color: 'lime' as const },
+    { initials: 'SM', name: 'Sinta Maharani', score: 79.2, chip: 'Hidden Gem', color: 'lime' as const },
+    { initials: 'RZ', name: 'Rafi Zaidan', score: 45, chip: 'Terindikasi Kecurangan', color: 'rose' as const },
+  ];
+  return (
+    <Table aria-label="Contoh peringkat" size="sm" containerClassName="w-full">
+      <TableHeader>
+        <TableColumn id="name" isRowHeader>Kandidat</TableColumn>
+        <TableColumn>Skor</TableColumn>
+        <TableColumn>Label</TableColumn>
+      </TableHeader>
+      <TableBody>
+        {rows.map((r) => (
+          <TableRow key={r.name}>
+            <TableCell>
+              <span className="flex items-center gap-2">
+                <Avatar size="sm" color="neutral" initials={r.initials} />
+                <span className="text-body-medium text-text-primary">{r.name}</span>
+              </span>
+            </TableCell>
+            <TableCell>
+              <span className="text-body-medium tabular-nums text-text-primary">{r.score}</span>
+            </TableCell>
+            <TableCell>
+              <Chip variant="bold" color={r.color}>{r.chip}</Chip>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+function DemoStats() {
+  const stats = [
+    { label: 'Simulasi selesai', value: '3,400+', delta: '+12%', color: 'lime' as const },
+    { label: 'Kecurangan dicegah', value: '312', delta: 'otomatis', color: 'lime' as const },
+  ];
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      {stats.map((s) => (
+        <div key={s.label} className="flex flex-col gap-1 rounded-xl bg-background-primary-default p-3">
+          <span className="text-caption-1-semibold text-text-tertiary">{s.label}</span>
+          <span className="text-title-3-semibold tabular-nums text-text-primary">{s.value}</span>
+          <Chip variant="caption" color={s.color} className="self-start">{s.delta}</Chip>
         </div>
-        <Link
-          href="/recruiter"
-          className="inline-flex items-center gap-1.5 text-body-medium text-text-secondary outline-none transition-colors hover:text-text-primary focus-visible:ring-2 focus-visible:ring-border-focus-ring"
-        >
-          Lihat Demo
-          <RiArrowRightUpLine className="size-3.5" aria-hidden />
-        </Link>
-      </div>
+      ))}
     </div>
   );
 }
 
-function CardTelemetry() {
+function DemoTelemetry() {
+  const bars = [38, 62, 45, 80, 55, 70, 42, 66, 50, 74, 58, 64, 48, 72, 52];
   return (
-    <div className="group relative bg-background-primary-default border border-border-button-default rounded-2xl p-8 md:p-10 md:col-span-2 min-h-[14rem] flex flex-col justify-between gap-4 overflow-hidden shadow-card">
-      <div className="relative z-10 flex flex-col gap-3">
-        <p className="text-caption-1-semibold text-text-tertiary">
-          Lapisan 2
-        </p>
-        <h3 className="text-title-1-medium text-text-primary">
-          Deteksi kecurangan. Tanpa kamera.
-        </h3>
+    <div className="flex flex-col gap-2.5">
+      <div className="flex items-end gap-1 h-14" aria-hidden>
+        {bars.map((h, i) => (
+          <span
+            key={i}
+            className="w-full rounded-full bg-accent-500/70"
+            style={{ height: `${h}%`, animation: `telemetry-blink 1.6s ease-in-out ${i * 0.09}s infinite` }}
+          />
+        ))}
       </div>
-      <p className="relative z-10 text-body-regular leading-relaxed text-text-secondary max-w-sm">
-        Keystroke forensics menganalisis 13 sinyal perilaku secara real-time. Kecepatan, jeda, copy-paste, pola mengetik. Tidak ada proctoring invasif.
-      </p>
+      <div className="flex flex-wrap gap-1.5">
+        <Chip variant="caption" color="neutral">WPM: 84</Chip>
+        <Chip variant="caption" color="neutral">Backspace: 4.1%</Chip>
+        <Chip variant="caption" color="lime">Paste: 0</Chip>
+      </div>
+      <style>{`@keyframes telemetry-blink { 0%,100% { opacity: 0.45; } 50% { opacity: 1; } }`}</style>
     </div>
   );
 }
 
-function CardTalentIntel() {
+function DemoUpload() {
+  const [done, setDone] = useState<string | null>(null);
   return (
-    <div className="group relative bg-background-primary-default border border-border-button-default rounded-2xl p-8 md:p-10 min-h-[14rem] flex flex-col justify-between gap-3 overflow-hidden shadow-card">
-      <div className="relative z-10 flex flex-col gap-3">
-        <p className="text-caption-1-semibold text-text-tertiary">
-          Lapisan 3
-        </p>
-        <h3 className="text-title-2-medium text-text-primary">
-          Cognitive<br />Fingerprint.
-        </h3>
-        <p className="text-body-regular leading-relaxed text-text-secondary">
-          Profil multi-dimensi dari jawaban dan perilaku nyata. Bukan skor angka semata.
-        </p>
-      </div>
-      <Link
-        href="/signup"
-        className="mt-1 inline-flex w-fit items-center gap-1.5 text-body-medium text-text-secondary outline-none transition-colors hover:text-text-primary focus-visible:ring-2 focus-visible:ring-border-focus-ring"
-      >
-        <RiShieldCheckLine className="size-3.5 text-accent-600" aria-hidden />
-        Coba Sekarang
-      </Link>
+    <div className="flex flex-col gap-2">
+      <FileUpload
+        allowedExtensions={['pdf']}
+        maxBytes={5 * 1024 * 1024}
+        onUploadComplete={(file) => setDone(file.name)}
+      />
+      {done && (
+        <p className="text-body-regular text-status-lime-text">Diterima: {done}</p>
+      )}
     </div>
   );
 }
 
-function CardComparative() {
-  return (
-    <div className="group relative bg-background-primary-default border border-border-button-default rounded-2xl p-8 md:p-10 min-h-[14rem] flex flex-col items-center justify-center overflow-hidden text-center gap-4 shadow-card">
-      <p className="text-caption-1-semibold text-text-tertiary">
-        Perbandingan
-      </p>
-      <h3 className="text-title-2-medium text-text-primary">
-        Bandingkan<br />hingga 4 kandidat.
-      </h3>
-      <span className="flex size-12 items-center justify-center rounded-full bg-background-secondary-default transition-colors duration-300 group-hover:bg-background-tertiary-default">
-        <RiNodeTree className="size-[18px] text-foreground-icon-secondary group-hover:text-foreground-icon-primary transition-colors duration-300" aria-hidden />
-      </span>
-    </div>
-  );
-}
+const DEMO_FP = {
+  analytical_depth: 92,
+  communication_clarity: 81,
+  execution_velocity: 76,
+  integrity_index: 95,
+  creative_synthesis: 68,
+  pressure_resilience: 84,
+};
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-6 md:py-10 font-boardui">
-      <div className="flex items-end justify-between mb-6 gap-4">
-        <h2 className="text-title-1-medium text-text-primary max-w-md">
-          Tiga lapisan bukti.<br className="hidden md:block" /> Satu keputusan tepat.
-        </h2>
+    <section id="features" className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-4 md:py-6 font-boardui">
+      <div className="flex flex-wrap items-end justify-between gap-3 mb-4 px-1">
+        <div className="flex flex-col gap-1.5">
+          <p className="text-caption-1-semibold text-text-tertiary">
+            Komponen interaktif
+          </p>
+          <h2 className="text-title-1-medium text-text-primary max-w-xl">
+            Segalanya hidup, langsung bisa dicoba.
+          </h2>
+        </div>
         <Link
           href="/signup"
-          className="hidden md:inline-flex items-center gap-1.5 text-body-medium text-text-secondary outline-none transition-colors hover:text-text-primary focus-visible:ring-2 focus-visible:ring-border-focus-ring whitespace-nowrap"
+          className="inline-flex items-center gap-1.5 text-body-medium text-text-secondary outline-none transition-colors hover:text-text-primary focus-visible:ring-2 focus-visible:ring-border-focus-ring whitespace-nowrap"
         >
           Mulai Evaluasi
           <RiArrowRightUpLine className="size-3.5" aria-hidden />
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-4">
-        <CardMicroSim />
-        <CardTelemetry />
-        <CardTalentIntel />
-        <CardComparative />
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <CardShell title="Tabel peringkat" desc="Urut, saring, dan telusuri data kompleks dalam tabel responsif.">
+          <DemoTable />
+        </CardShell>
+        <CardShell title="Kartu stat" desc="Angka utama, delta jujur, dan konteks dalam sekejap.">
+          <DemoStats />
+        </CardShell>
+        <CardShell title="Indikator thinking" desc="Penanda AI sedang berpikir, mengetik, dan menilai.">
+          <div className="flex items-center justify-center py-6">
+            <ThinkingIndicator statusText="Menilai jawaban…" />
+          </div>
+        </CardShell>
+        <CardShell title="Telemetri live" desc="Sinyal perilaku yang terekam saat kandidat mengetik.">
+          <DemoTelemetry />
+        </CardShell>
+        <CardShell title="Unggah berkas" desc="Seret-dan-letakkan dengan validasi dan progres. Coba jatuhkan PDF.">
+          <DemoUpload />
+        </CardShell>
+        <CardShell title="Radar fingerprint" desc="Enam dimensi kompetensi dalam satu tatapan.">
+          <div className="flex items-center justify-center">
+            <CognitiveFingerprintRadar fingerprint={DEMO_FP} size={210} />
+          </div>
+        </CardShell>
       </div>
     </section>
   );

@@ -761,6 +761,35 @@ D:\projects\JHIC-rev\
   - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
 
+### Session: 2026-09-23 — Rombak Landing Ikuti BoardUI.com Asli
+- **Goal / User Request**: Masih tidak mirip BoardUI sama sekali; cari komponen BoardUI yang cocok dan rombak dari "Tiga lapisan bukti" ke bawah.
+- **Riset**: fetch HTML boardui.com (1.8MB) + ekstrak struktur asli: grid komponen live-demo (judul + 1 baris), spotlight loading state, template siap pakai, blok install/MCP, pricing, FAQ. Itu yang ditiru persis.
+- **Changes Made**:
+  - `FeaturesSection` → grid 6 kartu live: tabel peringkat, stat, thinking indicator hidup, telemetri live animasi, FileUpload asli (bisa dijatuhi PDF), radar fingerprint.
+  - Baru `SpotlightSection` (panel gelap + ThinkingIndicator hidup), `PortalsSection` (2 kartu portal gradient-icon), `DemoAccessSection` (blok terminal mono + salin fungsional + tombol Masuk), `FaqSection` (akordeon 5 Q).
+  - `StepsSection` dihapus (diganti DemoAccess). `page.tsx` urutan baru. Hero TIDAK disentuh.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/landing/FeaturesSection.tsx`, `frontend/src/app/page.tsx`
+  - `[NEW]` `SpotlightSection.tsx`, `PortalsSection.tsx`, `DemoAccessSection.tsx`, `FaqSection.tsx`
+  - `[DELETE]` `frontend/src/components/landing/StepsSection.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright 5 shot semua seksi: tabel/stat/thinking/telemetri/upload/radar hidup, spotlight, portal, terminal demo, FAQ. 0 pageerror. Temp dibersihkan.
+- **Handoff Notes for Next Session**: BELUM push. Microcopy Inggris di dalam FileUpload adalah bawaan komponen BoardUI asli (disengaja).
+
+### Session: 2026-09-23 — Rombak Total Bawah Hero (Tanah Putih BoardUI)
+- **Goal / User Request**: Bagian "Tiga lapisan bukti" ke bawah jelek banget; rombak total presis BoardUI. Hero jangan diubah.
+- **Root Cause**: dekorasi tabrakan sudah dibuang sesi lalu tapi bahasa visual masih generik (tanah abu raksasa + panel putih besar + radius 3xl di mana-mana), bukan bahasa aplikasi BoardUI.
+- **Changes Made**:
+  - Tanah bawah-hero jadi putih penuh (`bg-background-full`, footer ikut) — persis ground aplikasi BoardUI.
+  - Kepadatan skala dashboard: seksi py-4/6, kartu p-5/6, radius kartu 2xl seragam (3xl hanya panel display hero/CTA).
+  - LogoCloud jadi ubin secondary tanpa border; strip abu antara CTA-footer dihapus.
+  - Hero TIDAK disentuh.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/app/page.tsx`, 6 file `frontend/src/components/landing/*`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. Playwright 2 shot: ubin stat + kartu putih + steps + CTA gelap + footer, semua bersih. 0 pageerror. Temp dibersihkan.
+- **Handoff Notes for Next Session**: BELUM push (unggu perintah). PENTING: user kemungkinan melihat URL production (ikut `main`) — semua kerja ini hanya di `preview`; ingatkan soal preview-vs-production + waktu deploy Vercel bila komplain "masih sama".
+
 ### Session: 2026-09-23 — Perbaiki Tabrakan Dekorasi Features
 - **Goal / User Request**: Bagian "Tiga lapisan bukti" ke bawah jelek banget.
 - **Root Cause (screenshot)**: angka hantu "01" raksasa menabrak judul Micro-Simulation; watermark lingkaran/kotak wireframe render seperti glitch menabrak teks.
