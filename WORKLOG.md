@@ -761,6 +761,41 @@ D:\projects\JHIC-rev\
   - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
 
+### Session: 2026-09-23 — Full-bleed Putih CTA (Gutter Abu)
+- **Goal / User Request**: Area abu di samping kartu CTA.
+- **Root Cause**: root CTASection membawa `max-w + px` sehingga background abu `main` mengintip di gutter kiri-kanan.
+- **Fix**: root jadi full-bleed putih, `max-w + mx-auto` pindah ke kartu dalam.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/landing/CTASection.tsx`
+- **Verification & Testing**:
+  - Playwright: gutter hilang, putih penuh. Temp dibersihkan.
+
+### Session: 2026-09-23 — Lihat Asli BoardUI.com, Terangkan Semua Panel Gelap
+- **Goal / User Request**: Contoh AI slop = 2 panel hitam kosong (spotlight + terminal demo). Tantangan: apa benar lihat landing BoardUI.
+- **Riset jujur**: screenshot langsung 8 viewport boardui.com. Temuan: marketing BoardUI SELURUHNYA terang — kartu putih demo-di-atas, spotlight/install/CTA/FAQ terang, headline display tengah. Panel gelap saya tidak ada padanannya.
+- **Changes Made**:
+  - CardShell dibalik: demo di atas, judul + deskripsi di bawah (anatomi kartu BoardUI asli).
+  - Spotlight → kartu putih + visual telemetri kanan.
+  - DemoAccess → kartu putih, kredensial di ubin secondary, header tengah display-3.
+  - CTA → kartu putih + glow pastel atas + tombol primer/sekunder (panel gelap dibuang).
+  - FAQ + "Masih ada pertanyaan?" (cermin BoardUI).
+- **Affected Files**: 6 file `frontend/src/components/landing/*`.
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright 3 shot. 0 pageerror. Temp + screenshot studi dibersihkan. `graphify update .`.
+- **Handoff Notes for Next Session**: BELUM push. File studi boardui.com sudah dihapus.
+
+### Session: 2026-09-23 — Bersihkan Titik Rapih (Upload, Braille, Kontrol)
+- **Goal / User Request**: Dari tempelan user: kartu upload ("No file chosen", Inggris, status glitch) + glif braille `⠕⠕⠊` yang terlihat seperti karakter rusak.
+- **Changes Made**:
+  - Kartu "Unggah berkas" → "Kontrol formulir": SegmentedControl (Harian/Mingguan/Bulanan) + Switch + Checkbox BoardUI asli, interaktif, Indonesia penuh.
+  - ThinkingIndicator (braille) di landing → DotPulse baru (3 titik denyut, guarded reduced-motion, tanpa glif eksotis). Dipakai showcase + spotlight (varian label putih).
+  - `graphify update .` pasca-edit.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/landing/FeaturesSection.tsx`, `SpotlightSection.tsx`
+  - `[NEW]` `frontend/src/components/landing/DotPulse.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. Playwright: segmented/switch/checkbox interaktif, dot pulse rapi. 0 pageerror. Temp dibersihkan.
+
 ### Session: 2026-09-23 — Audit Standar BoardUI Resmi (Skill + Graphify)
 - **Goal / User Request**: Belum benar-benar mempelajari UI BoardUI; beberapa seksi aislop dan tak penuhi standar. Revisi pakai context7/graphify.
 - **Studi**: skill resmi BoardUI (`.agents/skills/boardui/`: SKILL + patterns/motion/theming) + graphify query/topik standar. Temuan koreksi penting: kartu/panel = `rounded-3xl` (koreksi 2xl saya sebelumnya SALAH), heading seksi = `title-2`, tombol teks = LinkButton, press = step warna `active:`, keyframe wajib guard reduced-motion, ubin stat 2xl mengikuti source komponen.

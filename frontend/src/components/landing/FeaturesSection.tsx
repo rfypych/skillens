@@ -1,8 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { RiArrowRightUpLine } from '@remixicon/react';
-import { LinkButton } from '@/components/base/buttons/link-button';
+import { RiArrowRightUpLine } from '@remixicon/react';import { LinkButton } from '@/components/base/buttons/link-button';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Chip } from '@/components/base/badges/chip';
 import {
@@ -13,19 +11,21 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/base/table/table';
-import { FileUpload } from '@/components/base/file-upload/file-upload';
-import { ThinkingIndicator } from '@/components/ThinkingIndicator';
+import { SegmentedControl, SegmentedControlItem } from '@/components/base/segmented-control/segmented-control';
+import { Switch } from '@/components/base/switch/switch';
+import { Checkbox } from '@/components/base/checkbox/checkbox';
+import { DotPulse } from '@/components/landing/DotPulse';
 import CognitiveFingerprintRadar from '@/components/CognitiveFingerprintRadar';
 
 function CardShell({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
   return (
-    <div className="flex min-h-[19rem] flex-col gap-3 rounded-3xl border border-border-button-default bg-background-primary-default p-5 shadow-card">
-      <div className="flex flex-col gap-1">
+    <div className="flex min-h-[19rem] flex-col gap-4 rounded-3xl border border-border-button-default bg-background-primary-default p-4 shadow-card">
+      <div className="overflow-hidden rounded-2xl border border-separator-border bg-background-secondary-default p-3">
+        {children}
+      </div>
+      <div className="flex flex-col gap-1 px-1 pb-1">
         <h3 className="text-body-1-medium text-text-primary">{title}</h3>
         <p className="text-body-regular text-text-secondary">{desc}</p>
-      </div>
-      <div className="mt-auto overflow-hidden rounded-xl border border-separator-border bg-background-secondary-default p-3">
-        {children}
       </div>
     </div>
   );
@@ -106,18 +106,20 @@ function DemoTelemetry() {
   );
 }
 
-function DemoUpload() {
-  const [done, setDone] = useState<string | null>(null);
+function DemoControls() {
   return (
-    <div className="flex flex-col gap-2">
-      <FileUpload
-        allowedExtensions={['pdf']}
-        maxBytes={5 * 1024 * 1024}
-        onUploadComplete={(file) => setDone(file.name)}
-      />
-      {done && (
-        <p className="text-body-regular text-status-lime-text">Diterima: {done}</p>
-      )}
+    <div className="flex flex-col gap-3">
+      <SegmentedControl defaultSelectedKeys={['mingguan']} aria-label="Periode">
+        <SegmentedControlItem id="harian">Harian</SegmentedControlItem>
+        <SegmentedControlItem id="mingguan">Mingguan</SegmentedControlItem>
+        <SegmentedControlItem id="bulanan">Bulanan</SegmentedControlItem>
+      </SegmentedControl>
+      <Switch defaultSelected>
+        <span className="text-body-regular text-text-primary">Notifikasi hasil baru</span>
+      </Switch>
+      <Checkbox defaultSelected={false}>
+        <span className="text-body-regular text-text-primary">Tampilkan skor ke kandidat</span>
+      </Checkbox>
     </div>
   );
 }
@@ -157,14 +159,14 @@ export function FeaturesSection() {
         </CardShell>
         <CardShell title="Indikator thinking" desc="Penanda AI sedang berpikir, mengetik, dan menilai.">
           <div className="flex items-center justify-center py-6">
-            <ThinkingIndicator statusText="Menilai jawaban…" />
+            <DotPulse label="Menilai jawaban…" />
           </div>
         </CardShell>
         <CardShell title="Telemetri live" desc="Sinyal perilaku yang terekam saat kandidat mengetik.">
           <DemoTelemetry />
         </CardShell>
-        <CardShell title="Unggah berkas" desc="Seret-dan-letakkan dengan validasi dan progres. Coba jatuhkan PDF.">
-          <DemoUpload />
+        <CardShell title="Kontrol formulir" desc="Pilihan periode, sakelar, dan kotak cek yang langsung merespons.">
+          <DemoControls />
         </CardShell>
         <CardShell title="Radar fingerprint" desc="Enam dimensi kompetensi dalam satu tatapan.">
           <div className="flex items-center justify-center">
