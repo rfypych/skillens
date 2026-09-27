@@ -127,6 +127,17 @@ D:\projects\JHIC-rev\
 
 ## 6. Recent Work History
 
+### Session: 2026-09-27 08:25 WIB — Push Lokal 147 File ke Preview + Staging Rebuild (DONE)
+- **Goal / User Request**: "gas" — commit + push perubahan lokal ke branch preview.
+- **Changes Made**:
+  - Audit 190 file: secret-scan diff bersih; sengaja TIDAK ikut: `backend/uploads/*` baru (CV kandidat asli!), `*.db`, `graphify-out/` (32M, + entry `.gitignore`), `.opencode/node_modules`, `.claude`, `.playwright-mcp`, skill anti-slop/boardui (bukan sesi ini), artefak e2e/PDF/log.
+  - Stage 147 file (23k++): komponen app-shell/base baru, `app/api/chat`, evaluasi visual-analysis backend, package.json (ai-sdk), AGENTS/WORKLOG/graphify skill.
+  - Gate: `npx tsc --noEmit` exit 0, `py_compile` OK (code-review skill dimuat; review sub-agent dilewat, diganti audit diff langsung karena uncommitted).
+  - Commit `4744738`, push `215a0e4..4744738 preview` — Vercel auto-build 57s, alias staging pindah otomatis.
+- **Affected Files**: `[NEW/MODIFY]` 147 file (lihat `git show 4744738 --stat`).
+- **Verification & Testing**: staging root 200, login recruiter 200 JWT pasca-rebuild — Passed.
+- **Handoff Notes for Next Session**: Produksi VPS masih di `215a0e4` — perlu `git pull + build + copy standalone + restart` di VPS untuk ikut `4744738` (ingat gotcha copy static!). Sisa unstaged tetap lokal (uploads, graphify-out, tool configs).
+
 ### Session: 2026-09-27 08:10 WIB — Fix Staging Login 404: Preview Env ke Backend Mati (DONE)
 - **Goal / User Request**: "An error occurred" waktu login di staging.
 - **Changes Made**:
@@ -665,6 +676,19 @@ D:\projects\JHIC-rev\
   - `npx tsc --noEmit` 0 error. `npm run build` green.
   - Playwright: dashboard (nav Dasbor, tanpa tombol ganda), menu akun terbuka (Masuk sebagai + user asli + Keluar). 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: SettingsModal BoardUI masih di-vendor tapi tak terjangkau dari shell (ok). Bantuan/tema gelap disembunyikan, bukan dihapus dari source.
+
+### Session: 2026-09-23 — Perbaikan 5 Logo Sponsor di Semua Halaman
+- **Goal / User Request**: Perbaiki kelima logo (JHIC, Jagoan Hosting, Komdigi, Garuda Spark, Ngalup) di semua halaman, pastikan diletakkan dengan baik.
+- **Findings & Fixes**:
+  - Aset timpang: dimensi sumber 1.38:1 s.d. 6.32:1 dan ukuran 29-174KB per file (total 525KB) untuk logo footer. Fix: resize via sharp ke tinggi 96px → total 57KB (≈90% lebih ringan), proporsi asli dipertahankan.
+  - `SponsorLogos` ditulis ulang ala BoardUI: varian `strip` (login/signup/apply) dan `band` (footer shell: hairline atas + caption "Didukung oleh"), tinggi visual seragam h-6 + batas lebar per logo (komdigi kecil tidak tenggelam, ngalup lebar tidak dominan), grayscale tenang + hover berwarna, wrap rapi di mobile.
+  - Penempatan: band ditambahkan di layout rekruiter + kandidat (sebelumnya hilang saat konversi BoardUI); strip tetap di login/signup/apply. Total 5 titik.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/SponsorLogos.tsx`, `frontend/src/app/recruiter/layout.tsx`, `frontend/src/app/candidate/layout.tsx`
+  - `[MODIFY]` `frontend/public/sponsors/*.png` (5 file dioptimasi)
+- **Verification & Testing**:
+  - `npm run build` green. Playwright: strip login + band footer dashboard (5 img ter-render, sejajar rapi). 0 pageerror. Temp dibersihkan.
+- **Handoff Notes for Next Session**: Server dev fresh berjalan (:3000 + :8000) setelah keduanya sempat mati antar-sesi.
 
 ### Session: 2026-09-23 18:05 WIB — Pembersihan Kartu Spesifikasi Protokol pada Pilar 4 Sistem
 - **Goal / User Request**: Hapus kartu `Route-System-Protocol` ("SYS App Router Architecture - Protokol Pemulihan & Streaming") dan konektornya pada Pilar 4 sesuai instruksi visual pengguna (lingkaran merah). Pilar 4 kini murni hanya memuat 3 kartu node sistem: `404`, `error boundary`, dan `loading`.

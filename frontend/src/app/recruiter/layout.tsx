@@ -24,6 +24,7 @@ import { IconButton } from '@/components/base/buttons/icon-button';
 import { cx } from '@/utils/cx';
 import { LanguageProvider, useLanguage } from '@/i18n/LanguageContext';
 import OnboardingWizardModal from '@/components/OnboardingWizardModal';
+import SponsorLogos from '@/components/SponsorLogos';
 
 const RECRUITER_NAV: DashboardNavItem[] = [
   { key: 'command', label: 'Dasbor', icon: RiDashboardLine, href: '/recruiter' },
@@ -194,6 +195,7 @@ function RecruiterShell({ children }: { children: ReactNode }) {
             </div>
           </header>
           <div className="flex w-full flex-col gap-4 pb-4">{children}</div>
+          <SponsorLogos variant="band" />
         </div>
       </main>
 
