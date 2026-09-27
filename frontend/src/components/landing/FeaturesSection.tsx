@@ -6,21 +6,10 @@ import {
   RiShieldCheckLine,
   RiNodeTree,
 } from '@remixicon/react';
-import {
-  WatermarkArchitecture,
-  WatermarkTelemetryPulse,
-} from '@/components/icons/CustomIcons';
 
 function CardMicroSim() {
   return (
     <div className="group relative bg-background-secondary-default border border-separator-border rounded-2xl p-8 md:p-10 md:row-span-2 min-h-[28rem] flex flex-col justify-between overflow-hidden">
-      <span
-        className="absolute top-6 right-8 text-[9rem] md:text-[11rem] font-semibold leading-none text-text-primary opacity-[0.05] select-none pointer-events-none tabular-nums"
-        aria-hidden
-      >
-        01
-      </span>
-
       <div className="relative z-10 flex flex-col gap-4">
         <p className="text-caption-1-semibold text-accent-600">
           Lapisan 1
@@ -63,12 +52,6 @@ function CardMicroSim() {
 function CardTelemetry() {
   return (
     <div className="group relative bg-background-primary-default border border-border-button-default rounded-2xl p-8 md:p-10 md:col-span-2 min-h-[14rem] flex flex-col justify-between gap-4 overflow-hidden shadow-card">
-      <div className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 pointer-events-none">
-        <WatermarkTelemetryPulse
-          size={280}
-          className="text-text-primary opacity-[0.04] group-hover:scale-105 transition-transform duration-700"
-        />
-      </div>
       <div className="relative z-10 flex flex-col gap-3">
         <p className="text-caption-1-semibold text-text-tertiary">
           Lapisan 2
@@ -87,12 +70,6 @@ function CardTelemetry() {
 function CardTalentIntel() {
   return (
     <div className="group relative bg-background-primary-default border border-border-button-default rounded-2xl p-8 md:p-10 min-h-[14rem] flex flex-col justify-between gap-3 overflow-hidden shadow-card">
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <WatermarkArchitecture
-          size={260}
-          className="text-text-primary opacity-[0.04] group-hover:scale-110 transition-transform duration-700"
-        />
-      </div>
       <div className="relative z-10 flex flex-col gap-3">
         <p className="text-caption-1-semibold text-text-tertiary">
           Lapisan 3

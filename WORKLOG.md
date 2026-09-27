@@ -761,6 +761,20 @@ D:\projects\JHIC-rev\
   - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
 
+### Session: 2026-09-23 — Perbaiki Tabrakan Dekorasi Features
+- **Goal / User Request**: Bagian "Tiga lapisan bukti" ke bawah jelek banget.
+- **Root Cause (screenshot)**: angka hantu "01" raksasa menabrak judul Micro-Simulation; watermark lingkaran/kotak wireframe render seperti glitch menabrak teks.
+- **Fix**: buang angka hantu 01 + kedua watermark (TelemetryPulse, Architecture) + import mati. Kartu kini bersih BoardUI.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/landing/FeaturesSection.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. Playwright screenshot: tak ada tabrakan. Temp dibersihkan.
+
+### Session: 2026-09-23 — Push Rombak Presisi ke preview (11051f7)
+- **Goal / User Request**: Push.
+- **Changes Made**: Stage 7 file → commit `11051f7` + push `preview` (`2d2f880..11051f7`). Secret-scan bersih.
+- **Verification**: Remote `preview` maju ke `11051f7`.
+
 ### Session: 2026-09-23 — Rombak Presisi BoardUI Bawah Hero
 - **Goal / User Request**: Rombak, belum puas; hero jangan diubah; bawah dibuat presis BoardUI versi kita.
 - **Changes Made** (temuan presisi: kartu BoardUI asli `rounded-2xl` bukan 3xl; ubin plain = secondary tile + icon tile; KPI khas = StatCards footer):
