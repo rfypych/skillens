@@ -6,7 +6,7 @@
 @plugin "@tailwindcss/typography";
 
 .font-playfair {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair), 'Playfair Display', Georgia, serif;
 }
 
 

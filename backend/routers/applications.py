@@ -14,12 +14,20 @@ router = APIRouter(
 
 @router.get("", response_model=List[schemas.ApplicationResponse])
 def get_applications(
-    skip: int = 0, 
-    limit: int = 100, 
+    skip: int = 0,
+    limit: int = 100,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user)
 ):
-    return application_service.get_applications(db, current_user, skip, limit)
+    from fastapi.encoders import jsonable_encoder
+    from utils.cache import cached_list, store_list
+    key = f"apps:user:{current_user.id}:{skip}:{limit}"
+    hit = cached_list(key)
+    if hit is not None:
+        return hit
+    res = application_service.get_applications(db, current_user, skip, limit)
+    store_list(key, jsonable_encoder(res))
+    return res
 
 @router.get("/{application_id}", response_model=schemas.ApplicationResponse)
 def get_application(

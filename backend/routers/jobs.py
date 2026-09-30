@@ -21,11 +21,19 @@ def create_job(
 
 @router.get("", response_model=List[schemas.JobResponse])
 def get_jobs(
-    skip: int = 0, 
-    limit: int = 100, 
+    skip: int = 0,
+    limit: int = 100,
     db: Session = Depends(get_db)
 ):
-    return job_service.get_jobs(db, skip, limit)
+    from fastapi.encoders import jsonable_encoder
+    from utils.cache import cached_list, store_list
+    key = f"jobs:list:{skip}:{limit}"
+    hit = cached_list(key)
+    if hit is not None:
+        return hit
+    res = job_service.get_jobs(db, skip, limit)
+    store_list(key, jsonable_encoder(res))
+    return res
 
 @router.get("/my-jobs", response_model=List[schemas.JobResponseDetailed])
 def get_my_jobs(

@@ -79,7 +79,7 @@ class Job(Base):
     max_questions = Column(Integer, default=5)
     archetype = Column(String, default="teknis")  # "teknis" | "lapangan" | "kreatif"
     kkm_score = Column(Float, default=0.0)
-    status = Column(String, default="open") # "open", "closed"
+    status = Column(String, default="open", index=True) # "open", "closed"
     deadline = Column(DateTime(timezone=True), nullable=True)
     magic_link_token = Column(String, unique=True, index=True, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -99,14 +99,14 @@ class Application(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), index=True)
     job_id = Column(Integer, ForeignKey("jobs.id", ondelete="CASCADE"), index=True)
-    status = Column(String, default="applied") # applied, testing, evaluated, interview, hired, rejected
+    status = Column(String, default="applied", index=True) # applied, testing, evaluated, interview, hired, rejected
     hidden_prompt = Column(String, nullable=True)
     resume_url = Column(String, nullable=True)
     resume_text = Column(Text, nullable=True)
     resume_images = Column(Text, nullable=True)  # JSON list of /uploads/*.png evidence photo URLs
     resume_visual_analysis = Column(Text, nullable=True)  # JSON: local-vision findings per photo
     access_token = Column(String, nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     
     user = relationship("User", back_populates="applications")
@@ -157,10 +157,10 @@ class Interview(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     application_id = Column(Integer, ForeignKey("applications.id", ondelete="CASCADE"), index=True)
-    scheduled_at = Column(DateTime(timezone=True), nullable=False)
+    scheduled_at = Column(DateTime(timezone=True), nullable=False, index=True)
     location = Column(String, nullable=True)
     notes = Column(Text, nullable=True)
-    status = Column(String, default="pending")  # pending, accepted, rejected, completed
+    status = Column(String, default="pending", index=True)  # pending, accepted, rejected, completed
     interview_score = Column(Float, nullable=True)
     score_notes = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

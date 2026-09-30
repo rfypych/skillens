@@ -17,6 +17,7 @@ import {
   RiVideoLine,
 } from '@remixicon/react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { toast, Toaster } from 'react-hot-toast';
@@ -28,7 +29,9 @@ import { Button, ButtonLink } from '@/components/base/buttons/button';
 import { IconButton } from '@/components/base/buttons/icon-button';
 import { Chip } from '@/components/base/badges/chip';
 import { ThinkingIndicator } from '@/components/ThinkingIndicator';
-import BiosphereSimulationPanel from '@/components/BiosphereSimulationPanel';
+const BiosphereSimulationPanel = dynamic(() => import('@/components/BiosphereSimulationPanel'), {
+  loading: () => <ThinkingIndicator />,
+});
 import ComparativeFingerprintView from '@/components/ComparativeFingerprintView';
 import TeamDNAGraph, { type TeamMember } from '@/components/TeamDNAGraph';
 import type { FingerprintValues } from '@/components/CognitiveFingerprintRadar';
