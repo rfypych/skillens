@@ -1,18 +1,22 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { HeroSection } from '@/components/landing/HeroSection';
 import { PreviewSection } from '@/components/landing/PreviewSection';
-import { LogoCloudSection } from '@/components/landing/LogoCloudSection';
-import { SolusiSection } from '@/components/landing/SolusiSection';
-import { MetricsSection } from '@/components/landing/MetricsSection';
-import { FeaturesSection } from '@/components/landing/FeaturesSection';
-import { SpotlightSection } from '@/components/landing/SpotlightSection';
-import { PortalsSection } from '@/components/landing/PortalsSection';
-import { DemoAccessSection } from '@/components/landing/DemoAccessSection';
-import { FaqSection } from '@/components/landing/FaqSection';
-import { CTASection } from '@/components/landing/CTASection';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
+
+// Below-fold sections split out so heavy motion weight never
+// blocks first paint. Placeholders keep viewport layout stable (CLS 0).
+const LogoCloudSection = dynamic(() => import('@/components/landing/LogoCloudSection').then(m => m.LogoCloudSection), { loading: () => <div className="min-h-[40vh]" /> });
+const SolusiSection = dynamic(() => import('@/components/landing/SolusiSection').then(m => m.SolusiSection), { loading: () => <div className="min-h-[40vh]" /> });
+const MetricsSection = dynamic(() => import('@/components/landing/MetricsSection').then(m => m.MetricsSection), { loading: () => <div className="min-h-[40vh]" /> });
+const FeaturesSection = dynamic(() => import('@/components/landing/FeaturesSection').then(m => m.FeaturesSection), { loading: () => <div className="min-h-[40vh]" /> });
+const SpotlightSection = dynamic(() => import('@/components/landing/SpotlightSection').then(m => m.SpotlightSection), { loading: () => <div className="min-h-[40vh]" /> });
+const PortalsSection = dynamic(() => import('@/components/landing/PortalsSection').then(m => m.PortalsSection), { loading: () => <div className="min-h-[40vh]" /> });
+const DemoAccessSection = dynamic(() => import('@/components/landing/DemoAccessSection').then(m => m.DemoAccessSection), { loading: () => <div className="min-h-[40vh]" /> });
+const FaqSection = dynamic(() => import('@/components/landing/FaqSection').then(m => m.FaqSection), { loading: () => <div className="min-h-[40vh]" /> });
+const CTASection = dynamic(() => import('@/components/landing/CTASection').then(m => m.CTASection), { loading: () => <div className="min-h-[40vh]" /> });
 
 export default function LandingPage() {
   return (
