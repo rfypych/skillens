@@ -1,16 +1,14 @@
 'use client';
 
-import HeroAsciiShader from '@/components/HeroAsciiShader';
-
 interface ShaderBackgroundProps {
   variant?: 'light' | 'dark';
   className?: string;
 }
 
 /**
- * Lightweight hero backdrop: pure-CSS radial glow + ASCII canvas shader.
- * Deliberately dependency-free (no WebGL lib) so it never lands in the
- * initial bundle — the old `shaders/react` import cost ~2.6MB.
+ * Lightweight hero backdrop: pure-CSS radial glow only.
+ * Deliberately dependency-free (no WebGL lib, no canvas twin) so it never
+ * lands in the initial bundle — the old `shaders/react` import cost ~2.6MB.
  */
 export default function ShaderBackground({ variant = 'light', className = '' }: ShaderBackgroundProps) {
   const isDark = variant === 'dark';
@@ -25,9 +23,6 @@ export default function ShaderBackground({ variant = 'light', className = '' }: 
             : 'radial-gradient(ellipse 70% 60% at 20% 20%, rgba(242, 101, 34, 0.15) 0%, rgba(255, 212, 194, 0.25) 45%, rgba(239, 239, 239, 1) 100%)',
         }}
       />
-      <div className="absolute inset-0 w-full h-full pointer-events-none z-20 opacity-90">
-        <HeroAsciiShader className="w-full h-full" />
-      </div>
     </div>
   );
 }
