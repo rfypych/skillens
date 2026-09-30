@@ -14,14 +14,14 @@ router = APIRouter(
 )
 
 @router.post("/signup", response_model=schemas.UserResponse)
-@limiter.limit("5/minute")
+@limiter.limit("20/minute")
 def signup(request: Request, user: schemas.UserCreate, db: Session = Depends(get_db)):
     return auth_service.signup_user(db, user)
 
 from fastapi.responses import JSONResponse
 
 @router.post("/login", response_model=schemas.Token)
-@limiter.limit("5/minute")
+@limiter.limit("30/minute")
 def login(request: Request, response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     token_data = auth_service.authenticate_user(db, form_data.username, form_data.password)
     from utils.auth import create_refresh_token
