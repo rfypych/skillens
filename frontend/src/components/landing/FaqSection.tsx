@@ -7,7 +7,7 @@ import { cx } from '@/utils/cx';
 const FAQS = [
   {
     q: 'Apa itu Skillens?',
-    a: 'Platform evaluasi kandidat berbasis bukti. Kandidat mengerjakan simulasi studi kasus interaktif, AI menilai 5 dimensi kompetensi dari jawaban nyata — bukan dari klaim resume.',
+    a: 'Platform evaluasi kandidat berbasis bukti. Kandidat mengerjakan simulasi studi kasus interaktif, AI menilai 6 dimensi kompetensi dari jawaban nyata — bukan dari klaim resume.',
   },
   {
     q: 'Bagaimana tesnya berjalan?',

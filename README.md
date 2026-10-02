@@ -2,8 +2,8 @@
 
 > **Skillens AI Platform** — Platform Penilai Bakat & Wawancara AI Interaktif Berbasis Conversational AI.
 
-[![Live App](https://img.shields.io/badge/Production-Live_App-orange?style=for-the-badge&logo=vercel)](https://skillens-app.vercel.app)
-[![API Docs](https://img.shields.io/badge/API-Swagger_Docs-blue?style=for-the-badge&logo=fastapi)](https://skillens-backend-production.up.railway.app/docs)
+[![Live App](https://img.shields.io/badge/Production-Live_App-orange?style=for-the-badge&logo=vercel)](https://socratech.my.id)
+[![API Docs](https://img.shields.io/badge/API-Swagger_Docs-blue?style=for-the-badge&logo=fastapi)](https://socratech.my.id/api/docs)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/rfypych/skillens)
 
 ---
@@ -17,9 +17,10 @@
 
 ## 🌐 Live URLs
 
-- **Web Application**: [https://skillens-app.vercel.app](https://skillens-app.vercel.app)
-- **Backend API**: [https://skillens-backend-production.up.railway.app](https://skillens-backend-production.up.railway.app)
-- **Interactive Swagger Docs**: [https://skillens-backend-production.up.railway.app/docs](https://skillens-backend-production.up.railway.app/docs)
+- **Web Application (produksi)**: [https://socratech.my.id](https://socratech.my.id)
+- **Staging (branch preview, DB terpisah)**: [https://staging.socratech.my.id](https://staging.socratech.my.id)
+- **Backend API**: [https://socratech.my.id/api](https://socratech.my.id/api) (via frontend rewrite ke FastAPI di VPS)
+- **Interactive Swagger Docs**: [https://socratech.my.id/api/docs](https://socratech.my.id/api/docs)
 
 ---
 
@@ -34,9 +35,9 @@
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 16 (Turbopack), TypeScript, Tailwind CSS, WebGL Shaders (`shaders/react`), Lucide Icons. Hosted on **Vercel**.
-- **Backend**: FastAPI (Python), SQLAlchemy, Pydantic, OAuth2 / JWT, Slowapi. Hosted on **Railway**.
-- **AI Engine**: Llama 3.3 70B Versatile via **Groq Cloud API**.
-- **Database & Cache**: **Neon Cloud Serverless PostgreSQL** & **Upstash Cloud Redis**.
+- **Frontend**: Next.js 16 (Turbopack), TypeScript, Tailwind CSS, Lucide Icons. Produksi di **VPS Jakarta (systemd)**, staging di **Vercel**, edge via **Cloudflare** (tunnel + cache + redirect).
+- **Backend**: FastAPI (Python), SQLAlchemy, Pydantic, OAuth2 / JWT, Slowapi. Berjalan di **VPS** (3 worker prod + 2 worker staging + Celery worker antrean evaluasi).
+- **AI Engine**: Groq `qwen/qwen3-8-27b` (fallback `gpt-oss-120b`), vision foto via **Gemini**, fingerprint ML scikit-learn GradientBoosting.
+- **Database & Cache**: **Neon Cloud Serverless PostgreSQL** (branch produksi + staging terpisah) & **Upstash Cloud Redis** (cache API 60s + broker Celery).
 
 © 2026 **Skillens AI Platform**. All Rights Reserved.
