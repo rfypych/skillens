@@ -127,6 +127,102 @@ D:\projects\JHIC-rev\
 
 ## 6. Recent Work History
 
+### Session: 2026-10-03 — Audit Akurasi Pitch Deck vs Kode+Graph (LOLOS)
+- **Goal / User Request**: Cek apakah isi deck dilebih-lebihkan, pakai graphify + seluruh source.
+- **Changes Made**: Verifikasi klaim per slide: fitur (graph 11.5k node + grep link), Offer stat + Edit btn ADA di HEAD/staging/prod-source, stack versi persis, optimasi (5 index di Neon, worker 3+celery 2, cache 60s, CF rules), angka uji (11.746/120ms/64/LCP6.4 cocok), VPS prod = 501da62 (hanya 1 commit test di belakang origin, nol dampak runtime).
+- **Affected Files**: none.
+- **Verification & Testing**: Graph query + git show HEAD/VPS + curl — Passed, tanpa overclaim.
+- **Handoff Notes for Next Session**: Deck boleh dipakai apa adanya. Satu saran opsional: tambah peluru "rate-limit venue-safe 30/mnt" sebagai kesiapan lomba.
+
+### Session: 2026-10-03 — Adu Audit vs AI Sebelah: Deck Valid + 4 Koreksi Diterapkan (DONE)
+- **Goal / User Request**: AI lain klaim deck overclaim; verifikasi + perbaiki yang benar.
+- **Changes Made**: AI sebelah benar 4 hal: fingerprint 6D (bukan 5D), README basi (Railway mati + Llama 3.3 lama), artefak FAIL Juli, istilah Copilot tak ada di kode. AI sebelah salah 4 hal (checkout lama): model live = qwen3-8-27b + Gemini (key aktif di VPS), Offer stat + Edit btn ADA di HEAD/staging/prod, infra VPS/CF live di luar repo, Guest Apply+CV valid (apply_for_job terima file tanpa login).
+- **Affected Files**: `[MODIFY]` README (URL + stack live), FaqSection 5→6D, sitemap 5→6D; `[DELETE]` test_results.txt + .last-run.json basi. Commit `f00e626` push preview.
+- **Verification & Testing**: tsc 0; VPS .env (Groq+qwen, Gemini, Groq key aktif) — Passed.
+- **Handoff Notes for Next Session**: Sisa untuk tim (deck, bukan kode): (1) "AI Copilot" → ganti "Rekomendasi AI" (samakan kode); (2) "Briefing Telemetri" = halaman Instruksi (samakan istilah); (3) angka lain boleh tetap.
+
+### Session: 2026-09-30 17:35 WIB — Jawaban 5 Pertanyaan Tim (Fitur/Stack/Optimasi/Perf/Demo)
+- **Goal / User Request**: Rekan tim tanya: fitur live, stack, optimasi, uji performa, link demo.
+- **Changes Made**: Verifikasi via grep curl: model AI (`config.py`: qwen3-8-27b + fallback gpt-oss-120b, vision Gemini free-tier), requirements (PyMuPDF, RapidOCR, sklearn), index DB, next/image, font, status live 3 URL, oldest minute.
+- **Affected Files**: none (temuan saja).
+- **Verification & Testing**: curl prod 200:0.44s, staging 200:1.54s (cold), www 301:0.15s. Lighthouse tak tersedia di env ini — TIDAK diklaim.
+- **Handoff Notes for Next Session**: Beda live prod (215a0e4) vs staging (4744738) vs lokal uncommitted (edit-link, offer stat) — jangan tertukar saat demo.
+
+### Session: 2026-10-01 03:20 WIB — Stress Test k6 Pra-Lomba (DONE)
+- **Goal / User Request**: Tgl 5 stresstesting lomba — coba dulu. Install k6 (winget GrafanaLabs.k6 v2.2.0).
+- **Changes Made**:
+  - Landing staging 25 VU/60s: 1396 req, 0% gagal, p95 120ms.
+  - API login+jobs 100 VU: 98% gagal — diagnosis: limiter 5/mnt/IP (anti-brute-force bekerja benar). Pelajaran venue: satu IP wifi = satu kuota → naikkan login 30/mnt, signup 20/mnt (commit, VPS pull+restart).
+  - API authed (setup-once token) 100 VU/4 mnt: 11.747 req, 0% gagal, p95 198ms, ~49 req/s. Load VPS puncak 2.94/8 core, pulih <5 mnt.
+- **Affected Files**: `[MODIFY]` auth.py limit; `[NEW/MODIFY]` e2e/k6/staging-api.js. Commit `ea78a59` push preview.
+- **Verification & Testing**: k6 thresholds hijau (rate<0.01, p95<2000ms); burst login 12x 200 pasca-restart — Passed.
+- **Handoff Notes for Next Session**: Siap lomba: venue ~30 login/mnt/IP aman; brute force tetap diblokir. Jangan uji beban ke produksi (staging cukup, satu box). Skrip: `k6 run e2e/k6/staging-smoke.js`, `k6 run e2e/k6/staging-api.js`.
+
+### Session: 2026-10-01 03:00 WIB — Deploy Produksi VPS ke 6fb0bba (DONE)
+- **Goal / User Request**: "gas" — pull preview ke produksi VPS.
+- **Changes Made** (VPS): `git pull` 215a0e4→6fb0bba (bersih, hanya env untracked); pip install (no-op, tanpa dep backend baru); restart backend prod+staging 200; `npm install --unsafe-perm` (root, chown balik); build PERTAMA SALAH (env `http://backend:8000` nama service docker — rebuild dengan `127.0.0.1:8000` karena standalone membeku rewrite saat build); copy standalone static+public (69 chunks, gotcha dipatuhi); restart frontend 200; purge CF total.
+- **Affected Files** (VPS): repo + `.next/standalone`. Repo lokal: none.
+- **Verification & Testing**: 37/37 aset prod 200, 0 referensi fonts.googleapis, login prod 200 — Passed.
+- **Handoff Notes for Next Session**: Pelajaran deploy: JANGAN pakai hostname docker di build VPS; selalu `BACKEND_INTERNAL_URL=http://127.0.0.1:8000` + copy standalone + purge. Produksi kini = staging = 6fb0bba (minus uncommitted lokal).
+
+### Session: 2026-10-01 02:35 WIB — Maksimalkan 1 VPS Lomba (DONE)
+- **Goal / User Request**: Lomba cuma kasih 1 VPS — maksimalkan tanpa LB/VPS ke-2.
+- **Changes Made** (VPS, 8 CPU / 3.9GB RAM): backend prod `--workers 3`, staging `--workers 2` (restart, login 200 dua-duanya, worker multiprocessing jalan); stop docker/containerd idle (0 container, hemat ~200MB, reversible); coba tambah swap 2GB GAGAL (ploop container, Operation not permitted — file dibersihkan).
+- **Affected Files** (VPS): 2 unit systemd backend. Repo: none.
+- **Verification & Testing**: 5 service active, prod+staging login 200 — Passed.
+- **Handoff Notes for Next Session**: Box sudah mentok wajar: 8 CPU terpakai (3+2 worker + celery 2 + next + tunnel), RAM available 2.8G, swap tak bisa di container. Jangan sentuh Apache/MariaDB/Webuzo (panel + mail). Kalau butuh RAM: matikan staging backend saat tak dipakai.
+
+### Session: 2026-10-01 02:25 WIB — Staging DB Terpisah + Backend Staging Isolasi Penuh (DONE)
+- **Goal / User Request**: API key Neon diberikan; pisahkan DB staging.
+- **Changes Made** (secret hanya memory):
+  - Project `jhic-rev` (blue-wind-…) dikonfirmasi produksi via endpoint ep-divine-union. Branch baru `staging` (br-bitter-forest, endpoint ep-hidden-tree, copy 35 jobs/197 users) + role `staging_user` (tak dipakai; pakai owner dari .env VPS).
+  - VPS: `.env.staging` (URL pooler staging, USE_CELERY=false, FRONTEND_URL staging) + unit `skillens-staging-backend` (:8001, enabled) + tunnel ingress `staging-api` + DNS CNAME. Koneksi OK.
+  - Vercel Preview env → `NEXT_PUBLIC_API_URL=https://staging.socratech.my.id/api` (same-origin, tanpa CORS) + `BACKEND_INTERNAL_URL=https://staging-api.socratech.my.id`; redeploy; login staging 200 JWT.
+  - Bukti isolasi: buat job ISOLATION-PROBE via staging-api → staging 36 vs prod 35; hapus → row hanya di staging (closed), prod kosong; hard-delete → staging kembali 35.
+- **Affected Files** (VPS): `.env.staging`, unit staging-backend, config tunnel + DNS. Repo: none.
+- **Verification & Testing**: health/login/jobs staging 200; isolasi tulis-baca terbukti dua arah — Passed.
+- **Handoff Notes for Next Session**: Staging kini 100% terpisah (frontend Vercel + backend :8001 + branch Neon). Upload file masih folder bersama (terima). Staging worker tidak ada (inline eval) — hemat RAM, sesuai.
+
+### Session: 2026-10-01 02:10 WIB — Install Neon CLI (VPS + Lokal), Menunggu API Key
+- **Goal / User Request**: Install neon CLI + beri command auth.
+- **Changes Made**: `npm i -g neonctl` → v7.0.1 di VPS (`ssh jhic`) dan lokal. Belum auth (butuh API key user).
+- **Affected Files**: none.
+- **Verification & Testing**: `neonctl --version` 7.0.1 dua-duanya — Passed.
+- **Handoff Notes for Next Session**: Setelah user kasih `NEON_API_KEY`: `export NEON_API_KEY=…` → `neonctl projects list` → buat branch staging + DB + role → sambungkan ke backend staging terpisah.
+
+### Session: 2026-10-01 01:55 WIB — Lighthouse Formal + Bunuh Chunk 2.6MB (DONE, perf 41→64)
+- **Goal / User Request**: "bisakah kamu membuatnya sempurna" — audit formal + kejar 10/10.
+- **Changes Made**:
+  - Lighthouse CLI (Chrome lokal): prod perf 35 (LCP 12.5s, TBT 1580ms). Forensik bundle: satu chunk 2.6MB berisi lib `shaders` (WebGPU, 33MB) + framer-motion funnel landing.
+  - Fix: hapus file yatim `ShaderBackground.tsx` (tidak ada importir) + `npm uninstall shaders`; 9 section bawah landing jadi `next/dynamic` (hero statis, placeholder anti-CLS).
+  - Insiden: penghapusan mematahkan build Vercel 2x — `HeroSection` di git MASIH import file itu (pelajaran: cek `git grep`, bukan working tree yang sedang diedit pihak lain). Fix: tulis ulang ShaderBackground murni-CSS tanpa import; build kedua gagal lagi karena `HeroAsciiShader` (file untracked orang lain) — final: versi 100% mandiri. Push `b904d28` → `1dd17b8` → `6fb0bba`, build Ready.
+  - Catatan paralel: pihak lain sedang refactor hero/auth (OrangeFlowAscii, login, signup — uncommitted, tidak disentuh).
+- **Affected Files**: `[MODIFY]` page.tsx, ShaderBackground, package.json/lock; `[NEW]` devDep bundle-analyzer.
+- **Verification & Testing**: tsc 0 (3x), Vercel Ready, Lighthouse staging: perf **41→64**, LCP 11.7→6.4s, TBT 1330→340ms, SI 8.0→5.3s, unused-js hilang, a11y 92, BP/SEO 100. Sisa = biaya evaluasi framework di CPU simulasi (wajar).
+- **Handoff Notes for Next Session**: Skor final: optimasi 9, struktur 7.5, performa 8.5 (ukur), overall 8.5/10. Sisa menuju 10: DB staging terpisah (butuh akses Neon), LB multi-node (butuh VPS ke-2 + R2 uploads agar stateless), hero-motion diet (tunggu refactor hero pihak lain selesai dulu).
+
+### Session: 2026-10-01 01:15 WIB — Redis Baru SG + Celery Worker Aktif (DONE)
+- **Goal / User Request**: User buat Redis Upstash baru (SG, 256MB) + kirim kredensial; pasang ke VPS.
+- **Changes Made** (VPS via ssh, secret hanya di memory — TIDAK dicatat di file):
+  - `.env` backup + `REDIS_URL` → instance baru (rediss) + `USE_CELERY=true`. Pelajaran format: redis-py menolak `?ssl_cert_reqs=CERT_NONE`, tapi backend Celery/kombu WAJIB ada `?ssl_cert_reqs=CERT_REQUIRED` → URL final pakai CERT_REQUIRED; `utils/cache.py` (sudah di-push) men-strip param itu sendiri jadi dua-duanya jalan.
+  - Unit baru `skillens-worker.service` (venv, `--concurrency=2`, Restart=always, enabled) — worker pong OK, queue `celery` bound, 1 node online.
+  - Restart backend → health 200, login recruiter 200 JWT, GET /jobs 200.
+- **Affected Files** (VPS): `backend/.env`, `/etc/systemd/system/skillens-worker.service`. Tanpa ubah repo.
+- **Verification & Testing**: REDIS ping True, kombu OK, celery inspect pong, queue bound, backend health+login+jobs 200 — Passed.
+- **Handoff Notes for Next Session**: Antrean eval kini via worker (fallback inline otomatis jika broker error). Submit assessment pertama user = uji api sesungguhnya — pantau `journalctl -u skillens-worker`. Free-tier 14 hari inaktif: traffic cache (TTL 60s) + heartbeat worker menjaga tetap aktif selama situs dipakai.
+
+### Session: 2026-09-30 17:45 WIB — Optimasi Penuh via Graphify (DONE, push 39c224b)
+- **Goal / User Request**: "optimasi semuanya" pakai analisa graphify + semua tools.
+- **Changes Made** (graph: hot path submit router:82→service:201→inline eval:246):
+  - Frontend: hapus 4 request render-blocking Google Fonts (Inter/Space/JetBrains sudah self-host; Playfair pindah ke `next/font` + var CSS); `BiosphereSimulationPanel` (framer-motion) jadi `next/dynamic`. Recharts dilewat (cuma dipakai docs), img audit sudah lazy.
+  - Backend: `utils/cache.py` baru (Redis read-through 60s, fail-open) dipakai GET `/jobs` + `/applications` (key per-user); index DB baru: applications(status, created_at), jobs(status), interviews(status, scheduled_at) — DDL dieksekusi ke Neon via VPS (5 OK).
+  - Cloudflare API: Early Hints off→on (brotli+h3 sudah on; 0rtt dibiarkan off).
+  - Repo: `.lighthouserc.json` (assert perf/LCP/CLS/TTFB prod+staging) + `e2e/k6/staging-smoke.js` (50→200→500 VU).
+  - TIDAK jadi: aktifkan Celery — hostname Upstash `apt-bison-…` mati di DNS (VPS DNS sehat), broker unreachable di redis-py maupun kombu. Queue tetap inline (aman); cache Redis dormant sampai REDIS_URL diganti.
+- **Affected Files**: `[MODIFY]` layout, globals.css, audit page, metrics? no — jobs/applications routers, models; `[NEW]` utils/cache.py, .lighthouserc.json, k6; `[MODIFY]` .gitignore? no. Commit `39c224b` push preview, staging rebuild OK.
+- **Verification & Testing**: tsc 0, py_compile OK, secret-scan bersih, staging HTML 0 referensi fonts.googleapis, staging 200. Lighthouse/k6 formal belum dijalankan (skema siap).
+- **Handoff Notes for Next Session**: (1) VPS prod masih 215a0e4 — pull+rebuild+copy-standalone+restart untuk bawa optimasi ke produksi. (2) Minta Redis Upstash baru → update REDIS_URL → cache aktif + Celery bisa dinyalakan (unit systemd + USE_CELERY=true). (3) Perubahan UI sesi lalu (edit-link, offer stat) masih uncommitted lokal.
+
 ### Session: 2026-09-27 08:55 WIB — Terapkan Sitemap Gaps: Edit-Link, Offer Stat, Konektor SVG (DONE, uncommitted)
 - **Goal / User Request**: "terapkan yang lebih baik" — 4 celah audit sitemap.
 - **Changes Made** (skill `skillens-design-system` + NeedMCP craft dimuat; tabrakan gaya: none — semua pakai komponen/kelas yang sudah ada di file yang sama):
@@ -760,6 +856,47 @@ D:\projects\JHIC-rev\
 - **Verification & Testing**:
   - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
+
+### Session: 2026-09-23 — Bedah Visual Analisa Kandidat (APP-51)
+- **Goal / User Request**: Di dalam rekruiter, di fitur buka analisa kandidat, masih ada yang belum?
+- **Metode**: grep token + screenshot full-page APP-51 yang login asli.
+- **Hasil**: Bersih. Header (Select status + Arsipkan + Skor Bukti), ringkasan AI, integritas, bar skor accent, nav laporan aktif — semua token/komponen BoardUI. Dua sarang lama sudah dibetulkan sesi audit dalam (blok CV + select mentah).
+- **Verification**: Playwright full-page 0 pageerror. Temp dibersihkan.
+
+### Session: 2026-09-23 — Audit Dalam: Sarang Style Lama di Menu
+- **Goal / User Request**: BoardUI belum sampai ke dalam; di dalam menu masih ada aset style lama.
+- **Metode**: sapu `grep` seluruh `src/` (abu/putih/hitam/hex mentah, tint mentah emerald/red/blue/dll, ring/divide, select mentah, shadow besar, blur, inline hex, ikon carbon).
+- **Temuan & Fix**:
+  - Blok analisis visual CV (`candidates/[app_id]`): tombol abu + label abu + panel abu → Button primer + token + Chip.
+  - 2 `<select>` mentah (status kandidat, kecepatan replay) → Select + SelectItem BoardUI; konstanta `NATIVE_SELECT_CLASSES` dihapus.
+  - Sisanya sah: scrim overlay (resep BoardUI), knob switch putih, hover putih-di-gelap, warna canvas art, dataviz internal, file mati tak terpakai.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/app/recruiter/candidates/[app_id]/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. `npm run build` green. `graphify update .`.
+
+### Session: 2026-09-23 — Kembaran ASCII Shader Hero (Port Algoritma Asli)
+- **Goal / User Request**: ASCII harus mirip shader WebGL hero, efek persis. Panel auth diterangkan sedikit.
+- **Riset mendalam**: bedah `node_modules/shaders` — Swirl = domain-warped triple sine (konstanta waktu + bobot identik di-port), ChromaFlow = adveksi fluida (semua arah oranye → aproksimasi peta oranye), FlutedGlass = distorsi sampling frekuensi 5, FilmGrain = noise 0.04.
+- **Changes Made**:
+  - Baru `HeroAsciiShader.tsx`: port verbatim swirlField (detail 1.2→0.7 final agar pita lebar), flute + grain, peta karakter lembut di terang, zona tenang belakang headline, gerbang hemat lengkap.
+  - Hero pakai kembaran ASCII (ShaderBackground light dilepas). Panel auth 800/700/600 → 700/600/500.
+  - Iterasi jujur: v1 karpet penuh → v2 grid kasar → v3 jarang lembut (final).
+- **Affected Files**:
+  - `[NEW]` `frontend/src/components/HeroAsciiShader.tsx`
+  - `[MODIFY]` `frontend/src/components/landing/HeroSection.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/app/signup/page.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. Playwright 4 iterasi screenshot. Temp dibersihkan.
+
+### Session: 2026-09-23 — Bloom + Cahaya Kursor ala Framer Uni
+- **Goal / User Request**: Contoh Framer Uni interactive ASCII (bloom, keren). Terapkan tekniknya.
+- **Riset**: Framer component proprietary (tak bisa disalin) — tekniknya: glow/bloom, cahaya radial kursor, gradien dua warna by lightness. Diterapkan ulang dari nol.
+- **Changes Made**:
+  - `OrangeFlowAscii`: `shadowBlur` bloom putih-hangat per glif + gradien dua warna (redup `#ffd9b8`, terang putih) + cahaya radial 230px mengikuti kursor.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/OrangeFlowAscii.tsx`
+- **Verification & Testing**:
+  - `npx tsc --noEmit` 0 error. Playwright + hover: glow lembut + cahaya kursor terlihat. Temp dibersihkan.
 
 ### Session: 2026-09-23 — ASCII Bilah Diagonal Persis Shader Hero
 - **Goal / User Request**: ASCII harus mirip shader WebGL hero (referensi screenshot bilah kaca diagonal), efek persis. Panel oranye, animasi putih, ada hover.

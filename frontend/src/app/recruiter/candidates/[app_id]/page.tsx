@@ -14,6 +14,7 @@ import {
   RiShieldCheckLine,
   RiSkipBackLine,
   RiSkipForwardLine,
+  RiSparklingLine,
   RiVideoLine,
 } from '@remixicon/react';
 import Link from 'next/link';
@@ -28,6 +29,7 @@ import { cx } from '@/utils/cx';
 import { Button, ButtonLink } from '@/components/base/buttons/button';
 import { IconButton } from '@/components/base/buttons/icon-button';
 import { Chip } from '@/components/base/badges/chip';
+import { Select, SelectItem } from '@/components/base/select/select';
 import { ThinkingIndicator } from '@/components/ThinkingIndicator';
 const BiosphereSimulationPanel = dynamic(() => import('@/components/BiosphereSimulationPanel'), {
   loading: () => <ThinkingIndicator />,
@@ -46,9 +48,6 @@ import type {
 
 type Tab = 'analysis' | 'replay' | 'transcript' | 'biosphere';
 const SPEED_OPTIONS = [0.5, 1, 2, 5];
-
-const NATIVE_SELECT_CLASSES =
-  'w-full rounded-xl border border-border-button-default bg-background-primary-default px-3 py-2 text-body-medium text-text-primary outline-none hover:border-border-button-hover focus-visible:ring-2 focus-visible:ring-border-focus-ring disabled:opacity-50';
 
 export default function CandidateForensicReport() {
   const params = useParams();
@@ -298,20 +297,21 @@ export default function CandidateForensicReport() {
           {result && (
             <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-4 bg-background-primary-default p-4 rounded-2xl border border-border-button-default shadow-card">
               <div className="flex flex-col gap-1 w-full sm:w-auto">
-                <label className="text-caption-1-medium text-text-tertiary uppercase">Status Kandidat</label>
-                <select
-                  value={app?.status || 'applied'}
-                  onChange={(e) => handleStatusChange(e.target.value)}
-                  disabled={updatingStatus}
-                  className={NATIVE_SELECT_CLASSES}
+                <span className="text-caption-1-semibold text-text-tertiary uppercase">Status Kandidat</span>
+                <Select
+                  aria-label="Status kandidat"
+                  selectedKey={app?.status || 'applied'}
+                  onSelectionChange={(k) => handleStatusChange(String(k))}
+                  isDisabled={updatingStatus}
+                  size="md"
                 >
-                  <option value="applied">Terdaftar</option>
-                  <option value="testing">Mengikuti Ujian</option>
-                  <option value="evaluated">Dalam Peninjauan</option>
-                  <option value="interview">Wawancara</option>
-                  <option value="hired">Diterima</option>
-                  <option value="rejected">Tidak Terpilih</option>
-                </select>
+                  <SelectItem id="applied">Terdaftar</SelectItem>
+                  <SelectItem id="testing">Mengikuti Ujian</SelectItem>
+                  <SelectItem id="evaluated">Dalam Peninjauan</SelectItem>
+                  <SelectItem id="interview">Wawancara</SelectItem>
+                  <SelectItem id="hired">Diterima</SelectItem>
+                  <SelectItem id="rejected">Tidak Terpilih</SelectItem>
+                </Select>
               </div>
 
               {app?.resume_url && (
@@ -378,24 +378,25 @@ export default function CandidateForensicReport() {
                 ))}
               </div>
               {!visualAnalysis ? (
-                <div>
-                  <button onClick={handleAnalyzePhotos} disabled={visualLoading}
-                    className="px-4 py-2 bg-gray-900 hover:bg-[#F26522] text-white text-xs font-bold uppercase tracking-wider rounded-full transition-colors disabled:opacity-60">
-                    {visualLoading ? 'Menganalisis foto…' : 'Analisis Visual AI'}
-                  </button>
-                  {visualError && <p className="text-xs text-red-600 mt-2">{visualError}</p>}
+                <div className="flex flex-col gap-2">
+                  <div>
+                    <Button onClick={handleAnalyzePhotos} disabled={visualLoading} variant="primary" size="small" leadingIcon={RiSparklingLine}>
+                      {visualLoading ? 'Menganalisis foto…' : 'Analisis Visual AI'}
+                    </Button>
+                  </div>
+                  {visualError && <p className="text-body-regular text-text-error-primary">{visualError}</p>}
                   {visualLoading && (
-                    <p className="text-xs text-gray-500 mt-2">AI membaca foto (±1 menit/foto). Boleh tinggalkan halaman ini.</p>
+                    <p className="text-body-regular text-text-secondary">AI membaca foto (±1 menit/foto). Boleh tinggalkan halaman ini.</p>
                   )}
                 </div>
               ) : (
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-3">
-                  <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                <div className="rounded-2xl bg-background-secondary-default p-4 space-y-3">
+                  <p className="text-caption-1-semibold text-text-tertiary">
                     Hasil analisis visual · {visualAnalysis.engine || 'local'} · {visualAnalysis.analyzed_at?.slice(0, 10) || ''}
                   </p>
                   {(visualAnalysis.findings || []).map((f: any, i: number) => (
-                    <div key={i} className="text-sm text-gray-800 leading-relaxed">
-                      <span className="font-mono text-xs text-gray-500">Foto {i + 1}: </span>
+                    <div key={i} className="text-body-regular leading-relaxed text-text-primary">
+                      <span className="font-mono text-caption-1-semibold text-text-tertiary">Foto {i + 1}: </span>
                       {f.analysis}
                     </div>
                   ))}
@@ -612,16 +613,16 @@ export default function CandidateForensicReport() {
                   <div className="flex items-center justify-between">
                     <h3 className="text-title-3-semibold text-text-primary">Pemutaran Ulang Proses</h3>
                     <div className="flex items-center gap-2">
-                      <select
-                        value={playbackSpeed}
-                        onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-                        className={cx(NATIVE_SELECT_CLASSES, 'w-auto rounded-full px-3 py-1.5 text-caption-1-medium')}
+                      <Select
                         aria-label="Kecepatan pemutaran"
+                        selectedKey={String(playbackSpeed)}
+                        onSelectionChange={(k) => setPlaybackSpeed(Number(k))}
+                        size="sm"
                       >
                         {SPEED_OPTIONS.map(s => (
-                          <option key={s} value={s}>{s}x</option>
+                          <SelectItem key={s} id={String(s)}>{s}x</SelectItem>
                         ))}
-                      </select>
+                      </Select>
                       <Button
                         onClick={() => {
                           if (replayHistory.length === 0) return;

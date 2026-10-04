@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { RiSparklingLine } from '@remixicon/react';
-import ShaderBackground from '@/components/ShaderBackground';
+import HeroAsciiShader from '@/components/HeroAsciiShader';
 import TextRollButton from '@/components/TextRollButton';
 import { Chip } from '@/components/base/badges/chip';
 import { useState, useEffect } from 'react';
@@ -95,7 +95,7 @@ export function HeroSection() {
 
         {/* Background Shader */}
         <div className="absolute inset-0 w-full h-full">
-          <ShaderBackground variant="light" />
+          <HeroAsciiShader />
         </div>
 
         {/* Navbar */}

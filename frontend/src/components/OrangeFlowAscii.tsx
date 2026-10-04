@@ -117,11 +117,27 @@ export default function OrangeFlowAscii({ className = '' }: { className?: string
           const alpha = Math.min(0.75, (v * 0.7 + boost) * calm);
           if (alpha < 0.05) continue;
           ctx.globalAlpha = alpha;
-          ctx.fillStyle = '#ffffff';
+          // Gradien dua warna ala Framer: redup hangat, terang putih.
+          ctx.fillStyle = v > 0.55 || boost > 0.25 ? '#ffffff' : '#ffd9b8';
+          // Bloom halus ala Framer (glow).
+          ctx.shadowColor = 'rgba(255, 240, 225, 0.9)';
+          ctx.shadowBlur = 6;
           ctx.fillText(ch, gx + ox, gy + oy);
         }
       }
+      ctx.shadowBlur = 0;
       ctx.globalAlpha = 1;
+
+      // Cahaya radial mengikuti kursor (ala Framer cursor light).
+      if (mouse.x > -9998) {
+        const glowR = 230;
+        const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, glowR);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 0.16)');
+        grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = grad;
+        ctx.fillRect(mouse.x - glowR, mouse.y - glowR, glowR * 2, glowR * 2);
+      }
     };
 
     const tick = (now: number) => {

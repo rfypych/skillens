@@ -89,9 +89,9 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background-full font-boardui overflow-x-hidden">
 
       {/* MOBILE VIEW (< lg): Dribbble Card Sheet Layout */}
-      <div className="flex lg:hidden min-h-screen flex-col justify-between bg-gradient-to-b from-accent-800 via-accent-700 to-accent-600">
+      <div className="flex lg:hidden min-h-screen flex-col justify-between bg-gradient-to-b from-accent-700 via-accent-600 to-accent-500">
         {/* Top WebGL Header Area */}
-        <div className="relative w-full h-[220px] sm:h-[260px] text-white p-4 flex flex-col justify-between overflow-hidden bg-gradient-to-b from-accent-800 to-accent-700">
+        <div className="relative w-full h-[220px] sm:h-[260px] text-white p-4 flex flex-col justify-between overflow-hidden bg-gradient-to-b from-accent-700 to-accent-600">
           <OrangeFlowAscii />
           <div className="relative z-20 w-full flex items-center justify-between">
             <Link
@@ -323,7 +323,7 @@ export default function LoginPage() {
 
         {/* WebGL Side - Flush Right Edge Floating Panel */}
         <div className="w-[58%] xl:w-[62%] p-3 pl-0">
-          <div className="w-full h-full bg-gradient-to-br from-accent-800 via-accent-700 to-accent-600 rounded-3xl p-12 lg:p-16 text-white flex flex-col justify-between items-start relative overflow-hidden shadow-dropdown">
+          <div className="w-full h-full bg-gradient-to-br from-accent-700 via-accent-600 to-accent-500 rounded-3xl p-12 lg:p-16 text-white flex flex-col justify-between items-start relative overflow-hidden shadow-dropdown">
             {/* Aliran ASCII putih ala shader hero — ringan, tanpa WebGL */}
             <div className="absolute inset-0" aria-hidden>
               <OrangeFlowAscii />
