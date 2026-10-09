@@ -37,7 +37,7 @@ function Navbar() {
   }, []);
 
   return (
-    <nav className="relative z-30 w-full flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5">
+    <nav className="relative z-50 w-full flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5">
       {/* Logo */}
       <Link href="/">
         <img src="/skillens-logo-text.png" alt="Skillens" className="h-8 w-auto object-contain" />
@@ -63,16 +63,18 @@ function Navbar() {
       </div>
 
       {/* Mobile toggle */}
-      <button
-        onClick={() => setOpen(!open)}
-        className="md:hidden w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center"
-      >
+        <button
+          onClick={() => setOpen(!open)}
+          aria-label={open ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+          aria-expanded={open}
+          className="md:hidden w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center"
+        >
         {open ? <X size={17} /> : <Menu size={17} />}
       </button>
 
       {/* Mobile drawer */}
       {open && (
-        <div className="absolute top-full left-0 right-0 bg-background-primary-default/95 backdrop-blur-md rounded-2xl border border-border-button-default mx-3 mt-2 p-5 shadow-dropdown z-50 flex flex-col gap-3">
+        <div className="absolute top-full left-0 right-0 bg-background-primary-default/95 backdrop-blur-md rounded-2xl border border-border-button-default mx-3 mt-2 p-5 shadow-dropdown z-[70] flex flex-col gap-3">
           <a href="#about" onClick={() => setOpen(false)} className="text-body-medium text-text-primary py-1">Solusi</a>
           <a href="#metrics" onClick={() => setOpen(false)} className="text-body-medium text-text-primary py-1">Kapabilitas</a>
           <Link href="/recruiter" onClick={() => setOpen(false)} className="text-body-medium text-text-primary py-1">Rekruiter</Link>
@@ -91,7 +93,7 @@ function Navbar() {
 export function HeroSection() {
   return (
     <div className="w-full h-screen flex items-center justify-center p-3 sm:p-4 md:p-6 lg:p-7 bg-[#f0f0f0]">
-      <section className="relative w-full max-w-[1760px] h-full rounded-[1.5rem] md:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden flex flex-col items-center group font-boardui">
+      <section className="relative w-full max-w-[1760px] h-full rounded-[1.5rem] md:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden flex flex-col items-center group font-app">
 
         {/* Background Shader */}
         <div className="absolute inset-0 w-full h-full">

@@ -58,7 +58,7 @@ function FaqRow({ q, a, open, onToggle }: { q: string; a: string; open: boolean;
 export function FaqSection() {
   const [openIndex, setOpenIndex] = useState(0);
   return (
-    <section className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-4 md:py-6 font-boardui">
+    <section className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-4 md:py-6 font-app">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
         <div className="flex flex-col gap-1.5 px-1 text-center items-center">
           <p className="text-caption-1-semibold text-text-tertiary">

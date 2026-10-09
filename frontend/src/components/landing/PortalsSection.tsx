@@ -24,7 +24,7 @@ const PORTALS = [
 
 export function PortalsSection() {
   return (
-    <section className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-4 md:py-6 font-boardui">
+    <section className="w-full max-w-[1760px] mx-auto px-3 sm:px-4 md:px-6 lg:px-7 py-4 md:py-6 font-app">
       <div className="flex flex-col gap-1.5 mb-4 px-1">
         <p className="text-caption-1-semibold text-text-tertiary">
           Template siap pakai
