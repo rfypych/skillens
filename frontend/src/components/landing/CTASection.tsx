@@ -6,7 +6,7 @@ import { Button } from '@/components/base/buttons/button';
 
 export function CTASection() {
   return (
-    <div className="w-full px-3 sm:px-4 md:px-6 lg:px-7 py-4 md:py-6 pb-6 md:pb-8 bg-background-full font-boardui">
+    <div className="w-full px-3 sm:px-4 md:px-6 lg:px-7 py-4 md:py-6 pb-6 md:pb-8 bg-background-full font-app">
       <section className="relative w-full max-w-[1760px] mx-auto rounded-3xl border border-border-button-default bg-background-primary-default overflow-hidden flex flex-col items-center justify-center px-6 py-16 md:py-24 shadow-card">
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-40"

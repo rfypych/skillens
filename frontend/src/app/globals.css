@@ -11,16 +11,6 @@
 
 
 @theme {
-  --color-brand-primary: #4B7B51;
-  --color-brand-secondary: #012631;
-  --color-brand-accent: #A6E587;
-  --color-brand-dark: #070707;
-  --color-brand-dark-teal: #2F4D55;
-  --color-brand-gray-light: #AFBCBE;
-  --color-brand-gray-medium: #829397;
-  --color-brand-gray-dark: #586D73;
-  --color-brand-white: #FEFEFE;
-
   --font-helvetica: "Helvetica Regular", ui-sans-serif, system-ui, sans-serif;
   /* Body + display use self-hosted Inter (next/font): zero slow external
      font downloads on first paint. Helvetica stack kept as fallback only. */
@@ -148,14 +138,14 @@ html.lenis, html.lenis body {
 }
 ::-webkit-scrollbar-track {
   background: #f0f0f0;
-  border-left: 1px solid #AFBCBE;
+  border-left: 1px solid var(--color-neutral-300);
 }
 ::-webkit-scrollbar-thumb {
-  background: #586D73;
+  background: var(--color-neutral-400);
   border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #012631;
+  background: var(--color-neutral-600);
 }
 
 @layer base {
@@ -192,10 +182,10 @@ html.lenis, html.lenis body {
   font-variant-numeric: tabular-nums;
 }
 
-/* BoardUI app surfaces (everything except the landing page) render in Inter,
- * matching BoardUI's --font-sans chain. Apply on shell/page roots; the
+/* App surfaces (everything except the landing page) render in Inter,
+ * matching the design-system --font-sans chain. Apply on shell/page roots; the
  * landing page keeps the brand Helvetica stack via font-sans. */
-.font-boardui {
+.font-app {
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 

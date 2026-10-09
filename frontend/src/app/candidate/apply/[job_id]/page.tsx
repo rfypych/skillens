@@ -133,7 +133,7 @@ export default function ApplyForJob() {
 
   if (initLoading) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-background-full font-boardui">
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-background-full font-app">
         <ThinkingIndicator statusText="Memuat Detail Posisi…" />
       </div>
     );
@@ -143,7 +143,7 @@ export default function ApplyForJob() {
   cleanDescription = cleanDescription.replace(/Job Title:.*?\nJob Description:\s*/, '');
 
   return (
-    <div className="min-h-dvh bg-background-full text-text-primary font-boardui">
+    <div className="min-h-dvh bg-background-full text-text-primary font-app">
       <nav className="flex h-16 items-center border-b border-separator-border bg-background-primary-default px-6 md:px-8">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
           <div className="flex items-center gap-3">

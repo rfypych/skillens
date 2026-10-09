@@ -61,7 +61,7 @@ export default function LandingPage() {
 
         {/* 9. Footer */}
         <div className="bg-background-full">
-        <footer className="w-full max-w-[1760px] mx-auto px-5 md:px-10 py-12 md:py-16 border-t border-separator-border font-boardui">
+        <footer className="w-full max-w-[1760px] mx-auto px-5 md:px-10 py-12 md:py-16 border-t border-separator-border font-app">
           <div className="flex flex-col md:flex-row items-start justify-between gap-12">
 
             {/* Left: Logo + tagline */}

@@ -86,7 +86,7 @@ export default function LoginPage() {
 
 
   return (
-    <div className="min-h-screen bg-background-full font-boardui overflow-x-hidden">
+    <div className="min-h-screen bg-background-full font-app overflow-x-hidden">
 
       {/* MOBILE VIEW (< lg): Dribbble Card Sheet Layout */}
       <div className="flex lg:hidden min-h-screen flex-col justify-between bg-gradient-to-b from-accent-700 via-accent-600 to-accent-500">

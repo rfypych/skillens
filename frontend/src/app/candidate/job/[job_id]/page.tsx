@@ -84,7 +84,7 @@ export default function JobDetail() {
 
   if (loading) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-background-full font-boardui">
+      <div className="flex min-h-dvh items-center justify-center bg-background-full font-app">
         <ThinkingIndicator />
       </div>
     );
@@ -92,7 +92,7 @@ export default function JobDetail() {
 
   if (!job) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-background-full font-boardui">
+      <div className="flex min-h-dvh items-center justify-center bg-background-full font-app">
         <div className="text-center">
           <p className="mb-4 text-body-medium text-text-tertiary">Posisi tidak ditemukan.</p>
           <Link href="/candidate/dashboard" className="text-body-medium text-accent-600 hover:text-accent-700">
@@ -106,7 +106,7 @@ export default function JobDetail() {
   const ctaLabel = applying ? 'Memproses…' : alreadyApplied ? 'Sudah Melamar' : 'Mulai Asesmen';
 
   return (
-    <div className="min-h-dvh bg-background-full text-text-primary font-boardui">
+    <div className="min-h-dvh bg-background-full text-text-primary font-app">
       <header className="sticky top-0 z-40 border-b border-separator-border bg-background-primary-default">
         <div className="mx-auto flex h-12 max-w-5xl items-center gap-3 px-6">
           <Link

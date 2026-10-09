@@ -206,7 +206,7 @@ export default function CandidateAssessment() {
       }
     };
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background-full p-4 relative overflow-hidden font-boardui">
+      <div className="min-h-screen flex items-center justify-center bg-background-full p-4 relative overflow-hidden font-app">
         <div className="bg-background-primary-default border border-border-button-default max-w-lg w-full rounded-3xl p-10 text-center shadow-card relative overflow-hidden">
           <div className="size-16 bg-background-secondary-default text-accent-600 rounded-full flex items-center justify-center mx-auto mb-6 border border-separator-border">
             <RiCheckLine className="size-8" aria-hidden />
@@ -231,7 +231,7 @@ export default function CandidateAssessment() {
 
   if (promptError) {
     return (
-      <div className="min-h-screen bg-background-full flex flex-col items-center justify-center gap-4 p-6 text-center font-boardui">
+      <div className="min-h-screen bg-background-full flex flex-col items-center justify-center gap-4 p-6 text-center font-app">
         <div className="bg-background-primary-default rounded-2xl border border-border-button-default shadow-card px-8 py-10 max-w-md">
           <h2 className="text-title-2-medium text-text-primary">Sesi Ujian Tidak Tersedia</h2>
           <p className="text-body-regular text-text-secondary mt-2 leading-relaxed">
@@ -249,7 +249,7 @@ export default function CandidateAssessment() {
 
   if (!promptData) {
     return (
-      <div className="min-h-screen bg-background-full flex flex-col items-center justify-center gap-6 font-boardui">
+      <div className="min-h-screen bg-background-full flex flex-col items-center justify-center gap-6 font-app">
         <ThinkingIndicator statusText="Menyiapkan Sesi Ujian Aman..." />
       </div>
     );
@@ -259,7 +259,7 @@ export default function CandidateAssessment() {
   const isCriticalTime = timeLeft <= 120;
 
   return (
-    <div className="min-h-screen bg-background-full text-text-primary flex flex-col h-screen font-boardui">
+    <div className="min-h-screen bg-background-full text-text-primary flex flex-col h-screen font-app">
       {/* ── SECURITY TAB OVERLAY ── */}
       {isTabHidden && (
         <div className="fixed inset-0 bg-background-primary-default/95 z-[100] flex flex-col items-center justify-center p-6 text-center">

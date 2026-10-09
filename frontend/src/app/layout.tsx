@@ -17,8 +17,8 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
 });
 
-// BoardUI token chain (theme.css) reads --font-mono-source; expose the same
-// JetBrains Mono face under BoardUI's variable name (landing keeps Helvetica).
+// Theme token chain (theme.css) reads --font-mono-source; expose the same
+// JetBrains Mono face under that variable name (landing keeps Helvetica).
 const jetbrainsMonoSource = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-mono-source',
@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="shortcut icon" href="/logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/logo.png" />
       </head>
-      <body className="font-sans antialiased bg-brand-white text-brand-dark" suppressHydrationWarning>
+      <body className="font-sans antialiased bg-background-full text-text-primary" suppressHydrationWarning>
         {children}
       </body>
     </html>

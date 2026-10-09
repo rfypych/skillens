@@ -161,7 +161,7 @@ export default function AssessmentInstructions() {
   ];
 
   return (
-    <div className="relative flex min-h-dvh items-center justify-center bg-background-full px-4 py-10 sm:px-6 md:px-8 font-boardui">
+    <div className="relative flex min-h-dvh items-center justify-center bg-background-full px-4 py-10 sm:px-6 md:px-8 font-app">
       <CandidateOnboardingModal isOpen={showGuide} onClose={handleCloseGuide} />
 
       <div className="fixed top-6 right-6 z-40">

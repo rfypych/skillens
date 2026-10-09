@@ -162,7 +162,7 @@ export default function OnboardingWizardModal({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 font-boardui">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 font-app">
       <div className="max-h-[90vh] w-full max-w-lg overflow-hidden rounded-3xl border border-border-button-default bg-background-primary-default text-text-primary shadow-dropdown">
         <div className="flex items-center justify-between border-b border-separator-border px-6 py-5">
           <h2 className="text-title-3-semibold text-text-primary">

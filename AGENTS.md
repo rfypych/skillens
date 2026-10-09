@@ -30,18 +30,21 @@ Append a new entry under section **6. Recent Work History** using this exact tem
 
 ---
 
-## 🎨 DESIGN DISCIPLINE & ANTI-AI-SLOP (STRICT)
+## 🎨 DESIGN DISCIPLINE — BOARDUI ONLY (STRICT)
 
-Skillens adopts a **Sharp Minimalist / Editorial** aesthetic for high-stakes national recruitment. Do NOT generate generic "AI SaaS template" styling.
+Skillens uses **BoardUI** as its sole design system (source-owned components under `frontend/src/components/`, tokens in `frontend/src/styles/`). The old Sharp/Editorial green system (`#4B7B51`, rounded-none, hard shadows) is RETIRED — never use it for new work, never reintroduce it.
 
-### ❌ STRICTLY FORBIDDEN (AI Slop Tells):
-1. **Pulsing Dot Pill Badges**: Never render badges like `● LAYER 1 — CORE INNOVATION` with pulsing dots or excessive all-caps. Use plain typographic labels with wide tracking (e.g., `Lapisan 1` semibold).
-2. **Grid Backgrounds + Neon Glow Blobs**: Avoid dark cards with repeating grid lines and neon orange/purple blur circles in corners. Use flat backgrounds with high contrast or subtle typographic watermarks (e.g., ghost text `01`).
-3. **Rainbow Checklist Dots**: Never create feature lists with rainbow bullet dots (orange, purple, cyan, green stacked). Use subtle hairline dividers or monospaced index tags (`D1`, `D2`, `01`, `02`).
-4. **Excessive Em-Dashes (`—`)**: Do not litter Indonesian copy with em-dashes. Use natural periods (`.`) or commas.
-5. **Gratuitous Glassmorphism**: Avoid `backdrop-blur-md` with transparent borders on interactive buttons unless explicitly specified.
-6. **Soft Drop Shadows & Nested Cards**: Never stack gray cards inside gray cards with thick soft shadows. Use whitespace, clean 1px borders (`border-gray-200/60`), and clear contrast.
-7. **Middle Dot (`·`)**: Never use `·` anywhere in UI copy or docs. Use `/` or `-` as separators.
+### Mandatory BoardUI rules (from `.agents/skills/boardui/`):
+1. **Semantic tokens only**: `text-text-primary/secondary/tertiary`, `bg-background-primary/secondary/tertiary-default`, `bg-background-full` page ground, `border-border-button-default`, `border-separator-border` hairlines, `accent-*` ramp (Skillens orange `#F26522`), status pairs (`status-lime/rose/blue/yellow/orange/purple`). Never raw palette classes or hex literals.
+2. **Composite type only**: `text-title-1/2-medium`, `text-body-medium/regular`, `text-caption-1-*`, `text-display-*`. Never hand-stacked `text-sm font-*`.
+3. **Shape**: cards/panels `rounded-3xl` + `border-border-button-default`; stat tiles `rounded-2xl`; inputs/menu rows `rounded-md/xl`; pills `rounded-full`. Grid `gap`, never per-card margins.
+4. **Components, not lookalikes**: Button/Input/Chip/Avatar/Table/Select/SegmentedControl/Switch/StatCards/etc. from `@/components/**`; icons `@remixicon/react` as refs; classes merged with `cx()`; `active:` press color steps; `prefers-reduced-motion` guards on keyframes.
+5. **Copy**: BoardUI voice — literal names, functional verbs, one-line descriptions, concrete numbers, zero superlatives, zero exclamation marks.
+
+### Still forbidden (genuine slop, any system):
+1. Pulsing dot pill badges, rainbow bullet dots, middle dot (`·`) in copy.
+2. Neon glow blobs, gratuitous glassmorphism on buttons.
+3. Excessive em-dashes in Indonesian copy — use periods/commas.
 
 ---
 
@@ -88,7 +91,7 @@ Every agent session MUST load and obey the following skills/MCP servers for the 
 ### Repo-local skills (`.agents/skills/`)
 | Skill | Load when... |
 |---|---|
-| `skillens-design-system`, `hallmark`, `anti-slop` | BEFORE writing/editing ANY UI — in addition to NeedMCP craft below. |
+| `hallmark`, `anti-slop` | BEFORE writing/editing ANY UI for generic quality gates — in addition to NeedMCP craft below. (The retired `skillens-design-system` green skill was deleted; never re-add it.) |
 | `ui-ux-pro-max`, `design-system` | For layout/typography/color decisions and component specs. |
 
 ### Connected MCP servers (already configured — use them, do not re-add)
@@ -123,7 +126,7 @@ Before submitting your final response:
 - [ ] `design-craft` consulted for any UI change?
 - [ ] Playwright proof green for any behavior change?
 - [ ] `code-review` gate passed before push?
-- [ ] UI changes strictly follow **Anti-AI-Slop** editorial standards?
+- [ ] UI changes strictly follow **BoardUI** standards (§🎨)?
 - [ ] Temporary debug scripts or scratch files cleaned up?
 - [ ] **HAS `WORKLOG.md` BEEN UPDATED WITH YOUR ACTIVITY LOG?**
 

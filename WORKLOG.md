@@ -857,6 +857,29 @@ D:\projects\JHIC-rev\
   - `npx tsc --noEmit` 0 error. `npm run build` green. Playwright desktop 1440 + mobile 390: layout production utuh berkulit BoardUI. 0 pageerror. Temp dibersihkan.
 - **Handoff Notes for Next Session**: Login kini divergen dari `main` hanya di styling (lebih aman di-merge). Signup belum disentuh sesi ini.
 
+### Session: 2026-09-23 — Hapus Total Sistem Hijau Lama
+- **Goal / User Request**: Desain lama (hijau, kotak lancip) muncul lagi padahal sudah dihapus. Hapus dan lupakan.
+- **Root Cause**: artefak video hijau + komposisi hyperframes masih ada di disk; lebih parah, AGENTS.md + skill `skillens-design-system` masih memerintahkan gaya hijau ke setiap sesi agen baru — itu sebabnya "ia" terus memakai desain lama.
+- **Changes Made**:
+  - Hapus: `renders/`, `hyperframes/`, `frontend/public/renders/`, `frontend/public/hyperframes/`, `.agents/skills/skillens-design-system/`, `AmbientGridBackground.tsx` (tak terpakai, radial hijau).
+  - `AGENTS.md` §🎨 ditulis ulang → BoardUI satu-satunya; tabel skill + checklist disesuaikan; larangan re-add skill hijau.
+  - `globals.css`: blok token brand hijau dihapus; scrollbar → netral; `layout.tsx` body → token BoardUI.
+  - Audit: app + auth + dasbor + kandidat + landing difoto semua — tak ada kotak hijau di produk (yang ada hanya video, kini terhapus).
+- **Affected Files**:
+  - `[DELETE]` 4 folder artefak + 1 skill + 1 komponen
+  - `[MODIFY]` `AGENTS.md`, `frontend/src/app/globals.css`, `frontend/src/app/layout.tsx`
+- **Verification & Testing**:
+  - `grep` brand/hijau/rounded-none: 0 sisa. `npx tsc --noEmit` 0 error. `npm run build` green. `graphify update .`.
+
+### Session: 2026-09-23 — Navbar Mobile Tertutup Teks Hero
+- **Goal / User Request**: Navbar harus paling atas; di mobile saat dibuka ketutup teks.
+- **Root Cause**: drawer di dalam stacking context `nav z-30`, sedangkan headline bermotion (transform) ter-render setelahnya sehingga menutup drawer.
+- **Fix**: nav → `z-50`, drawer → `z-[70]`; bonus `aria-label/expanded` pada tombol toggle.
+- **Affected Files**:
+  - `[MODIFY]` `frontend/src/components/landing/HeroSection.tsx`
+- **Verification & Testing**:
+  - Playwright mobile 390px: drawer terbuka penuh di atas semua teks. Temp dibersihkan.
+
 ### Session: 2026-09-23 — Bedah Visual Analisa Kandidat (APP-51)
 - **Goal / User Request**: Di dalam rekruiter, di fitur buka analisa kandidat, masih ada yang belum?
 - **Metode**: grep token + screenshot full-page APP-51 yang login asli.
@@ -1227,6 +1250,34 @@ D:\projects\JHIC-rev\
   - Perintah: `npx playwright test tests/human-journey.spec.ts --project=chromium --headed`
   - Hasil: **1 / 1 human journey passed (56.1s) — 100% HIJAU**.
 - **Handoff Notes for Next Session**: Pengujian otentik gaya manusia terbukti sukses melewati seluruh rantai aplikasi secara natural.
+
+### Session: 2026-10-09 10:06 WIB — Implementasi HyperFrames "The Forensic Interrogation" (32.0s GSAP Showcase)
+- **Goal / User Request**: Membangun animasi showcase sinematik berdurasi 32.0 detik menggunakan kerangka HyperFrames dan adapter runtime GSAP sesuai Master Prompt "The Forensic Interrogation (Skillens)".
+- **Changes Made**:
+  - **HyperFrames Composition** (`hyperframes/the-forensic-interrogation/index.html`):
+    - Mengimplementasikan seluruh 5 scene timecoded (0.0s – 32.0s):
+      - **Scene 1 (0.0s – 5.5s)**: *The Paper Illusion* (Headline *Playfair Display* Italic percussive slam, tag `[GPA 4.0 / IVY LEAGUE]`, mechanical inhuman typewriter 120 WPM tanpa jeda).
+      - **Scene 2 (5.5s – 12.5s)**: *The Forensic Breach* (Snap ke `#012631`, virtual camera zoom 2.3x, chromatic glitch snap 0.2s, `ai-tracking-box` L-bracket `#F26522`, dynamic burst WPM ticker 65 -> 842 WPM, audit card drop, keruntuhan skor integritas 98% -> 14%, stempel diskualifikasi).
+      - **Scene 3 (12.5s – 19.5s)**: *The Cognitive Cadence* (Kandidat B non-pedigree, split-panel micro-simulation, keystroke cadence waveform organik dengan jeda berpikir 1.8s & 14% backspace revision, streaming competency bars `#4B7B51` 94%/96%/98%).
+      - **Scene 4 (19.5s – 26.0s)**: *Cognitive Radar Bloom* (6-axis radar graph terukur identik `CognitiveFingerprintRadar.tsx`, stroke-dashoffset draw `#F26522`, 6 dimensi skor count-up, banner `TEAM DNA MATCH: 98.4% [HIDDEN GEM IDENTIFIED]`, continuous drift & verdict note).
+      - **Scene 5 (26.0s – 32.0s)**: *The Evidence Verdict & Brand Outro* (ATS leaderboard re-sorting: Kandidat A anjlok di bawah KKM 80.0, Kandidat B naik ke Rank #01 Rekomendasi Utama, transisi ke lockup akhir Skillens *"Merekrut tanpa tebakan"* / *RECRUITMENT RUNS ON EVIDENCE* / `skillens-app.vercel.app` dengan status ping aktif).
+    - Mematuhi standar estetika Sharp Minimalist / Editorial & Anti-AI-Slop (square edges `0px`, zero soft drop shadow/blur halos, depth via 1px crisp borders `#AFBCBE` / hard offset shadow `4px 4px 0px 0px #070707`, zero middle dots).
+    - Mematuhi kontrak teknis HyperFrames: single paused timeline terdaftar di `window.__timelines = [tl]`, deterministik murni, GPU transforms (`x`, `y`, `scale`, `rotation`, `opacity`), pre-calculated coordinates.
+  - **Public Mirroring & MP4 Video Render**:
+    - Merender video MP4 menggunakan `npx hyperframes render` + Headless Chrome + FFmpeg ke `renders/skillens-the-forensic-interrogation.mp4`.
+    - Menyalin video ke `frontend/public/renders/skillens-the-forensic-interrogation.mp4`.
+    - Menyediakan mirror HTML interaktif di `frontend/public/hyperframes/the-forensic-interrogation/index.html`.
+- **Affected Files**:
+  - `[NEW]` `hyperframes/the-forensic-interrogation/index.html`
+  - `[NEW]` `frontend/public/hyperframes/the-forensic-interrogation/index.html`
+  - `[NEW]` `renders/skillens-the-forensic-interrogation.mp4` (2.6 MB, 32.0s, 1920x1080 @ 30fps)
+  - `[NEW]` `frontend/public/renders/skillens-the-forensic-interrogation.mp4`
+  - `[MODIFY]` `WORKLOG.md`
+- **Verification & Testing**:
+  - HyperFrames Analyzer (`node .../animation-map.mjs`): 54/55 tweens dianalisis, 33 seeks dieksekusi maju-mundur, static-frame dedup 109/109 frames verified, **ZERO DEAD ZONES** terdeteksi sepanjang 32.0s.
+  - Video Production Render (`npx hyperframes render`): 960 frame dirender dan di-encode secara sempurna (durasi: 32.0s, ukuran: 2.6 MB, resolusi: 1920x1080 @ 30 FPS).
+  - TypeScript Compilation (`frontend/`): `npx tsc --noEmit` lulus tanpa error (Exit code 0).
+- **Handoff Notes for Next Session**: Video showcase produk siap digunakan untuk presentasi juri, pitch deck, atau di-embed di hero landing page.
 
 ---
 

@@ -112,7 +112,7 @@ function CandidateShell({ children }: { children: ReactNode }) {
   const accountUsers = [{ initials: userInitials, color: 'neutral' as const, name: userName }];
 
   return (
-    <div className="relative flex h-dvh w-full gap-4 overflow-hidden bg-background-full p-3 font-boardui">
+    <div className="relative flex h-dvh w-full gap-4 overflow-hidden bg-background-full p-3 font-app">
       <DashboardSidebar
         items={CANDIDATE_NAV}
         selected={selected}
@@ -155,7 +155,7 @@ function CandidateShell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <main className="relative flex min-h-0 min-w-0 flex-1 justify-center overflow-x-hidden overflow-y-auto bg-background-full sm:pt-3 font-boardui">
+      <main className="relative flex min-h-0 min-w-0 flex-1 justify-center overflow-x-hidden overflow-y-auto bg-background-full sm:pt-3 font-app">
         <div className="flex w-full max-w-[1300px] flex-col gap-2.5">
           <header className="flex w-full flex-col gap-2">
             <Breadcrumb>
